@@ -336,6 +336,7 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 		SaveRunData(SVMLogs, pid, tid, (s + pSampleCount + SVMParms->InputCount), vActual, &MyPrediction);
 	}
 
+	if (Mymodel->kernel_parm.kernel_type == 0) free(Mymodel->lin_weights);
 	for (int sv = 1; sv < SVMLogs->SVcount; sv++) {
 		free(Mymodel->supvec[sv]->fvec->words);
 		free(Mymodel->supvec[sv]->fvec->userdefined);
