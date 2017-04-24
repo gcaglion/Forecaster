@@ -59,7 +59,7 @@ int read_documents(int sampleCnt, int sampleLen, double** Sample, double** Targe
 	//FILE *docfl;
 
 	max_docs = sampleCnt;
-	ll = 3000;	//-- totally arbitrary ??
+	ll = 50*sampleLen;	//-- totally arbitrary ??
 	max_words_doc = 3 * sampleLen*sampleCnt;	//-- totally arbitrary ??
 
 	//nol_ll(docfile, &max_docs, &max_words_doc, &ll); /* scan size of input file */
@@ -67,10 +67,10 @@ int read_documents(int sampleCnt, int sampleLen, double** Sample, double** Targe
 	ll += 2;
 	max_docs += 2;
 
-	(*docs) = (DOC **)my_malloc(sizeof(DOC *)*max_docs);    /* feature vectors */
-	(*label) = (double *)my_malloc(sizeof(double)*max_docs); /* target values */
-	line = (char *)my_malloc(sizeof(char)*ll);
-	words = (svmWORD *)my_malloc(sizeof(svmWORD)*(max_words_doc + 10));
+	(*docs) = (DOC **)malloc(sizeof(DOC *)*max_docs);    /* feature vectors */
+	(*label) = (double *)malloc(sizeof(double)*max_docs); /* target values */
+	line = (char *)malloc(sizeof(char)*ll);
+	words = (svmWORD *)malloc(sizeof(svmWORD)*(max_words_doc + 10));
 
 	dnum = 0;
 	(*totwords) = 0;
@@ -209,7 +209,7 @@ __declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenM
 	KERNEL_CACHE *kernel_cache;
 	LEARN_PARM learn_parm;
 	KERNEL_PARM kernel_parm;
-	MODEL *model = (MODEL *)my_malloc(sizeof(MODEL));
+	MODEL *model = (MODEL *)malloc(sizeof(MODEL));
 	//--
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
@@ -261,7 +261,7 @@ __declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenM
 }
 
 __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tCoreLog* SVMLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget) {
-	MODEL *Mymodel = (MODEL *)my_malloc(sizeof(MODEL));
+	MODEL *Mymodel = (MODEL *)malloc(sizeof(MODEL));
 	//--
 	double vActual, MyPrediction;
 	int s, i;
@@ -284,8 +284,8 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 	Mymodel->sv_num = SVMLogs->SVcount;
 	Mymodel->b = SVMLogs->ThresholdB;
 	//--
-	Mymodel->supvec= (DOC **)my_malloc(sizeof(DOC *)*Mymodel->sv_num+2);
-	Mymodel->alpha = (double *)my_malloc(sizeof(double)*Mymodel->sv_num+2);
+	Mymodel->supvec= (DOC **)malloc(sizeof(DOC *)*Mymodel->sv_num+2);
+	Mymodel->alpha = (double *)malloc(sizeof(double)*Mymodel->sv_num+2);
 	Mymodel->index = NULL;
 	Mymodel->lin_weights = NULL;
 	//--

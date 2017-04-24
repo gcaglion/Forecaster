@@ -297,7 +297,7 @@ EXPORT long   minl(long, long);
 EXPORT long   maxl(long, long);
 EXPORT long   get_runtime(void);
 EXPORT int    space_or_null(int);
-EXPORT void   *my_malloc(size_t);
+//EXPORT void   *malloc(size_t);
 EXPORT void   copyright_notice(void);
 EXPORT void set_verbosity(long v);
 

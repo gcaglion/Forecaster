@@ -105,8 +105,8 @@ EXPORT SVECTOR *create_svector(svmWORD *words,char *userdefined,double factor) {
     fnum++;
   }
   fnum++;
-  vec = (SVECTOR *)my_malloc(sizeof(SVECTOR));
-  vec->words = (svmWORD *)my_malloc(sizeof(svmWORD)*(fnum));
+  vec = (SVECTOR *)malloc(sizeof(SVECTOR));
+  vec->words = (svmWORD *)malloc(sizeof(svmWORD)*(fnum));
   for(i=0;i<fnum;i++) { 
       vec->words[i]=words[i];
   }
@@ -117,7 +117,7 @@ EXPORT SVECTOR *create_svector(svmWORD *words,char *userdefined,double factor) {
     fnum++;
   }
   fnum++;
-  vec->userdefined = (char *)my_malloc(sizeof(char)*(fnum));
+  vec->userdefined = (char *)malloc(sizeof(char)*(fnum));
   for(i=0;i<fnum;i++) { 
       vec->userdefined[i]=userdefined[i];
   }
@@ -209,7 +209,7 @@ EXPORT SVECTOR* sub_ss(SVECTOR *a, SVECTOR *b)
     }
     veclength++;
 
-    sum=(svmWORD *)my_malloc(sizeof(svmWORD)*veclength);
+    sum=(svmWORD *)malloc(sizeof(svmWORD)*veclength);
     sumi=sum;
     ai=a->words;
     bj=b->words;
@@ -293,7 +293,7 @@ EXPORT SVECTOR* add_ss(SVECTOR *a, SVECTOR *b)
 
     /*** is veclength=lengSequence(a)+lengthSequence(b)? ***/
 
-    sum=(svmWORD *)my_malloc(sizeof(svmWORD)*veclength);
+    sum=(svmWORD *)malloc(sizeof(svmWORD)*veclength);
     sumi=sum;
     ai=a->words;
     bj=b->words;
@@ -385,7 +385,7 @@ EXPORT SVECTOR* smult_s(SVECTOR *a, double factor)
     }
     veclength++;
 
-    sum=(svmWORD *)my_malloc(sizeof(svmWORD)*veclength);
+    sum=(svmWORD *)malloc(sizeof(svmWORD)*veclength);
     sumi=sum;
     ai=a->words;
     while (ai->wnum) {
@@ -482,7 +482,7 @@ EXPORT void add_weight_vector_to_linear_model(MODEL *model)
   long i;
   SVECTOR *f;
 
-  model->lin_weights=(double *)my_malloc(sizeof(double)*(model->totwords+1));
+  model->lin_weights=(double *)malloc(sizeof(double)*(model->totwords+1));
   clear_vector_n(model->lin_weights,model->totwords);
   for(i=1;i<model->sv_num;i++) {
     for(f=(model->supvec[i])->fvec;f;f=f->next)  
@@ -493,7 +493,7 @@ EXPORT void add_weight_vector_to_linear_model(MODEL *model)
 
 EXPORT DOC *create_example(long docnum, long queryid, long slackid, double costfactor, SVECTOR *fvec) {
   DOC *example;
-  example = (DOC *)my_malloc(sizeof(DOC));
+  example = (DOC *)malloc(sizeof(DOC));
   example->docnum=docnum;
   example->queryid=queryid;
   example->slackid=slackid;
@@ -581,7 +581,7 @@ EXPORT MODEL *read_model(char *modelfile)
   if(verbosity>=1) {
     printf("Reading model..."); fflush(stdout);
   }
-  model = (MODEL *)my_malloc(sizeof(MODEL));
+  model = (MODEL *)malloc(sizeof(MODEL));
   model->retcode = 0;
 
   /* scan size of model file */
@@ -591,8 +591,8 @@ EXPORT MODEL *read_model(char *modelfile)
   max_words+=2;
   ll+=2;
 
-  words = (svmWORD *)my_malloc(sizeof(svmWORD)*(max_words+10));
-  line = (char *)my_malloc(sizeof(char)*ll);
+  words = (svmWORD *)malloc(sizeof(svmWORD)*(max_words+10));
+  line = (char *)malloc(sizeof(char)*ll);
 
   if ((modelfl = fopen (modelfile, "r")) == NULL)
   {
@@ -616,8 +616,8 @@ EXPORT MODEL *read_model(char *modelfile)
   fscanf(modelfl,"%ld%*[^\n]\n", &model->sv_num);
   fscanf(modelfl,"%lf%*[^\n]\n", &model->b);
 
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*model->sv_num);
-  model->alpha = (double *)my_malloc(sizeof(double)*model->sv_num);
+  model->supvec = (DOC **)malloc(sizeof(DOC *)*model->sv_num);
+  model->alpha = (double *)malloc(sizeof(double)*model->sv_num);
   model->index=NULL;
   model->lin_weights=NULL;
 
@@ -644,10 +644,10 @@ EXPORT MODEL *copy_model(MODEL *model)
   MODEL *newmodel;
   long  i;
 
-  newmodel=(MODEL *)my_malloc(sizeof(MODEL));
+  newmodel=(MODEL *)malloc(sizeof(MODEL));
   (*newmodel)=(*model);
-  newmodel->supvec = (DOC **)my_malloc(sizeof(DOC *)*model->sv_num);
-  newmodel->alpha = (double *)my_malloc(sizeof(double)*model->sv_num);
+  newmodel->supvec = (DOC **)malloc(sizeof(DOC *)*model->sv_num);
+  newmodel->alpha = (double *)malloc(sizeof(double)*model->sv_num);
   newmodel->index = NULL; /* index is not copied */
   newmodel->supvec[0] = NULL;
   newmodel->alpha[0] = 0;
@@ -659,7 +659,7 @@ EXPORT MODEL *copy_model(MODEL *model)
 				       copy_svector(model->supvec[i]->fvec));
   }
   if(model->lin_weights) {
-    newmodel->lin_weights = (double *)my_malloc(sizeof(double)*(model->totwords+1));
+    newmodel->lin_weights = (double *)malloc(sizeof(double)*(model->totwords+1));
     for(i=0;i<model->totwords+1;i++) 
       newmodel->lin_weights[i]=model->lin_weights[i];
   }
@@ -706,14 +706,14 @@ EXPORT int read_documents(char *docfile, DOC ***docs, double **label,
     printf("done\n"); fflush(stdout);
   }
 
-  (*docs) = (DOC **)my_malloc(sizeof(DOC *)*max_docs);    /* feature vectors */
-  (*label) = (double *)my_malloc(sizeof(double)*max_docs); /* target values */
-  line = (char *)my_malloc(sizeof(char)*ll);
+  (*docs) = (DOC **)malloc(sizeof(DOC *)*max_docs);    /* feature vectors */
+  (*label) = (double *)malloc(sizeof(double)*max_docs); /* target values */
+  line = (char *)malloc(sizeof(char)*ll);
 
   if ((docfl = fopen (docfile, "r")) == NULL)
   { perror (docfile); return -1; }
 
-  words = (svmWORD *)my_malloc(sizeof(svmWORD)*(max_words_doc+10));
+  words = (svmWORD *)malloc(sizeof(svmWORD)*(max_words_doc+10));
   if(verbosity>=1) {
     printf("Reading examples into memory..."); fflush(stdout);
   }
@@ -858,7 +858,7 @@ EXPORT double *read_alphas(char *alphafile,long totdoc)
   double *alpha;
   long dnum;
  
-  alpha = (double *)my_malloc(sizeof(double)*totdoc);
+  alpha = (double *)malloc(sizeof(double)*totdoc);
 
   if ((fl = fopen (alphafile, "r")) == NULL)
   {
@@ -950,11 +950,11 @@ EXPORT int space_or_null(int c) {
     return 1;
   return isspace((unsigned char)c);
 }
-
-EXPORT void *my_malloc(size_t size)
+/*
+EXPORT void *malloc(size_t size)
 {
   void *ptr;
-  if(size<=0) size=1; /* for AIX compatibility */
+  if(size<=0) size=1; // for AIX compatibility 
   ptr=(void *)malloc(size);
   if(!ptr) { 
     perror ("Out of memory!\n"); 
@@ -962,7 +962,7 @@ EXPORT void *my_malloc(size_t size)
   }
   return(ptr);
 }
-
+*/
 EXPORT void copyright_notice(void)
 {
   printf("\nCopyright: Thorsten Joachims, thorsten@joachims.org\n\n");

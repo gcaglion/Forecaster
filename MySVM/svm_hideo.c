@@ -62,8 +62,6 @@ long  roundnumber=0;
 
 /* /////////////////////////////////////////////////////////////// */
 
-void *my_malloc();
-
 int optimize_hildreth_despo(long,long,double,double,double,long,long,long,double,double *,
 			    double *,double *,double *,double *,double *,
 			    double *,double *,double *,long *,double *,double *);
@@ -107,10 +105,10 @@ LEARN_PARM *learn_parm;
 
   if(firstcall) { /* allocate memory at first call */
 /*
-    primal=(double *)my_malloc(sizeof(double)*nx);
-    dual=(double *)my_malloc(sizeof(double)*((nx+1)*2));
-    nonoptimal=(long *)my_malloc(sizeof(long)*(nx));
-    buffer=(double *)my_malloc(sizeof(double)*((nx+1)*2*(nx+1)*2+nx*nx+2*(nx+1)*2+2*nx+1+2*nx+nx+nx+nx*nx));
+    primal=(double *)malloc(sizeof(double)*nx);
+    dual=(double *)malloc(sizeof(double)*((nx+1)*2));
+    nonoptimal=(long *)malloc(sizeof(long)*(nx));
+    buffer=(double *)malloc(sizeof(double)*((nx+1)*2*(nx+1)*2+nx*nx+2*(nx+1)*2+2*nx+1+2*nx+nx+nx+nx*nx));
 */
     (*threshold)=0;
     for(i=0;i<nx;i++) {

@@ -93,18 +93,18 @@ EXPORT void svm_learn_classification(DOC **docs, double *class, long int
 
   init_shrink_state(&shrink_state,totdoc,(long)MAXSHRINK);
 
-  label = (long *)my_malloc(sizeof(long)*totdoc);
-  inconsistent = (long *)my_malloc(sizeof(long)*totdoc);
-  unlabeled = (long *)my_malloc(sizeof(long)*totdoc);
-  c = (double *)my_malloc(sizeof(double)*totdoc);
-  a = (double *)my_malloc(sizeof(double)*totdoc);
-  a_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  xi_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  lin = (double *)my_malloc(sizeof(double)*totdoc);
-  learn_parm->svm_cost = (double *)my_malloc(sizeof(double)*totdoc);
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*(totdoc+2));
-  model->alpha = (double *)my_malloc(sizeof(double)*(totdoc+2));
-  model->index = (long *)my_malloc(sizeof(long)*(totdoc+2));
+  label = (long *)malloc(sizeof(long)*totdoc);
+  inconsistent = (long *)malloc(sizeof(long)*totdoc);
+  unlabeled = (long *)malloc(sizeof(long)*totdoc);
+  c = (double *)malloc(sizeof(double)*totdoc);
+  a = (double *)malloc(sizeof(double)*totdoc);
+  a_fullset = (double *)malloc(sizeof(double)*totdoc);
+  xi_fullset = (double *)malloc(sizeof(double)*totdoc);
+  lin = (double *)malloc(sizeof(double)*totdoc);
+  learn_parm->svm_cost = (double *)malloc(sizeof(double)*totdoc);
+  model->supvec = (DOC **)malloc(sizeof(DOC *)*(totdoc+2));
+  model->alpha = (double *)malloc(sizeof(double)*(totdoc+2));
+  model->index = (long *)malloc(sizeof(long)*(totdoc+2));
 
   model->at_upper_bound=0;
   model->b=0;	       
@@ -179,10 +179,10 @@ EXPORT void svm_learn_classification(DOC **docs, double *class, long int
     if(verbosity>=1) {
       printf("Computing starting state..."); fflush(stdout);
     }
-    index = (long *)my_malloc(sizeof(long)*totdoc);
-    index2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-    weights=(double *)my_malloc(sizeof(double)*(totwords+1));
-    aicache = (CFLOAT *)my_malloc(sizeof(CFLOAT)*totdoc);
+    index = (long *)malloc(sizeof(long)*totdoc);
+    index2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+    weights=(double *)malloc(sizeof(double)*(totwords+1));
+    aicache = (CFLOAT *)malloc(sizeof(CFLOAT)*totdoc);
     for(i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
       alpha[i]=fabs(alpha[i]);
@@ -505,9 +505,9 @@ EXPORT void svm_learn_regression(DOC **docs, double *value, long int totdoc,
 
   /* set up regression problem in standard form */
   docs_org=docs;
-  docs = (DOC **)my_malloc(sizeof(DOC)*2*totdoc);
-  label = (long *)my_malloc(sizeof(long)*2*totdoc);
-  c = (double *)my_malloc(sizeof(double)*2*totdoc);
+  docs = (DOC **)malloc(sizeof(DOC)*2*totdoc);
+  label = (long *)malloc(sizeof(long)*2*totdoc);
+  c = (double *)malloc(sizeof(double)*2*totdoc);
   for(i=0;i<totdoc;i++) {   
     j=2*totdoc-1-i;
     docs[i]=create_example(i,0,0,docs_org[i]->costfactor,docs_org[i]->fvec);
@@ -546,16 +546,16 @@ EXPORT void svm_learn_regression(DOC **docs, double *value, long int totdoc,
 
   init_shrink_state(&shrink_state,totdoc,(long)MAXSHRINK);
 
-  inconsistent = (long *)my_malloc(sizeof(long)*totdoc);
-  unlabeled = (long *)my_malloc(sizeof(long)*totdoc);
-  a = (double *)my_malloc(sizeof(double)*totdoc);
-  a_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  xi_fullset = (double *)my_malloc(sizeof(double)*totdoc);
-  lin = (double *)my_malloc(sizeof(double)*totdoc);
-  learn_parm->svm_cost = (double *)my_malloc(sizeof(double)*totdoc);
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*(totdoc+2));
-  model->alpha = (double *)my_malloc(sizeof(double)*(totdoc+2));
-  model->index = (long *)my_malloc(sizeof(long)*(totdoc+2));
+  inconsistent = (long *)malloc(sizeof(long)*totdoc);
+  unlabeled = (long *)malloc(sizeof(long)*totdoc);
+  a = (double *)malloc(sizeof(double)*totdoc);
+  a_fullset = (double *)malloc(sizeof(double)*totdoc);
+  xi_fullset = (double *)malloc(sizeof(double)*totdoc);
+  lin = (double *)malloc(sizeof(double)*totdoc);
+  learn_parm->svm_cost = (double *)malloc(sizeof(double)*totdoc);
+  model->supvec = (DOC **)malloc(sizeof(DOC *)*(totdoc+2));
+  model->alpha = (double *)malloc(sizeof(double)*(totdoc+2));
+  model->index = (long *)malloc(sizeof(long)*(totdoc+2));
 
   model->at_upper_bound=0;
   model->b=0;	       
@@ -737,10 +737,10 @@ EXPORT void svm_learn_ranking(DOC **docs, double *rankvalue, long int totdoc,
   }
 
   printf("Constructing %ld rank constraints...",totpair); fflush(stdout);
-  docdiff=(DOC **)my_malloc(sizeof(DOC)*totpair);
-  target=(double *)my_malloc(sizeof(double)*totpair); 
-  greater=(long *)my_malloc(sizeof(long)*totpair); 
-  lesser=(long *)my_malloc(sizeof(long)*totpair); 
+  docdiff=(DOC **)malloc(sizeof(DOC)*totpair);
+  target=(double *)malloc(sizeof(double)*totpair); 
+  greater=(long *)malloc(sizeof(long)*totpair); 
+  lesser=(long *)malloc(sizeof(long)*totpair); 
 
   k=0;
   for(i=0;i<totdoc;i++) {
@@ -797,13 +797,13 @@ EXPORT void svm_learn_ranking(DOC **docs, double *rankvalue, long int totdoc,
 
   /* must use unbiased hyperplane on difference vectors */
   learn_parm->biased_hyperplane=0;
-  pairmodel=(MODEL *)my_malloc(sizeof(MODEL));
+  pairmodel=(MODEL *)malloc(sizeof(MODEL));
   svm_learn_classification(docdiff,target,totpair,totwords,learn_parm,
 			   kernel_parm,(*kernel_cache),pairmodel,NULL);
 
   /* Transfer the result into a more compact model. If you would like
      to output the original model on pairs of documents, see below. */
-  alpha=(double *)my_malloc(sizeof(double)*totdoc); 
+  alpha=(double *)malloc(sizeof(double)*totdoc); 
   for(i=0;i<totdoc;i++) {
     alpha[i]=0;
   }
@@ -811,9 +811,9 @@ EXPORT void svm_learn_ranking(DOC **docs, double *rankvalue, long int totdoc,
     alpha[lesser[(pairmodel->supvec[i])->docnum]]-=pairmodel->alpha[i];
     alpha[greater[(pairmodel->supvec[i])->docnum]]+=pairmodel->alpha[i];
   }
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*(totdoc+2));
-  model->alpha = (double *)my_malloc(sizeof(double)*(totdoc+2));
-  model->index = (long *)my_malloc(sizeof(long)*(totdoc+2));
+  model->supvec = (DOC **)malloc(sizeof(DOC *)*(totdoc+2));
+  model->alpha = (double *)malloc(sizeof(double)*(totdoc+2));
+  model->index = (long *)malloc(sizeof(long)*(totdoc+2));
   model->supvec[0]=0;  /* element 0 reserved and empty for now */
   model->alpha[0]=0;
   model->sv_num=1;
@@ -917,16 +917,16 @@ EXPORT void svm_learn_optimization(DOC **docs, double *rhs, long int
 
   init_shrink_state(&shrink_state,totdoc,(long)MAXSHRINK);
 
-  label = (long *)my_malloc(sizeof(long)*totdoc);
-  unlabeled = (long *)my_malloc(sizeof(long)*totdoc);
-  inconsistent = (long *)my_malloc(sizeof(long)*totdoc);
-  c = (double *)my_malloc(sizeof(double)*totdoc);
-  a = (double *)my_malloc(sizeof(double)*totdoc);
-  lin = (double *)my_malloc(sizeof(double)*totdoc);
-  learn_parm->svm_cost = (double *)my_malloc(sizeof(double)*totdoc);
-  model->supvec = (DOC **)my_malloc(sizeof(DOC *)*(totdoc+2));
-  model->alpha = (double *)my_malloc(sizeof(double)*(totdoc+2));
-  model->index = (long *)my_malloc(sizeof(long)*(totdoc+2));
+  label = (long *)malloc(sizeof(long)*totdoc);
+  unlabeled = (long *)malloc(sizeof(long)*totdoc);
+  inconsistent = (long *)malloc(sizeof(long)*totdoc);
+  c = (double *)malloc(sizeof(double)*totdoc);
+  a = (double *)malloc(sizeof(double)*totdoc);
+  lin = (double *)malloc(sizeof(double)*totdoc);
+  learn_parm->svm_cost = (double *)malloc(sizeof(double)*totdoc);
+  model->supvec = (DOC **)malloc(sizeof(DOC *)*(totdoc+2));
+  model->alpha = (double *)malloc(sizeof(double)*(totdoc+2));
+  model->index = (long *)malloc(sizeof(long)*(totdoc+2));
 
   model->at_upper_bound=0;
   model->b=0;	       
@@ -984,10 +984,10 @@ EXPORT void svm_learn_optimization(DOC **docs, double *rhs, long int
     if(verbosity>=1) {
       printf("Computing starting state..."); fflush(stdout);
     }
-    index = (long *)my_malloc(sizeof(long)*totdoc);
-    index2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-    weights=(double *)my_malloc(sizeof(double)*(totwords+1));
-    aicache = (CFLOAT *)my_malloc(sizeof(CFLOAT)*totdoc);
+    index = (long *)malloc(sizeof(long)*totdoc);
+    index2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+    weights=(double *)malloc(sizeof(double)*(totwords+1));
+    aicache = (CFLOAT *)malloc(sizeof(CFLOAT)*totdoc);
     for(i=0;i<totdoc;i++) {    /* create full index and clip alphas */
       index[i]=1;
       alpha[i]=fabs(alpha[i]);
@@ -1093,8 +1093,8 @@ EXPORT void svm_learn_optimization(DOC **docs, double *rhs, long int
   }
   
   if(learn_parm->sharedslack) {
-    index = (long *)my_malloc(sizeof(long)*totdoc);
-    index2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
+    index = (long *)malloc(sizeof(long)*totdoc);
+    index2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
     maxslackid=0;
     for(i=0;i<totdoc;i++) {    /* create full index */
       index[i]=1;
@@ -1102,8 +1102,8 @@ EXPORT void svm_learn_optimization(DOC **docs, double *rhs, long int
 	maxslackid=docs[i]->slackid;
     }
     (void)compute_index(index,totdoc,index2dnum);
-    slack=(double *)my_malloc(sizeof(double)*(maxslackid+1));
-    alphaslack=(double *)my_malloc(sizeof(double)*(maxslackid+1));
+    slack=(double *)malloc(sizeof(double)*(maxslackid+1));
+    alphaslack=(double *)malloc(sizeof(double)*(maxslackid+1));
     for(i=0;i<=maxslackid;i++) {    /* init shared slacks */
       slack[i]=0;
       alphaslack[i]=0;
@@ -1233,29 +1233,29 @@ EXPORT long optimize_to_convergence(DOC **docs, long int *label, long int totdoc
 
   learn_parm->totwords=totwords;
 
-  chosen = (long *)my_malloc(sizeof(long)*totdoc);
-  last_suboptimal_at = (long *)my_malloc(sizeof(long)*totdoc);
-  key = (long *)my_malloc(sizeof(long)*(totdoc+11)); 
-  selcrit = (double *)my_malloc(sizeof(double)*totdoc);
-  selexam = (long *)my_malloc(sizeof(long)*totdoc);
-  a_old = (double *)my_malloc(sizeof(double)*totdoc);
-  aicache = (CFLOAT *)my_malloc(sizeof(CFLOAT)*totdoc);
-  working2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  active2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  qp.opt_ce = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_ce0 = (double *)my_malloc(sizeof(double));
-  qp.opt_g = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize
+  chosen = (long *)malloc(sizeof(long)*totdoc);
+  last_suboptimal_at = (long *)malloc(sizeof(long)*totdoc);
+  key = (long *)malloc(sizeof(long)*(totdoc+11)); 
+  selcrit = (double *)malloc(sizeof(double)*totdoc);
+  selexam = (long *)malloc(sizeof(long)*totdoc);
+  a_old = (double *)malloc(sizeof(double)*totdoc);
+  aicache = (CFLOAT *)malloc(sizeof(CFLOAT)*totdoc);
+  working2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+  active2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+  qp.opt_ce = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_ce0 = (double *)malloc(sizeof(double));
+  qp.opt_g = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize
 				 *learn_parm->svm_maxqpsize);
-  qp.opt_g0 = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_xinit = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_low=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_up=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  weights=(double *)my_malloc(sizeof(double)*(totwords+1));
+  qp.opt_g0 = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_xinit = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_low=(double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_up=(double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  weights=(double *)malloc(sizeof(double)*(totwords+1));
 
-  double* primal = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  double* dual = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
-  long*   nonoptimal = (long *)my_malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
-  double* buffer = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
+  double* primal = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  double* dual = (double *)malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
+  long*   nonoptimal = (long *)malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
+  double* buffer = (double *)malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
 
   choosenum=0;
   inconsistentnum=0;
@@ -1667,10 +1667,10 @@ EXPORT long optimize_to_convergence_sharedslack(DOC **docs, long int *label,
   double bestmaxdiff;
   long   bestmaxdiffiter,terminate;
   
-  double* primal = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  double* dual = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
-  long* nonoptimal = (long *)my_malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
-  double* buffer = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
+  double* primal = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  double* dual = (double *)malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
+  long* nonoptimal = (long *)malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
+  double* buffer = (double *)malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
 
   double *selcrit;  /* buffer for sorting */        
   CFLOAT *aicache;  /* buffer to keep one row of hessian */
@@ -1689,34 +1689,34 @@ EXPORT long optimize_to_convergence_sharedslack(DOC **docs, long int *label,
 
   learn_parm->totwords=totwords;
 
-  chosen = (long *)my_malloc(sizeof(long)*totdoc);
-  unlabeled = (long *)my_malloc(sizeof(long)*totdoc);
-  inconsistent = (long *)my_malloc(sizeof(long)*totdoc);
-  ignore = (long *)my_malloc(sizeof(long)*totdoc);
-  key = (long *)my_malloc(sizeof(long)*(totdoc+11)); 
-  selcrit = (double *)my_malloc(sizeof(double)*totdoc);
-  selexam = (long *)my_malloc(sizeof(long)*totdoc);
-  a_old = (double *)my_malloc(sizeof(double)*totdoc);
-  aicache = (CFLOAT *)my_malloc(sizeof(CFLOAT)*totdoc);
-  working2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  active2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
-  qp.opt_ce = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_ce0 = (double *)my_malloc(sizeof(double));
-  qp.opt_g = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize
+  chosen = (long *)malloc(sizeof(long)*totdoc);
+  unlabeled = (long *)malloc(sizeof(long)*totdoc);
+  inconsistent = (long *)malloc(sizeof(long)*totdoc);
+  ignore = (long *)malloc(sizeof(long)*totdoc);
+  key = (long *)malloc(sizeof(long)*(totdoc+11)); 
+  selcrit = (double *)malloc(sizeof(double)*totdoc);
+  selexam = (long *)malloc(sizeof(long)*totdoc);
+  a_old = (double *)malloc(sizeof(double)*totdoc);
+  aicache = (CFLOAT *)malloc(sizeof(CFLOAT)*totdoc);
+  working2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+  active2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
+  qp.opt_ce = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_ce0 = (double *)malloc(sizeof(double));
+  qp.opt_g = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize
 				 *learn_parm->svm_maxqpsize);
-  qp.opt_g0 = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_xinit = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_low=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  qp.opt_up=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
-  weights=(double *)my_malloc(sizeof(double)*(totwords+1));
+  qp.opt_g0 = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_xinit = (double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_low=(double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  qp.opt_up=(double *)malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  weights=(double *)malloc(sizeof(double)*(totwords+1));
   maxslackid=0;
   for(i=0;i<totdoc;i++) {    /* determine size of slack array */
     if(maxslackid<docs[i]->slackid)
       maxslackid=docs[i]->slackid;
   }
-  slack=(double *)my_malloc(sizeof(double)*(maxslackid+1));
-  alphaslack=(double *)my_malloc(sizeof(double)*(maxslackid+1));
-  last_suboptimal_at = (long *)my_malloc(sizeof(long)*(maxslackid+1));
+  slack=(double *)malloc(sizeof(double)*(maxslackid+1));
+  alphaslack=(double *)malloc(sizeof(double)*(maxslackid+1));
+  last_suboptimal_at = (long *)malloc(sizeof(long)*(maxslackid+1));
   for(i=0;i<=maxslackid;i++) {    /* init shared slacks */
     slack[i]=0;
     alphaslack[i]=0;
@@ -3240,12 +3240,12 @@ EXPORT void init_shrink_state(SHRINK_STATE *shrink_state, long int totdoc,
   long i;
 
   shrink_state->deactnum=0;
-  shrink_state->active = (long *)my_malloc(sizeof(long)*totdoc);
-  shrink_state->inactive_since = (long *)my_malloc(sizeof(long)*totdoc);
-  shrink_state->a_history = (double **)my_malloc(sizeof(double *)*maxhistory);
+  shrink_state->active = (long *)malloc(sizeof(long)*totdoc);
+  shrink_state->inactive_since = (long *)malloc(sizeof(long)*totdoc);
+  shrink_state->a_history = (double **)malloc(sizeof(double *)*maxhistory);
   shrink_state->maxhistory=maxhistory;
-  shrink_state->last_lin = (double *)my_malloc(sizeof(double)*totdoc);
-  shrink_state->last_a = (double *)my_malloc(sizeof(double)*totdoc);
+  shrink_state->last_lin = (double *)malloc(sizeof(double)*totdoc);
+  shrink_state->last_a = (double *)malloc(sizeof(double)*totdoc);
 
   for(i=0;i<totdoc;i++) { 
     shrink_state->active[i]=1;
@@ -3305,7 +3305,7 @@ EXPORT long shrink_problem(DOC **docs,
       printf(" Shrinking..."); fflush(stdout);
     }
     if(kernel_parm->kernel_type != LINEAR) { /*  non-linear case save alphas */
-      a_old=(double *)my_malloc(sizeof(double)*totdoc);
+      a_old=(double *)malloc(sizeof(double)*totdoc);
       shrink_state->a_history[shrink_state->deactnum]=a_old;
       for(i=0;i<totdoc;i++) {
 	a_old[i]=a[i];
@@ -3385,10 +3385,10 @@ EXPORT void reactivate_inactive_examples(long int *label,
     }
   }
   else {
-    changed=(long *)my_malloc(sizeof(long)*totdoc);
-    changed2dnum=(long *)my_malloc(sizeof(long)*(totdoc+11));
-    inactive=(long *)my_malloc(sizeof(long)*totdoc);
-    inactive2dnum=(long *)my_malloc(sizeof(long)*(totdoc+11));
+    changed=(long *)malloc(sizeof(long)*totdoc);
+    changed2dnum=(long *)malloc(sizeof(long)*(totdoc+11));
+    inactive=(long *)malloc(sizeof(long)*totdoc);
+    inactive2dnum=(long *)malloc(sizeof(long)*(totdoc+11));
     for(t=shrink_state->deactnum-1;(t>=0) && shrink_state->a_history[t];t--) {
       if(verbosity>=2) {
 	printf("%ld..",t); fflush(stdout);
@@ -3551,7 +3551,7 @@ EXPORT void kernel_cache_shrink(KERNEL_CACHE *kernel_cache, long int totdoc,
     printf(" Reorganizing cache..."); fflush(stdout);
   }
 
-  keep=(long *)my_malloc(sizeof(long)*totdoc);
+  keep=(long *)malloc(sizeof(long)*totdoc);
   for(j=0;j<totdoc;j++) {
     keep[j]=1;
   }
@@ -3608,14 +3608,14 @@ EXPORT KERNEL_CACHE *kernel_cache_init(long int totdoc, long int buffsize)
   long i;
   KERNEL_CACHE *kernel_cache;
 
-  kernel_cache=(KERNEL_CACHE *)my_malloc(sizeof(KERNEL_CACHE));
-  kernel_cache->index = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->occu = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->lru = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->invindex = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->active2totdoc = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->totdoc2active = (long *)my_malloc(sizeof(long)*totdoc);
-  kernel_cache->buffer = (CFLOAT *)my_malloc((size_t)(buffsize)*1024*1024);
+  kernel_cache=(KERNEL_CACHE *)malloc(sizeof(KERNEL_CACHE));
+  kernel_cache->index = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->occu = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->lru = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->invindex = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->active2totdoc = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->totdoc2active = (long *)malloc(sizeof(long)*totdoc);
+  kernel_cache->buffer = (CFLOAT *)malloc((size_t)(buffsize)*1024*1024);
 
   kernel_cache->buffsize=(long)(buffsize/sizeof(CFLOAT)*1024*1024);
 
@@ -3793,7 +3793,7 @@ EXPORT void compute_xa_estimates(MODEL *model, long int *label,
   svnum=0;
 
   if(learn_parm->xa_depth > 0) {
-    sv = (long *)my_malloc(sizeof(long)*(totdoc+11));
+    sv = (long *)malloc(sizeof(long)*(totdoc+11));
     for(i=0;i<totdoc;i++) 
       sv[i]=0;
     for(i=1;i<model->sv_num;i++) 
@@ -3803,7 +3803,7 @@ EXPORT void compute_xa_estimates(MODEL *model, long int *label,
 	sv[model->supvec[i]->docnum]=1;
 	svnum++;
       }
-    sv2dnum = (long *)my_malloc(sizeof(long)*(totdoc+11));
+    sv2dnum = (long *)malloc(sizeof(long)*(totdoc+11));
     clear_index(sv2dnum);
     compute_index(sv,totdoc,sv2dnum);
   }
@@ -3864,8 +3864,8 @@ EXPORT double distribute_alpha_t_greedily(long int *sv2dnum, long int svnum,
   long best_ex[101];
   CFLOAT *cache,*trow;
 
-  cache=(CFLOAT *)my_malloc(sizeof(CFLOAT)*learn_parm->xa_depth*svnum);
-  trow = (CFLOAT *)my_malloc(sizeof(CFLOAT)*svnum);
+  cache=(CFLOAT *)malloc(sizeof(CFLOAT)*learn_parm->xa_depth*svnum);
+  trow = (CFLOAT *)malloc(sizeof(CFLOAT)*svnum);
 
   for(k=0;k<svnum;k++) {
     trow[k]=kernel(kernel_parm,docs[docnum],docs[sv2dnum[k]]);

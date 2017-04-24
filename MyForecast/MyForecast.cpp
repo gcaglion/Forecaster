@@ -796,7 +796,7 @@ void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* 
 			tp[t].TrainInfo.TestId = pTestId;
 
 			// workaround needed because somehow SVM engine fucks up when multi-threading. TO BE FIXED !!!!
-			if(tp[t].EngineParms->Core[n]->CoreType==ENGINE_SVM) WaitForSingleObject(HTrain[t], INFINITE);
+			//if(tp[t].EngineParms->Core[n]->CoreType==ENGINE_SVM) WaitForSingleObject(HTrain[t], INFINITE);
 
 			t++;
 		}
