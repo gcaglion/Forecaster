@@ -1,0 +1,1839 @@
+#include <sqlca.h>
+#include <time.h>
+#include <FXData.h>
+#include <Concordance.h>
+#include <DataShape.h>
+
+#include <MyWNN.h>
+#include <MyNN.h>
+#include <MySOM.h>
+#include <MySVM.h>
+#include <MyGA.h>
+
+#undef EXPORT
+#ifdef __cplusplus
+#define EXPORT extern "C" __declspec(dllexport)
+#else
+#define EXPORT __declspec(dllexport)
+#endif
+
+#define MAX_CONTEXTS 6
+// Forecast High/Low (replaces OutputType)
+#define FH 1	
+#define FL 0
+
+char* __stdcall timestamp_C(){
+	char* ftime;
+	time_t ltime; // calendar time 
+	HANDLE TimeMutex;
+
+	TimeMutex = CreateMutex(NULL, TRUE, NULL);
+	WaitForSingleObject(TimeMutex, INFINITE);
+	ltime = time(NULL); // get current cal time 
+	ftime = asctime(localtime(&ltime));
+	ftime[strlen(ftime)-1] = '\0';
+	ReleaseMutex(TimeMutex);
+
+	return (ftime);
+}
+
+void __stdcall Trim_C(char* str){
+	int l = 0;
+	int i;
+	int r = (int)strlen(str);
+	char ret[MAX_PATH];
+	while (isspace(str[l])>0) l++;
+	while (isspace(str[r - 1])>0) r--;
+	for (i = 0; i<(r - l); i++) ret[i] = str[l + i];
+	ret[r - l] = '\0';
+	strcpy(str, ret);
+}
+
+
+ void  __stdcall LogWrite_C(tDebugInfo* DebugParms, int LogType, char* msg, int argcount, ...){
+	// pLogLevel=	0 (No screen, No file) | 1 (Screen, No file) | 2 (Screen AND File)
+	int n;
+	char*			arg_s;
+	int				arg_d;
+	double			arg_f;
+	//long			arg_l;
+	va_list			arguments;
+	//char*			submsg=(char*)malloc(strlen(msg));
+	char submsg[MAX_PATH];
+	char fullfname[MAX_PATH];
+	unsigned int	im = 0;
+	int				prev_im = 0;
+	//HANDLE			FileMutex;
+	//HANDLE			ScreenMutex;
+
+	if (DebugParms->DebugLevel == 0 && LogType == LOG_INFO) return;
+	//if (DebugParms->DebugLevel >1){
+	if (DebugParms->fIsOpen != 1){
+		strcpy(fullfname, DebugParms->fPath); strcat(fullfname, "/"); strcat(fullfname, DebugParms->fName);
+		DebugParms->fHandle = fopen(fullfname, "w");
+		DebugParms->fIsOpen = 1;
+	}
+	//}
+
+	va_start(arguments, argcount);
+	n = 0;
+
+	//ScreenMutex=CreateMutex(NULL, FALSE, NULL);
+	//FileMutex=  CreateMutex(NULL, FALSE, NULL);
+
+	//	while(FileMutex==NULL) FileMutex=CreateMutex(NULL, TRUE, NULL);
+	//	WaitForSingleObject(FileMutex, INFINITE);
+
+	do {
+		if (msg[im] == 37){                // "%"
+			memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
+			n++;
+			prev_im = im + 2;
+			if (msg[im + 1] == 115){   // "s"
+				arg_s = va_arg(arguments, char*);
+				if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg, arg_s);
+				if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR)	fprintf(DebugParms->fHandle, submsg, arg_s);
+			}
+			else if (msg[im + 1] == 100){   // "d"
+				arg_d = va_arg(arguments, int);
+				if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg, arg_d);
+				if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR)	fprintf(DebugParms->fHandle, submsg, arg_d);
+			}
+			else if (msg[im + 1] == 112){   // "p"
+				arg_d = va_arg(arguments, long);
+				if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg, arg_d);
+				if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR)	fprintf(DebugParms->fHandle, submsg, arg_d);
+			}
+			else                   {   // this could be 67 ("f") or any mask before "f" -> in any case, it's a double
+				arg_f = va_arg(arguments, double);
+				if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg, arg_f);
+				if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR)	fprintf(DebugParms->fHandle, submsg, arg_f);
+			}
+		}
+		im++;
+	} while (im<strlen(msg));
+
+	memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
+	if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg);
+	if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) fprintf(DebugParms->fHandle, submsg);
+	if (LogType == LOG_ERROR) system("pause");
+
+	va_end(arguments);
+
+}
+
+EXPORT int __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInfo){
+
+	EXEC SQL BEGIN DECLARE SECTION;
+	char* username = DBConnInfo->DBUser;
+	char* password = DBConnInfo->DBPassword;
+	char* dbstring = DBConnInfo->DBConnString;
+	sql_context vCtx = NULL;
+	EXEC SQL END DECLARE SECTION;
+
+	//LogWrite_C(DebugParms, "%s About to execute connect with %s , %s , %s\n", 4, timestamp_C, pUserName, pPassword, pDBString);
+
+	char* vPath = getenv("PATH");
+	char* vOH = getenv("ORACLE_HOME");
+
+	EXEC SQL CONTEXT ALLOCATE :vCtx;
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL CONNECT :username IDENTIFIED BY :password USING :dbstring;
+
+	if (sqlca.sqlcode == 0){
+		//memcpy(DBConnInfo->Ctx, vCtx, sizeof(sql_context));
+		DBConnInfo->DBCtx = vCtx;
+		DebugInfo->DBCtx = vCtx;
+		LogWrite_C(DebugInfo, LOG_INFO, "OraConnect() - Connected to ORACLE as user: %s ; DBConnInfo->DBCtx=%p\n", 2, username, DBConnInfo->DBCtx);
+	}
+	else {
+		LogWrite_C(DebugInfo, LOG_ERROR, "%s Error %d connecting to ORACLE as user: %s\n", 3, timestamp_C, sqlca.sqlcode, DBConnInfo->DBUser);
+	}
+	return(sqlca.sqlcode);
+}
+
+//===== Formerly in MyLog.pc ===================================================================================================================
+
+int Ora_Insert(tDebugInfo* DebugInfo, tDBConnection* DBConnInfo, char* pSQL){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = DBConnInfo->DBCtx;
+	char* vSQL = pSQL;
+	EXEC SQL END   DECLARE SECTION;
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL ALTER SESSION SET NLS_DATE_FORMAT = 'YYYYMMDDHH24MI';
+	EXEC SQL EXECUTE IMMEDIATE :vSQL;
+
+	if (sqlca.sqlcode == 0) {
+		EXEC SQL COMMIT;
+		return 0;
+	}
+	else {
+		LogWrite_C(DebugInfo, LOG_ERROR, "OraInsert() Failed: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+}
+
+int Ora_BulkWeightInsert_NN(tDebugInfo* DebugParms, tDBConnection* LogDB, int pDatasetsCount, NN_Parms** NNParms, NN_Logs** NNLogs){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i, j, d, l;
+	int idx;
+	sql_context vCtx = LogDB->DBCtx;
+	char stmt[1000];
+	int vInsertCount;
+	int** vProcessId;
+	int** vThreadId;
+	int** vTestId;
+	int** vLevel;
+	int** FromNeuron;
+	int** ToNeuron;
+	double** Weight;
+	double** CtxValue;
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, LogDB) != 0) printf("BulkRunInsert_NN could not connect to Log Database...\n");
+		vCtx = LogDB->DBCtx;
+	}
+
+	//--  All the arrays are <DatasetsCount><(i*j)+(j*k)> size
+	vProcessId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vThreadId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vTestId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vLevel = (int**)malloc(pDatasetsCount*sizeof(int*));
+	FromNeuron = (int**)malloc(pDatasetsCount*sizeof(int*));
+	ToNeuron = (int**)malloc(pDatasetsCount*sizeof(int*));
+	Weight = (double**)malloc(pDatasetsCount*sizeof(double*));
+	CtxValue = (double**)malloc(pDatasetsCount*sizeof(double*));
+
+	for (d = 0; d < pDatasetsCount; d++){
+		vInsertCount = NNParms[d]->WeightsCountTotal;
+
+		vProcessId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vThreadId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vTestId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vLevel[d] = (int*)malloc(vInsertCount*sizeof(int));
+		FromNeuron[d] = (int*)malloc(vInsertCount*sizeof(int));
+		ToNeuron[d] = (int*)malloc(vInsertCount*sizeof(int));
+		Weight[d] = (double*)malloc(vInsertCount*sizeof(double));
+		CtxValue[d] = (double*)malloc(vInsertCount*sizeof(double));
+
+		idx = 0;
+		for (l = 0; l<(NNParms[d]->LevelsCount-1); l++){
+			for (j = 0; j < NNParms[d]->NodesCount[l+1]; j++){
+				for (i = 0; i < NNParms[d]->NodesCount[l]; i++){
+					vProcessId[d][idx] = NNLogs[d]->FinalW[l][j][i].ProcessId;
+					vThreadId[d][idx] = NNLogs[d]->FinalW[l][j][i].ThreadId;
+					vLevel[d][idx] = l;
+					FromNeuron[d][idx] = NNLogs[d]->FinalW[l][j][i].FromNeuron;
+					ToNeuron[d][idx] = NNLogs[d]->FinalW[l][j][i].ToNeuron;
+					Weight[d][idx] = NNLogs[d]->FinalW[l][j][i].Weight;
+
+					CtxValue[d][idx] = (i >= NNParms[d]->InputCount) ? NNLogs[d]->FinalW[l][j][i].CtxValue : 0;
+
+					idx++;
+				}
+			}
+		}
+		//-- Then, Build the Insert statement
+		sprintf(&stmt[0], "insert into NetImage_NN (ProcessId, ThreadId, TestId, NeuronLevel, FromNeuron, ToNeuron, Weight, CtxValue)");
+		strcat(stmt, " values(:WNN01, :WNN02, :WNN04, :WNN05, :WNN06, :WNN07, :WNN08, :WNN09)");
+
+		EXEC SQL CONTEXT USE :vCtx;
+		EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'WNN';
+		EXEC SQL SET DESCRIPTOR 'WNN' COUNT = 8;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 1 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 2 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 3 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 4 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 5 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 6 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 7 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'WNN' VALUE 8 TYPE = :dbl_type;
+
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 1 DATA = :vProcessId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 2 DATA = :vThreadId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 3 DATA = :vTestId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 4 DATA = :vLevel[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 5 DATA = :FromNeuron[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 6 DATA = :ToNeuron[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 7 DATA = :Weight[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WNN' VALUE 8 DATA = :CtxValue[d];
+
+		EXEC SQL PREPARE DynWNNs FROM :stmt;
+		EXEC SQL FOR :vInsertCount EXECUTE DynWNNs USING DESCRIPTOR 'WNN';
+
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1){
+				LogWrite_C(DebugParms, LOG_ERROR, "BulkWeightInsert_NN failed. SQL Error %d\n", 1, sqlca.sqlcode);
+			}
+			return sqlca.sqlcode;
+		}
+		EXEC SQL DEALLOCATE DESCRIPTOR 'WNN';
+	}
+
+	//-- free()s
+	for (d = 0; d < pDatasetsCount; d++){
+		free(vProcessId[d]);
+		free(vThreadId[d]);
+		free(vTestId[d]);
+		free(vLevel[d]);
+		free(FromNeuron[d]);
+		free(ToNeuron[d]);
+		free(Weight[d]);
+		free(CtxValue[d]);
+	}
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vLevel);
+	free(FromNeuron);
+	free(ToNeuron);
+	free(Weight);
+	free(CtxValue);
+
+	return 0;
+}
+
+int Ora_BulkWeightInsert_SOM(tDebugInfo* DebugParms, tDBConnection* LogDB, int pDatasetsCount, SOM_Parms* SOMParms){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i, o, d;
+	int idx;
+	sql_context vCtx = LogDB->DBCtx;
+	char stmt[1000];
+	int vInsertCount = SOMParms->InputCount*SOMParms->OutputCount;
+	int** vProcessId;
+	int** vThreadId;
+	int** vTestId;
+	int** FromNeuron;
+	int** ToNeuron;
+	double** Weight;
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, LogDB) != 0) printf("BulkRunInsert could not connect to Log Database...\n");
+		vCtx = LogDB->DBCtx;
+	}
+
+	//--  All the arrays are <DatasetsCount><(i*j)+(j*k)> size
+	vProcessId = (int**)malloc(pDatasetsCount*sizeof(int*)); for (d = 0; d < pDatasetsCount; d++) vProcessId[d] = (int*)malloc(vInsertCount*sizeof(int));
+	vThreadId = (int**)malloc(pDatasetsCount*sizeof(int*)); for (d = 0; d < pDatasetsCount; d++) vThreadId[d] = (int*)malloc(vInsertCount*sizeof(int));
+	vTestId = (int**)malloc(pDatasetsCount*sizeof(int*)); for (d = 0; d < pDatasetsCount; d++) vTestId[d] = (int*)malloc(vInsertCount*sizeof(int));
+	FromNeuron = (int**)malloc(pDatasetsCount*sizeof(int*)); for (d = 0; d < pDatasetsCount; d++) FromNeuron[d] = (int*)malloc(vInsertCount*sizeof(int));
+	ToNeuron = (int**)malloc(pDatasetsCount*sizeof(int*)); for (d = 0; d < pDatasetsCount; d++) ToNeuron[d] = (int*)malloc(vInsertCount*sizeof(int));
+	Weight = (double**)malloc(pDatasetsCount*sizeof(double*)); for (d = 0; d < pDatasetsCount; d++) Weight[d] = (double*)malloc(vInsertCount*sizeof(double));
+
+	for (d = 0; d<pDatasetsCount; d++){
+		idx = 0;
+		for (o = 0; o < SOMParms->OutputCount; o++){
+			for (i = 0; i < SOMParms->InputCount; i++){
+				vProcessId[d][idx] = SOMParms->FinalW[d][o][i].ProcessId;
+				vThreadId[d][idx] = SOMParms->FinalW[d][o][i].ThreadId;
+				vTestId[d][idx] = SOMParms->FinalW[d][o][i].TestId;
+				FromNeuron[d][idx] = SOMParms->FinalW[d][o][i].FromNeuron;
+				ToNeuron[d][idx] = SOMParms->FinalW[d][o][i].ToNeuron;
+				Weight[d][idx] = SOMParms->FinalW[d][o][i].Weight;
+				idx++;
+			}
+		}
+
+		//-- Then, Build the Insert statement
+		sprintf(&stmt[0], "insert into NetImage_SOM (ProcessId, ThreadId, TestId, FromNeuron, ToNeuron, Weight)");
+		strcat(stmt, " values(:WSOM1, :WSOM2, :WSOM3, :WSOM4, :WSOM5, :WSOM6)");
+
+		EXEC SQL CONTEXT USE :vCtx;
+		EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'WSOM';
+		EXEC SQL SET DESCRIPTOR 'WSOM' COUNT = 6;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 1 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 2 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 3 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 4 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 5 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'WSOM' VALUE 6 TYPE = :dbl_type;
+		
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 1 DATA = :vProcessId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 2 DATA = :vThreadId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 3 DATA = :vTestId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 4 DATA = :FromNeuron[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 5 DATA = :ToNeuron[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'WSOM' VALUE 6 DATA = :Weight[d];
+		
+		EXEC SQL PREPARE Dyns FROM :stmt;
+		EXEC SQL FOR :vInsertCount EXECUTE Dyns USING DESCRIPTOR 'WSOM';
+
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1){
+				LogWrite_C(DebugParms, LOG_ERROR, "BulkWeightInsert_SOM failed. SQL Error %d\n", 1, sqlca.sqlcode);
+			}
+			return sqlca.sqlcode;
+		}
+		EXEC SQL DEALLOCATE DESCRIPTOR 'WSOM';
+	}
+
+	//-- free()s
+	for (d = 0; d < pDatasetsCount; d++){
+		free(vProcessId[d]);
+		free(vThreadId[d]);
+		free(vTestId[d]);
+		free(FromNeuron[d]);
+		free(ToNeuron[d]);
+		free(Weight[d]);
+	}
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(FromNeuron);
+	free(ToNeuron);
+	free(Weight);
+
+	return 0;
+}
+
+//void Build_TestLogSQL(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, tFXData* FXDataSource, int pLayerId, int pNetId, char* pTrainingStart, char* pTrainingEnd, char* DPsql, char* EPsql){
+/*	//-- Builds Insert statements (one for DataParms table, one for EngineParms table)
+
+	NN_Parms* NNParms; NN_Logs* NNLogs;
+	GA_Parms* GAParms;		//GA_Logs* GALogs;
+	SOM_Parms* SOMParms;	//SOM_Logs* SOMLogs;
+	SVM_Parms* SVMParms;	//SVM_Logs* SVMLogs;
+	WNN_Parms* WNNParms;	//WNN_Logs* WNNLogs;
+
+	switch (pEngineParms->EngineType){
+	case ENGINE_NN:
+		NNParms= (NN_Parms*)pEngineParms->EngineSpecs;
+		NNLogs = (NN_Logs*)pEngineParms->EngineLogs;
+		sprintf(DPsql, "insert into DataParms (ProcessId, ThreadId, TestId, LayerId, NetId, DataSourceType, Symbol, TimeFrame, IsFilled, BarData, DataTransformation, WiggleRoom, HistoryLen, SampleLen, PredictionLen, ScaleMin, ScaleMax, Training_Start, Training_End)\
+							 									values(%d, %d, %d, %d, %d, %d, '%s', '%s', %d, %d, %d, %f, %d, %d, %d, %f, %f, to_date('%s','DY MON DD HH24:MI:SS YYYY'), to_date('%s', 'DY MON DD HH24:MI:SS YYYY') )", \
+																NNLogs->MSEOutput[0][0].ProcessId, NNLogs->MSEOutput[0][0].ThreadId, NNLogs->MSEOutput[0][0].TestId, pLayerId, pNetId, pDataParms->DataSourceType, FXDataSource->Symbol, FXDataSource->TimeFrame, FXDataSource->IsFilled, FXDataSource->BarDataType[d], pDataParms->DataTransformation, pDataParms->wiggleRoom, pDataParms->HistoryLen, pDataParms->SampleLen, pDataParms->PredictionLen, pDataParms->ScaleMin, pDataParms->ScaleMax, pTrainingStart, pTrainingEnd);
+		sprintf(EPsql, "insert into EngineParms_NN  (ProcessId, ThreadId, TestId, NetId, UseContext, InputCount, LevelRatios, OutputCount, BP_Algo, ActivationFunction, LearningRate, LearningMomentum, MaxEpochs, TargetMSE, HCPBeta, Mu) \
+							  									  									  								values(%d, %d, %d, %d, %d, %d, '%s', %d, %d, %d, %f, %f, %d, %f, %f, %f)",
+																																	NNLogs->MSEOutput[d]->ProcessId, NNLogs->MSEOutput[d]->ThreadId, 0, NNLogs->MSEOutput[d]->TestId, NNParms->UseContext, NNParms->InputCount, NNParms->LevelRatioS, NNParms->OutputCount, NNParms->BP_Algo, NNParms->ActivationFunction, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->HCPbeta, NNParms->mu);
+		break;
+
+	case ENGINE_GA:
+		GAParms = (GA_Parms*)pEngineParms->EngineSpecs;
+		sprintf(DPsql, "insert into DataParms (ProcessId, ThreadId, TestId, NetId, DataSourceType, Symbol, TimeFrame, IsFilled, BarData, DataTransformation, WiggleRoom, HistoryLen, SampleLen, PredictionLen, ScaleMin, ScaleMax, Training_Start, Training_End)\
+							 								 	values(%d, %d, %d, %d, %d '%s', '%s', %d, %d, %d, %f, %d, %d, %d, %f, %f, to_date('%s','DY MON DD HH24:MI:SS YYYY'), to_date('%s', 'DY MON DD HH24:MI:SS YYYY') )", \
+																GAParms->MSEOutput[d]->ProcessId, GAParms->MSEOutput[d]->ThreadId, GAParms->MSEOutput[d]->TestId, n, pDataSourceType, FXDataSource->Symbol, FXDataSource->TimeFrame, FXDataSource->IsFilled, FXDataSource->BarDataType[d], DataInfo->DataTransformation, DataInfo->wiggleRoom, DataInfo->HistoryLen, DataInfo->SampleLen, DataInfo->PredictionLen, DataInfo->ScaleMin, DataInfo->ScaleMax, pTrainingStart, pTrainingEnd);
+		sprintf(EPsql, "insert into EngineParms_GA    (ProcessId, ThreadId, TestId, NetId, InputCount, OutputCount,FitnessThreshold, PopulationSize, Levels, FitnessSkewingFactor, TargetFitness, CrossOverProbability, MutationProbability, CrossSelfRate, Roulette_Max_Tries, ADF_Force_Presence, ADF_Tree_FixedValues_Ratio, ADF_Tree_DataPoints_Ratio, ADF_Leaf_FixedValues_Ratio) \
+							  								values(%d, %d, %d, %d, %d, %d, %d, %d, %d, %f, %d, %f, %f, %f, %d, %d, %f, %f, %f)",
+															GAParms->MSEOutput[d]->ProcessId, GAParms->MSEOutput[d]->ThreadId, 0, GAParms->MSEOutput[d]->TestId, DataInfo->SampleLen, GAParms->OutputCount, GAParms->FitnessThreshold, GAParms->PopulationSize, GAParms->Levels, GAParms->FitnessSkewingFactor, GAParms->TargetFitness, GAParms->CrossOverProbability, GAParms->MutationProbability, GAParms->CrossSelfRate, GAParms->RouletteMaxTries, GAParms->ADF_ForcePresence, GAParms->ADF_Tree_FixedValues_Ratio, GAParms->ADF_Tree_DataPoints_Ratio, GAParms->ADF_Leaf_FixedValues_Ratio);
+		break;
+	case ENGINE_SVM:
+		break;
+	case ENGINE_SOM:
+		SOMParms = (SOM_Parms*)pEngineParms->EngineSpecs;
+		sprintf(DPsql, "insert into DataParms (ProcessId, ThreadId, TestId, NetId, DataSourceType, Symbol, TimeFrame, IsFilled, BarData, DataTransformation, WiggleRoom, HistoryLen, SampleLen, PredictionLen, ScaleMin, ScaleMax, Training_Start, Training_End)\
+							 									values(%d, %d, %d, %d, %d, '%s', '%s', %d, %d, %d, %f, %d, %d, %d, %f, %f, to_date('%s','DY MON DD HH24:MI:SS YYYY'), to_date('%s', 'DY MON DD HH24:MI:SS YYYY') )", \
+																SOMParms->MSEOutput[d]->ProcessId, SOMParms->MSEOutput[d]->ThreadId, SOMParms->MSEOutput[d]->TestId, n, pDataSourceType, FXDataSource->Symbol, FXDataSource->TimeFrame, FXDataSource->IsFilled, FXDataSource->BarDataType[d], DataInfo->DataTransformation, DataInfo->wiggleRoom, DataInfo->HistoryLen, DataInfo->SampleLen, DataInfo->PredictionLen, DataInfo->ScaleMin, DataInfo->ScaleMax, pTrainingStart, pTrainingEnd);
+		sprintf(EPsql, "insert into EngineParms_SOM	(ProcessId, ThreadId, TestId, NetId, InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR)\
+							  								values(%d, %d, %d, %d, %d, %d, %d, %d, %f, %d, %f )", \
+															SOMParms->RunOutput[d]->ProcessId, SOMParms->RunOutput[d]->ThreadId, 0, SOMParms->RunOutput[d]->TestId, SOMParms->InputCount, SOMParms->OutputCount, SOMParms->MaxEpochs, SOMParms->TDFunction, SOMParms->BaseTD, SOMParms->LRFunction, SOMParms->BaseLR);
+		break;
+	}
+	LogWrite_C(pDebugParms, LOG_INFO, "WriteTestLog() CheckPoint 2\n", 0);
+}
+*/
+
+//========= Common Logs =========
+EXPORT int __stdcall Ora_WriteTesterLog(tDebugInfo* DebugParms, int pSimulationLen, char* pSimulationStart, int pTesterEngine, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0){
+			printf("WriteTesterLog could not connect to Log Database...\n");
+			return -1;
+		}
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+	//-- Builds Insert statement
+	sprintf(&stmt[0], "insert into TesterParms(ProcessId, TesterStart, SimulationLen, SimulationStart, Engine, DoTraining, DoRun, DataSourceType, DataSourceFileName) values(%d, sysdate, %d, to_date('%s','YYYYMMDDHH24MI'), %d, %d, %d, %d, '%s')", GetCurrentProcessId(), pSimulationLen, pSimulationStart, pTesterEngine, pDoTraining, pDoRun, pDataSourceType, pDataSourceFileName);
+	//-- Executes Insert statements
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL EXECUTE IMMEDIATE :stmt;
+	if (sqlca.sqlcode != 0){
+		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "WriteTesterLog failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL COMMIT;
+	return 0;
+}
+
+//EXPORT int __stdcall Ora_WriteTestLog(tDebugInfo* pDebugParms, tFXData* FXDataSource, tDataShape* pDataParms, tEngineDef* pEngineParms, char* pTrainingStart, char* pTrainingEnd){
+/*	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = LogDB->DBCtx;
+	char stmt_dp[1000]; char stmt_eng[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	int l, n;
+	NN_Parms* NNParms = 0;
+	//Dummy_Parms* DummyParms = 0;
+	//WNN_Parms* WNNParms = 0;
+	GA_Parms* GAParms = 0;
+	//SVM_Parms* SVMParms=nullptr;
+	SOM_Parms* SOMParms = 0;
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(pDebugParms, LogDB) != 0) printf("BulkMSEInsert could not connect to Log Database...\n");
+		vCtx = LogDB->DBCtx;
+	}
+	LogWrite_C(pDebugParms, LOG_INFO, "WriteTestLog() CheckPoint 1\n", 0);
+
+	for (l = 0; l<pEngineParms->LayersCount; l++){
+		for (n = 0; n < pEngineParms->NetCount[l]; n++){
+			Build_TestLogSQL(pDebugParms, pEngineParms, pDataParms, FXDataSource, l, n, pTrainingStart, pTrainingEnd, &stmt_dp[0], &stmt_eng[0]);
+		}
+	}
+
+
+	for (int d = 0; d < DataInfo->DatasetsCount; d++){
+		//-- Executes Insert statements
+		EXEC SQL CONTEXT USE :vCtx;
+		EXEC SQL EXECUTE IMMEDIATE :stmt_dp;
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "WriteTestLog failed while inserting in Data Params table. Dataset %d ; SQL Error %d\n", 2, d, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		EXEC SQL EXECUTE IMMEDIATE :stmt_eng;
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "WriteTestLog failed while inserting in Engine Params table. Dataset %d ; SQL Error %d\n", 2, d, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+	}
+	//-- Bulk insert for NetImage table (handles multiple datasets, specific for engine)
+	switch (EngineParms->EngineType){
+	case ENGINE_NN:
+		if (Ora_BulkWeightInsert_NN(DebugParms, LogDB, DataInfo->DatasetsCount, NNParms) != 0) return -1;
+		break;
+	case ENGINE_WNN:
+		if (Ora_BulkWeightInsert_WNN(DebugParms, LogDB, DataInfo->DatasetsCount, WNNParms) != 0) return -1;
+		break;
+	case ENGINE_GA:
+			break;
+		case ENGINE_SVM:
+			break;
+		case ENGINE_SOM:
+			if (Ora_BulkWeightInsert_SOM(DebugParms, LogDB, DataInfo->DatasetsCount, SOMParms)!=0) return -1;
+			break;
+	}
+
+	return 0;
+}
+*/
+
+EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int pDatasetsCount, int* pInsertCount, tLogMSE** MSEData){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i, d;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	int vInsertCount;
+	char stmt[1000];
+	//--
+	int** vProcessId;
+	int** vThreadId;
+	int** vTestId;
+	int** vLayerId;
+	int** vCoreId;
+	int** vEpoch;
+	double** vMSE_T;
+	double** vMSE_V;
+	//--
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	unsigned int vchar_type = 96;
+	unsigned int vchar_len = 12 + 1;
+
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 1 - LogDB->DBCtx=%p\n", 1, DebugParms->DebugDB->DBCtx);
+
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "BulkMSEInsert could not connect to Log Database...\n", 0);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 2 - LogDB->DBCtx=%p , vCtx=%p\n", 2, DebugParms->DebugDB->DBCtx, vCtx);
+
+	//--  All the arrays are <DatasetsCount><MaxEpochs> size
+	vProcessId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vThreadId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vTestId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vLayerId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vCoreId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vEpoch = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vMSE_T = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vMSE_V = (double**)malloc(pDatasetsCount*sizeof(double*));
+	for (d = 0; d < pDatasetsCount; d++){
+		vInsertCount = pInsertCount[d];
+		vProcessId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vThreadId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vTestId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vLayerId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vCoreId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vEpoch[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vMSE_T[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vMSE_V[d] = (double*)malloc(vInsertCount*sizeof(double));
+	}
+
+	for (d = 0; d < pDatasetsCount; d++){
+		vInsertCount = pInsertCount[d];
+
+		for (i = 0; i < vInsertCount; i++){
+			vProcessId[d][i] = MSEData[d][i].ProcessId;
+			vThreadId[d][i] = MSEData[d][i].ThreadId;
+			vTestId[d][i] = MSEData[d][i].TestId;
+			vLayerId[d][i] = MSEData[d][i].LayerId;
+			vCoreId[d][i] = MSEData[d][i].CoreId;
+			vEpoch[d][i] = MSEData[d][i].Epoch;
+			vMSE_T[d][i] = MSEData[d][i].MSE_T;
+			vMSE_V[d][i] = MSEData[d][i].MSE_V;
+			//LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 3.1 - vProcessId[%d][%d]=%d ; vThreadId[%d][%d]=%d ; vTestId[%d][%d]=%d ; vEpoch[%d][%d]=%d ; vMSE_T[%d][%d]=%f \n", 15, d, i, vProcessId[d][i], d, i, vThreadId[d][i], d, i, vTestId[d][i], d, i, vCoreId[d][i], d, i, vEpoch[d][i], d, i, vMSE_T[d][i]);
+		}
+
+		//-- Then, Build the Insert statement
+		sprintf(&stmt[0], "insert into MyLog_MSE (ProcessId, ThreadId, TestId, LayerId, CoreId, Epoch, MSE_T, MSE_V) values(:P01, :P02, :P03, :P04, :P05, :P06, :P07, :P08)");
+		LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 4 - stmt='%s'\n", 1, stmt);
+
+		EXEC SQL CONTEXT USE :vCtx;
+		//EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 4';
+		//EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
+		EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inMSE';
+		EXEC SQL SET DESCRIPTOR 'inMSE' COUNT = 8;
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 1 DATA = :vProcessId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 2 DATA = :vThreadId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 3 DATA = :vTestId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 4 DATA = :vLayerId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 5 DATA = :vCoreId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 6 DATA = :vEpoch[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 7 DATA = :vMSE_T[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 8 DATA = :vMSE_V[d];
+		EXEC SQL PREPARE DynIns FROM :stmt;
+		EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inMSE';
+		LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 5\n", 0);
+		//EXEC SQL ALTER SESSION SET SQL_TRACE = FALSE;
+
+		//pInsertCount[vNetLevel] = sqlca.sqlerrd[2];
+		LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "BulkMSEInsert failed. SQL Error %d\n", 1, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		EXEC SQL DEALLOCATE DESCRIPTOR 'inMSE';
+	}
+
+	//-- free()s
+	for (d = 0; d < pDatasetsCount; d++){
+		free(vProcessId[d]);
+		free(vThreadId[d]);
+		free(vTestId[d]);
+		free(vLayerId[d]);
+		free(vCoreId[d]);
+		free(vEpoch[d]);
+		free(vMSE_T[d]);
+		free(vMSE_V[d]);
+	}
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vLayerId);
+	free(vCoreId);
+	free(vEpoch);
+	free(vMSE_T);
+	free(vMSE_V);
+
+	return sqlca.sqlcode;
+}
+
+EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int pDatasetsCount, int pHistoryLen, int* pInsertCount, int pStepsCount, tLogRUN** RunData){
+	//-- pHistoryLen only needed to know where to insert the "spacer"
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i, d;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	int vInsertCount;
+	char stmt[1000];
+	//--
+	int** vProcessId;
+	int** vThreadId;
+	int** vNetProcessId;
+	int** vNetThreadId;
+	int** vTestId;
+	//--
+	int** vPos;
+	double** vActual; double** vActual_C;
+	double** vPredicted; double** vPredicted_C;
+	double** vError; double** vError_C;
+	double** vBarWidth;
+	double** vErrorP;
+	//--
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	unsigned int vchar_type = 96;
+	unsigned int vchar_len = 12 + 1;
+
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("BulkRunInsert could not connect to Log Database...\n");
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	LogWrite_C(DebugParms, LOG_INFO, "BulkRunInsert() CheckPoint 2 - vCtx=%p, DatasetCount=%d , InsertCount=%d\n", 3, vCtx, pDatasetsCount, pInsertCount);
+	//--  All the arrays are <DatasetsCount><MaxEpochs> size
+	vProcessId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vThreadId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vNetProcessId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vNetThreadId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vTestId = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vPos = (int**)malloc(pDatasetsCount*sizeof(int*));
+	vActual = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vPredicted = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vError = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vActual_C = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vPredicted_C = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vError_C = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vBarWidth = (double**)malloc(pDatasetsCount*sizeof(double*));
+	vErrorP = (double**)malloc(pDatasetsCount*sizeof(double*));
+
+	for (d = 0; d < pDatasetsCount; d++){
+		vInsertCount = pInsertCount[d];
+
+		vProcessId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vThreadId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vNetProcessId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vNetThreadId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vTestId[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vPos[d] = (int*)malloc(vInsertCount*sizeof(int));
+		vActual[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vPredicted[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vError[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vActual_C[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vPredicted_C[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vError_C[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vBarWidth[d] = (double*)malloc(vInsertCount*sizeof(double));
+		vErrorP[d] = (double*)malloc(vInsertCount*sizeof(double));
+		for (i = 0; i < vInsertCount; i++){
+			vProcessId[d][i] = RunData[d][pStepsCount*i].ProcessId;
+			vThreadId[d][i] = RunData[d][pStepsCount*i].ThreadId;
+			vNetProcessId[d][i] = RunData[d][pStepsCount*i].NetProcessId;
+			vNetThreadId[d][i] = RunData[d][pStepsCount*i].NetThreadId;
+			vTestId[d][i] = RunData[d][pStepsCount*i].TestId;
+			//--
+			vPos[d][i] = RunData[d][pStepsCount*i].Pos;
+			vActual[d][i] = RunData[d][pStepsCount*i].Actual;
+			vPredicted[d][i] = RunData[d][pStepsCount*i].Predicted;
+			vError[d][i] = RunData[d][pStepsCount*i].Error;
+			vActual_C[d][i] = RunData[d][pStepsCount*i].Actual_C;
+			vPredicted_C[d][i] = RunData[d][pStepsCount*i].Predicted_C;
+			vError_C[d][i] = RunData[d][pStepsCount*i].Error_C;
+			vBarWidth[d][i] = RunData[d][pStepsCount*i].BarWidth;
+			vErrorP[d][i] = RunData[d][pStepsCount*i].ErrorP;
+			//LogWrite_C(DebugParms, LOG_INFO, "vProcessId[%d][%d][%d]=%d , vThreadId[%d][%d][%d]=%d , vTestId[%d][%d][%d]=%d , vNetId[%d][%d][%d]=%d, vPos[%d][%d][%d]=%d \n", 20, d, n, i, vProcessId[d][n][i], d, n, i, vThreadId[d][n][i], d, n, i, vTestId[d][n][i], d, n, i, vNetId[d][n][i], d, n, i, vPos[d][n][i]);
+		}
+		//-- Then, Build the Insert statement
+		sprintf(&stmt[0], "insert into MyLog_Run (ProcessId, ThreadId, NetProcessId, NetThreadId, TestId, Pos, Actual, Predicted, Error, ActualC, PredictedC, ErrorC, BarWidth, ErrorP)");
+		strcat(stmt, " values(:Run1, :Run2, :Run3, :Run4, :Run5, :Run6, :Run7, :Run8, :Run9, :Run10, :Run11, :Run12, :Run13, :Run14, :Run15)");
+
+		EXEC SQL CONTEXT USE :vCtx;
+		//EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 4';
+		//EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
+		EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inRun';
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 1 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 2 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 3 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 4 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 5 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 6 TYPE = :int_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 7 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 8 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 9 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 10 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 11 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 12 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 13 TYPE = :dbl_type;
+		EXEC SQL SET DESCRIPTOR 'inRun' VALUE 14 TYPE = :dbl_type;
+
+		EXEC SQL SET DESCRIPTOR 'inRun' COUNT = 14;
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 1 DATA = :vProcessId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 2 DATA = :vThreadId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 3 DATA = :vNetProcessId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 4 DATA = :vNetThreadId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 5 DATA = :vTestId[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 6 DATA = :vPos[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 7 DATA = :vActual[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 8 DATA = :vPredicted[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 9 DATA = :vError[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 10 DATA = :vActual_C[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 11 DATA = :vPredicted_C[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 12 DATA = :vError_C[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 13 DATA = :vBarWidth[d];
+		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 14 DATA = :vErrorP[d];
+
+		EXEC SQL PREPARE DynIns FROM :stmt;
+		EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inRun';
+		//EXEC SQL ALTER SESSION SET SQL_TRACE = FALSE;
+
+		pInsertCount[d] = sqlca.sqlerrd[2];
+		LogWrite_C(DebugParms, LOG_INFO, "BulkRunInsert() CheckPoint 3 - InsertCount=%d\n", 1, pInsertCount[d]);
+		LogWrite_C(DebugParms, LOG_INFO, "BulkRunInsert() CheckPoint 4 - sqlca.sqlcode=%d\n", 1, sqlca.sqlcode);
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1){
+				LogWrite_C(DebugParms, LOG_ERROR, "BulkRunInsert failed. SQL Error %d\n", 1, sqlca.sqlcode);
+			}
+			return sqlca.sqlcode;
+		}
+
+		//-- Need to insert the spacer that is no longer created in MyNN.cpp
+		sprintf(&stmt[0], "insert into MyLog_Run (ProcessId, ThreadId, NetProcessId, NetThreadId, TestId, Pos, Actual, Predicted, Error, ActualC, PredictedC, ErrorC, BarWidth, ErrorP) \
+						  							values(%d, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f)", \
+													vProcessId[d][0], vThreadId[d][0], vNetProcessId[d][0], vNetThreadId[d][0], vTestId[d][0], (vPos[d][pHistoryLen - 1] + 0.5), NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		EXEC SQL EXECUTE IMMEDIATE :stmt;
+		if (sqlca.sqlcode != 0){
+			if (sqlca.sqlcode != 1403){
+				LogWrite_C(DebugParms, LOG_ERROR, "Inserting spacer in MyLog_Run failed. SQL Error %d\n", 1, sqlca.sqlcode);
+			}
+			return sqlca.sqlcode;
+		}
+		EXEC SQL DEALLOCATE DESCRIPTOR 'inRun';
+	}
+	//-- Fixing the '0' values on actual that mess up excel charts
+	strcpy(&stmt[0], "update MyLog_Run set Predicted=NULL, Error=NULL, PredictedC=NULL, ErrorC=NULL, BarWidth=NULL, ErrorP=NULL where Predicted=0");
+	EXEC SQL EXECUTE IMMEDIATE :stmt;
+	strcpy(&stmt[0], "update MyLog_Run set Actual=NULL, ActualC=NULL, Error=NULL, ErrorP=NULL where Actual=0");
+	EXEC SQL EXECUTE IMMEDIATE :stmt;
+	if (sqlca.sqlcode != 0){
+		if (sqlca.sqlcode != 1403){
+			LogWrite_C(DebugParms, LOG_ERROR, "Updating 0s in MyLog_Run failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		}
+		return sqlca.sqlcode;
+	}
+
+	//-- free()s
+	for (d = 0; d < pDatasetsCount; d++){
+		free(vProcessId[d]);
+		free(vThreadId[d]);
+		free(vNetProcessId[d]);
+		free(vNetThreadId[d]);
+		free(vTestId[d]);
+		free(vPos[d]);
+		free(vActual[d]);
+		free(vPredicted[d]);
+		free(vError[d]);
+		free(vBarWidth[d]);
+		free(vErrorP[d]);
+	}
+	free(vProcessId);
+	free(vThreadId);
+	free(vNetProcessId);
+	free(vNetThreadId);
+	free(vTestId);
+	free(vPos);
+	free(vActual);
+	free(vPredicted);
+	free(vError);
+	free(vBarWidth);
+	free(vErrorP);
+
+	return sqlca.sqlcode;
+}
+
+//===============================
+
+//===== Engine-specific Logs ====
+/*
+EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms,NN_Parms* NN, NN_Logs* NNLogs, int pid, int testid, int pDatasetsCount, int pTimeSteps, double****a, double**** F){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int d, l, t, j;
+	int vInsertCount; int idx;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	unsigned int vchar_type = 96;
+	unsigned int vchar_len = 12 + 1;
+
+	int* vProcessId;
+	int* vThreadId;
+	int* vTestId;
+	int* vDatasetId;
+	int* vLayerId;
+	int* vTimeStepId;
+
+	int* vNeuron;
+	double*  vInVal;
+	double*  vOutVal;
+
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_W() could not connect to Log Database...\n", 0);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	//-- mallocs
+	vInsertCount = 0; idx = 0;
+	for (d = 0; d < pDatasetsCount; d++){
+		for (l = 0; l < NN->LevelsCount; l++){
+			for (t = 0; t < pTimeSteps; t++){
+				for (j = 0; j < NN->NodesCount[l]; j++){
+					vInsertCount++;
+				}
+			}
+		}
+	}
+	vProcessId = (int*)malloc(vInsertCount*sizeof(int));
+	vThreadId = (int*)malloc(vInsertCount*sizeof(int));
+	vTestId = (int*)malloc(vInsertCount*sizeof(int));
+	vDatasetId = (int*)malloc(vInsertCount*sizeof(int));
+	vLayerId = (int*)malloc(vInsertCount*sizeof(int));
+	vTimeStepId = (int*)malloc(vInsertCount*sizeof(int));
+	vNeuron = (int*)malloc(vInsertCount*sizeof(int));
+	vInVal = (double*)malloc(vInsertCount*sizeof(double));
+	vOutVal = (double*)malloc(vInsertCount*sizeof(double));
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inINTN';
+
+	//-- assignments
+	for (d = 0; d < pDatasetsCount; d++){
+		for (l = 0; l < NN->LevelsCount; l++){
+			for (t = 0; t < pTimeSteps; t++){
+				for (j = 0; j < NN->NodesCount[l]; j++){
+					vProcessId[idx] = pid;
+					vThreadId[idx] = NNLogs->TrainingTid[d];
+					vTestId[idx] = testid;
+					vDatasetId[idx] = d;
+					vLayerId[idx] = l;
+					vTimeStepId[idx] = t;
+					vNeuron[idx] = j;
+					vInVal[idx] = a[d][l][t][j];
+					vOutVal[idx] = F[d][l][t][j];
+
+					idx++;
+				}
+			}
+		}
+	}
+	//-- Then, Build the Insert statement
+	sprintf(&stmt[0], "insert into Internals_NN_N (ProcessId, ThreadId, TestId, TimeStep, NeuronLevel, Neuron, INVal, OUTVal) values(:P01, :P02, :P03, :P04, :P05, :P06, :P07, :P08)");
+	LogWrite_C(DebugParms, LOG_INFO, "BulkInternalsInsert() CheckPoint 4 - stmt='%s'\n", 1, stmt);
+
+	EXEC SQL SET DESCRIPTOR 'inINTN' COUNT = 8;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 1 DATA = :vProcessId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 2 DATA = :vThreadId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 3 DATA = :vTestId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 4 DATA = :vTimeStepId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 5 DATA = :vLayerId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 6 DATA = :vNeuron;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 7 DATA = :vInVal;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTN' VALUE 8 DATA = :vOutVal;
+	EXEC SQL PREPARE DynIns FROM :stmt;
+	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inINTN';
+
+	LogWrite_C(DebugParms, LOG_INFO, "Ora_BulkInternalsInsert_NN_N() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_N() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+
+	//-- free()s
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vDatasetId);
+	free(vLayerId);
+	free(vTimeStepId);
+	free(vNeuron);
+	free(vInVal);
+	free(vOutVal);
+
+	EXEC SQL DEALLOCATE DESCRIPTOR 'inINTN';
+	return 0;
+}
+
+EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Parms* NN, NN_Logs* NNLogs, int pid, int testid, int pDatasetsCount, int pTimeSteps, double***** W){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int d, l, t, j, i;
+	int vInsertCount, idx;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	unsigned int vchar_type = 96;
+	unsigned int vchar_len = 12 + 1;
+
+	int* vProcessId;
+	int* vThreadId;
+	int* vTestId;
+	int* vDatasetId;
+	int* vLayerId;
+	int* vTimeStepId;
+	int* vFromNeuron;
+	int* vToNeuron;
+	double* vWeight;
+
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_W() could not connect to Log Database...\n", 0);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	//-- mallocs
+	vInsertCount = 0; idx = 0;
+	for (d = 0; d < pDatasetsCount; d++){
+		for (l = 0; l < (NN->LevelsCount - 1); l++){
+			for (t = 0; t < pTimeSteps; t++){
+				for (j = 0; j < NN->NodesCount[l+1]; j++){
+					for (i = 0; i < NN->NodesCount[l]; i++){
+						vInsertCount++;
+					}
+				}
+			}
+		}
+	}
+	vProcessId = (int*)malloc(vInsertCount*sizeof(int));
+	vThreadId = (int*)malloc(vInsertCount*sizeof(int));
+	vTestId = (int*)malloc(vInsertCount*sizeof(int));
+	vDatasetId = (int*)malloc(vInsertCount*sizeof(int));
+	vLayerId = (int*)malloc(vInsertCount*sizeof(int));
+	vTimeStepId = (int*)malloc(vInsertCount*sizeof(int));
+	vFromNeuron = (int*)malloc(vInsertCount*sizeof(int));
+	vToNeuron = (int*)malloc(vInsertCount*sizeof(int));
+	vWeight = (double*)malloc(vInsertCount*sizeof(double));
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inINTW';
+
+	//-- assignments
+	for (d = 0; d < pDatasetsCount; d++){
+		for (l = 0; l < (NN->LevelsCount - 1); l++){
+			for (t = 0; t < pTimeSteps; t++){
+				for (j = 0; j < NN->NodesCount[l+1]; j++){
+					for (i = 0; i < NN->NodesCount[l]; i++){
+						vProcessId[idx] = pid;
+						vThreadId[idx] = NNLogs->TrainingTid[d];
+						vTestId[idx] = testid;
+						vDatasetId[idx] = d;
+						vLayerId[idx] = l;
+						vTimeStepId[idx] = t;
+						vFromNeuron[idx] = j;
+						vToNeuron[idx] = i;
+						vWeight[idx] = W[d][l][t][j][i];
+
+						idx++;
+					}
+				}
+			}
+		}
+	}
+
+	//-- Then, Build the Insert statement
+	sprintf(&stmt[0], "insert into Internals_NN_W (ProcessId, ThreadId, TestId, TimeStep, NeuronLevel, FromNeuron, ToNeuron, Weight) values(:P01, :P02, :P03, :P04, :P05, :P06, :P07, :P08)");
+	LogWrite_C(DebugParms, LOG_INFO, "BulkInternalsInsert() CheckPoint 4 - stmt='%s'\n", 1, stmt);
+
+	EXEC SQL SET DESCRIPTOR 'inINTW' COUNT = 8;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 1 DATA = :vProcessId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 2 DATA = :vThreadId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 3 DATA = :vTestId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 4 DATA = :vTimeStepId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 5 DATA = :vLayerId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 6 DATA = :vFromNeuron;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 7 DATA = :vToNeuron;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inINTW' VALUE 8 DATA = :vWeight;
+	EXEC SQL PREPARE DynIns FROM :stmt;
+	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inINTW';
+
+	LogWrite_C(DebugParms, LOG_INFO, "Ora_BulkInternalsInsert_NN_W() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_W() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+
+	//-- free()s
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vDatasetId);
+	free(vLayerId);
+	free(vTimeStepId);
+	free(vFromNeuron);
+	free(vToNeuron);
+	free(vWeight);
+
+	EXEC SQL DEALLOCATE DESCRIPTOR 'inINTW';
+	return 0;
+}
+
+EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Parms* NN, NN_Logs* NNLogs, int pid, int testid, int pDatasetsCount, int pTimeSteps, tLogInt*** IntParms){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int d, l, t;
+	int vInsertCount; int idx;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	unsigned int vchar_type = 96;
+	unsigned int vchar_len = 12 + 1;
+
+	int* vProcessId;
+	int* vThreadId;
+	int* vTestId;
+	int* vDatasetId;
+	int* vLayerId;
+	int* vTimeStepId;
+
+	int* vsigma10;
+	double* vro10;
+	double* vD10W;
+	double* vadzev10;
+	int* vhcp10;
+	int* vsigma21;
+	double* vro21;
+	double* vadzev21norm;
+	double* vnorm_e;
+
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_P() could not connect to Log Database...\n", 0);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	//-- mallocs
+	vInsertCount = 0; idx = 0;
+	for (d = 0; d < pDatasetsCount; d++){
+		l = 0;	// For now, all parameters are associated to layer 0
+		for (t = 0; t < pTimeSteps; t++){
+			vInsertCount++;
+		}
+	}
+	vProcessId = (int*)malloc(vInsertCount*sizeof(int));
+	vThreadId = (int*)malloc(vInsertCount*sizeof(int));
+	vTestId = (int*)malloc(vInsertCount*sizeof(int));
+	vDatasetId = (int*)malloc(vInsertCount*sizeof(int));
+	vLayerId = (int*)malloc(vInsertCount*sizeof(int));
+	vTimeStepId = (int*)malloc(vInsertCount*sizeof(int));
+
+	vsigma10 = (int*)malloc(vInsertCount*sizeof(int));
+	vro10 = (double*)malloc(vInsertCount*sizeof(double));
+	vD10W = (double*)malloc(vInsertCount*sizeof(double));
+	vadzev10 = (double*)malloc(vInsertCount*sizeof(double));
+	vhcp10 = (int*)malloc(vInsertCount*sizeof(int));
+	vsigma21 = (int*)malloc(vInsertCount*sizeof(int));
+	vro21 = (double*)malloc(vInsertCount*sizeof(double));
+	vadzev21norm = (double*)malloc(vInsertCount*sizeof(double));
+	vnorm_e = (double*)malloc(vInsertCount*sizeof(double));
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inNNP';
+
+	//-- assignments
+	for (d = 0; d < pDatasetsCount; d++){
+		l = 0;	// For now, all parameters are associated to layer 0
+		for (t = 0; t < pTimeSteps; t++){
+			vProcessId[idx] = pid;
+			vThreadId[idx] = NNLogs->TrainingTid[d];
+			vTestId[idx] = testid;
+			vDatasetId[idx] = d;
+			vLayerId[idx] = l;
+			vTimeStepId[idx] = t;
+			vadzev10[idx] = IntParms[d][l][t].adzev10;
+			vadzev21norm[idx] = IntParms[d][l][t].adzev21N;
+			vD10W[idx] = IntParms[d][l][t].D10W;
+			vhcp10[idx] = IntParms[d][l][t].hcp10;
+			vnorm_e[idx] = IntParms[d][l][t].norm_e;
+			vProcessId[idx] = IntParms[d][l][t].ProcessId;
+			vro10[idx] = IntParms[d][l][t].ro10;
+			vro21[idx] = IntParms[d][l][t].ro21;
+			vsigma10[idx] = IntParms[d][l][t].sigma10;
+			vsigma21[idx] = IntParms[d][l][t].sigma21;
+			vTimeStepId[idx] = IntParms[d][l][t].TimeStep;
+			vThreadId[idx] = IntParms[d][l][t].ThreadId;
+
+			idx++;
+		}
+	}
+	//-- Then, Build the Insert statement
+	sprintf(&stmt[0], "insert into Internals_NN_P (ProcessId, ThreadId, TestId, DatasetId, LayerId, TimeStep,\
+					  					   sigma10, ro10, D10W, adzev10, hcp10, sigma21, ro21, adzev21norm, norm_e)\
+										   					   values(:P01, :P02, :P03, :P04, :P05, :P06, :P07, :P08, :P09, :P10, :P11, :P12, :P13, :P14, :P15)");
+	LogWrite_C(DebugParms, LOG_INFO, "BulkInternalsInsert() CheckPoint 4 - stmt='%s'\n", 1, stmt);
+
+	EXEC SQL SET DESCRIPTOR 'inNNP' COUNT = 15;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 1 DATA = :vProcessId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 2 DATA = :vThreadId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 3 DATA = :vTestId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 4 DATA = :vDatasetId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 5 DATA = :vLayerId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 6 DATA = :vTimeStepId;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 7 DATA = :vsigma10;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 8 DATA = :vro10;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 9 DATA = :vD10W;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 10 DATA = :vadzev10;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 11 DATA = :vhcp10;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 12 DATA = :vsigma21;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 13 DATA = :vro21;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 14 DATA = :vadzev21norm;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inNNP' VALUE 15 DATA = :vnorm_e;
+	EXEC SQL PREPARE DynIns FROM :stmt;
+	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inNNP';
+
+	LogWrite_C(DebugParms, LOG_INFO, "Ora_BulkInternalsInsert_NN_P() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_P() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+
+	//-- free()s
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vDatasetId);
+	free(vLayerId);
+	free(vTimeStepId);
+	free(vsigma10);
+	free(vro10);
+	free(vD10W);
+	free(vadzev10);
+	free(vhcp10);
+	free(vsigma21);
+	free(vro21);
+	free(vadzev21norm);
+	free(vnorm_e);
+
+	EXEC SQL DEALLOCATE DESCRIPTOR 'inNNP';
+	return 0;
+}
+*/
+//===============================
+
+EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int retval = 0;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	//-- Network Properties variables
+	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction;
+	char vLevelRatios[256];
+	double vLearningRate, vLearningMomentum, vHCPBeta, vTargetMSE;
+	EXEC SQL END DECLARE SECTION;
+
+	NN_Parms* vNNParms;
+	//GA_Parms* vGAParms;
+	//SOM_Parms* vSOMParms;
+	//SVM_Parms* vSVMParms;
+
+	//vLevelRatios = (char*)malloc(256*sizeof(char));
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_LoadEngine could not connect to Log Database...\n");
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	switch (pEngineType){
+	case ENGINE_NN:
+		vNNParms = (NN_Parms*)oEngineParms;
+
+		//-- Load Network properties from EngineParms_NN
+		sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from EngineParms_NN where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+		//LogWrite_C(DebugParms, "LoadEngine() CheckPoint 2\n", 0);
+		EXEC SQL CONTEXT USE :vCtx;
+		EXEC SQL PREPARE s1 FROM :stmt;
+		EXEC SQL DECLARE cle CURSOR FOR s1;
+		EXEC SQL OPEN cle;
+		if (sqlca.sqlcode != 0){
+			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: SQL Error %d\n", 1, sqlca.sqlcode); system("pause");
+			retval = sqlca.sqlcode;
+			break;
+		}
+		EXEC SQL FETCH cle INTO vInputCount, vOutputCount, vLevelRatios, vUseContext, vMaxEpochs, vBP_Algo, vLearningRate, vLearningMomentum, vActivationFunction, vHCPBeta, vTargetMSE;
+		if (sqlca.sqlcode == 0){
+			vNNParms->InputCount = vInputCount; vNNParms->OutputCount = vOutputCount; vNNParms->UseContext = vUseContext; vNNParms->MaxEpochs = vMaxEpochs; vNNParms->BP_Algo = vBP_Algo; vNNParms->LearningRate = vLearningRate; vNNParms->LearningMomentum = vLearningMomentum; vNNParms->ActivationFunction = vActivationFunction; vNNParms->HCPbeta = vHCPBeta; vNNParms->TargetMSE = vTargetMSE;
+			strcpy(vNNParms->LevelRatioS, vLevelRatios);
+		}
+		else if (sqlca.sqlcode == 1403){
+			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: Engine not found. ProcessId=%d ; ThreadId=%d ; TestId=%d\n", 3, pEngineHandle->ProcessId, pEngineHandle->ThreadId, pEngineHandle->TestId);
+			retval = sqlca.sqlcode;
+		}
+		else{
+			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: SQL Error %d\n", 1, sqlca.sqlcode);
+			retval = sqlca.sqlcode;
+		}
+		EXEC SQL CLOSE cle;
+		//free(vLevelRatios);
+
+		break;
+	case ENGINE_GA:
+		break;
+	case ENGINE_SVM:
+		break;
+	case ENGINE_SOM:
+		break;
+	}
+
+	return retval;
+}
+
+EXPORT int __stdcall Ora_LoadEngineData(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms, void* oEngineLogs){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int retval = 0;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	//-- Network Weights variables
+	int vNeuronLevel; int vFromNeuron; int vToNeuron; double vWeight;
+	EXEC SQL END DECLARE SECTION;
+
+	NN_Parms* vNNParms;
+	NN_Logs* vNNLogs;
+	//GA_Parms* vGAParms;
+	//SOM_Parms* vSOMParms;
+	//SVM_Parms* vSVMParms;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_LoadEngineData could not connect to Log Database...\n");
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	switch (pEngineType){
+	case ENGINE_NN:
+		vNNParms = (NN_Parms*)oEngineParms;
+		vNNLogs = (NN_Logs*)oEngineLogs;
+		//-- Load Network Weights from NetImage_NN
+		sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from NetImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+		LogWrite_C(DebugParms, LOG_INFO, "Ora_LoadEngineData() CheckPoint 3 - stmt=%s\n", 1, stmt);
+		EXEC SQL CONTEXT USE :vCtx;
+		EXEC SQL PREPARE s2 FROM :stmt;
+		EXEC SQL DECLARE c2 CURSOR FOR s2;
+		EXEC SQL OPEN c2;
+		while (TRUE) {
+			EXEC SQL FETCH c2 INTO vNeuronLevel, vFromNeuron, vToNeuron, vWeight;
+			if (sqlca.sqlcode == 0){
+				vNNLogs->FinalW[vNeuronLevel][vFromNeuron][vToNeuron].Weight = vWeight;
+			}
+			else if (sqlca.sqlcode == 1403){
+				break;
+			}
+			else{
+				LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineData: SQL Error %d\n", 1, sqlca.sqlcode);
+				retval = sqlca.sqlcode;
+				break;
+			}
+		}
+		EXEC SQL CLOSE c2;
+
+
+		break;
+	case ENGINE_GA:
+		break;
+	case ENGINE_SVM:
+		break;
+	case ENGINE_SOM:
+		break;
+	}
+
+	return retval;
+}
+
+//=====================================================
+
+EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char* pSymbol, char* oSymbol, int* oScale){
+
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pCtx;
+	char* SymLkp_stmt_base;
+	char SymLkp_stmt[300];
+	char vSymbol[10];
+	char* pScale_stmt_base;
+	char  pScale_stmt[300];
+	int vpScale;
+	EXEC SQL END DECLARE SECTION;
+
+	SymLkp_stmt_base = "select Hst_Symbol from History.Symbol_Lookup where MT4_Symbol='";
+	strcpy(SymLkp_stmt, SymLkp_stmt_base);
+	strcat(SymLkp_stmt, pSymbol);
+	strcat(SymLkp_stmt, "'");
+	LogWrite_C(DebugParms, LOG_INFO, "%s SymbolLookup executing: %s\n", 2, timestamp_C, SymLkp_stmt);
+	//EXEC SQL ALTER SESSION SET SQL_TRACE=TRUE;
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s5 FROM :SymLkp_stmt;
+	EXEC SQL DECLARE c5 CURSOR FOR s5;
+	EXEC SQL OPEN c5;
+	EXEC SQL FETCH c5 INTO :vSymbol;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_INFO, "SymbolLookup: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL CLOSE c5;
+	//EXEC SQL ALTER SESSION SET SQL_TRACE=FALSE;
+	LogWrite_C(DebugParms, LOG_INFO, "%s SymbolLookup found symbol: %s\n", 2, timestamp_C, vSymbol);
+
+	// Then, Look for pScale
+	pScale_stmt_base = "select pScale from GridUser.Pairs where Symbol='";
+	strcpy(pScale_stmt, pScale_stmt_base);
+	Trim_C(vSymbol); strcat(pScale_stmt, vSymbol);
+	strcat(pScale_stmt, "'");
+	LogWrite_C(DebugParms, LOG_INFO, "%s SymbolLookup executing: %s\n", 2, timestamp_C, pScale_stmt);
+
+	EXEC SQL PREPARE s6 FROM :pScale_stmt;
+	EXEC SQL DECLARE c6 CURSOR FOR s6;
+	EXEC SQL OPEN c6;
+	EXEC SQL FETCH c6 INTO :vpScale;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "GetpScale: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL CLOSE c6;
+	LogWrite_C(DebugParms, LOG_INFO, "%s SymbolLookup found pScale= %d\n", 2, timestamp_C, vpScale);
+
+	Trim_C(vSymbol);  strcpy(oSymbol, vSymbol);
+	(*oScale) = vpScale;
+
+	return 0;
+}
+
+EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx, char* vCSymbol, char* vHSymbol, char* vTimeFrame, int vIsFilled, char* pCurrentStart, int vTotalBars, char* vMeasure, int vOutputType, int pPredictorsCount, tPredictor* pBestPredictor){
+
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pCtx;
+	char* stmt_base;
+	char stmt[400];
+	char vTotalBarsBuffer[3 + 1];
+	int pr_id;
+	int vPredictorLen = 0;
+	char vPredictorStart[12 + 1];
+	char vPredictorMeasure[4 + 1];
+	EXEC SQL END DECLARE SECTION;
+	LogWrite_C(DebugParms, LOG_INFO, "%s FindBestPredictor(%s) started.\n", 2, timestamp_C, (vOutputType == FH) ? "High" :"Low");
+
+	stmt_base = "select to_char(PredictorStart,'YYYYMMDDHH24MI'), PatternLength, ";
+	strcpy(&stmt[0], stmt_base);
+	strcat(&stmt[0], vMeasure);
+	strcat(&stmt[0], " from TConcordance where CurrentData='");
+	strcat(&stmt[0], vCSymbol);
+	strcat(&stmt[0], "' and CurrentStart=to_date('");
+	strcat(&stmt[0], pCurrentStart);
+	strcat(&stmt[0], "','YYYYMMDDHH24MI')");
+	strcat(&stmt[0], "  and TimeFrame='");
+	strcat(&stmt[0], vTimeFrame);
+	strcat(&stmt[0], "'  and OutputType='");
+	strcat(&stmt[0], (vOutputType == 1) ? "High" :"Low");
+	strcat(&stmt[0], "' and PredictorData='");
+	strcat(&stmt[0], vHSymbol);
+	strcat(&stmt[0], "' and ");
+	strcat(&stmt[0], vMeasure);
+	strcat(&stmt[0], "<1");
+	strcat(&stmt[0], " and PatternLength=");
+	sprintf(vTotalBarsBuffer, "%d", vTotalBars);				strcat(&stmt[0], vTotalBarsBuffer);
+	strcat(&stmt[0], " order by 3 desc");
+	LogWrite_C(DebugParms, LOG_INFO, "%s FindBestPredictor(%s)  Executing stmt=%s\n", 3, timestamp_C, (vOutputType == FH)?"High":"Low", stmt);
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE S FROM :stmt;
+	EXEC SQL DECLARE c3 CURSOR FOR S;
+	EXEC SQL OPEN c3;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_INFO, "%s FindBestPredictor: Error raised by stmt: %d\n", 2, timestamp_C, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	//=========================================================================================================================================
+	for (pr_id = 0; pr_id<pPredictorsCount; pr_id++){
+		EXEC SQL FETCH c3 INTO :vPredictorStart, :vPredictorLen, :vPredictorMeasure;
+		if (sqlca.sqlcode != 0){
+			LogWrite_C(DebugParms, LOG_ERROR, "%s FindBestPredictor: Error raised by stmt: %d\n", 2, timestamp_C, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		pBestPredictor[pr_id].PredType = vOutputType;
+		strcpy(pBestPredictor[pr_id].PredStart, vPredictorStart);
+		pBestPredictor[pr_id].PredLen = vPredictorLen;
+		LogWrite_C(DebugParms, LOG_INFO, "%s FindBestPredictor(%s) found top %d predictor. PredStart=%s \n", 4, timestamp_C, (vOutputType == FH) ? "High" : "Low", pr_id, pBestPredictor[pr_id].PredStart);
+	}
+	EXEC SQL CLOSE c3;
+	return sqlca.sqlcode;
+
+}
+
+EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, char* oRet){
+	EXEC SQL BEGIN DECLARE SECTION;
+	char vSQL[1000];
+	char vRet[1000];
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+	strcpy(vSQL, pSQL);
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s8 FROM :vSQL;
+	EXEC SQL DECLARE c8 CURSOR FOR s8;
+	EXEC SQL OPEN c8;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "GetCharPFromQuery: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL FETCH c8 INTO :vRet;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "GetCharPFromQuery: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	Trim_C(vRet); strcpy(oRet, vRet);
+	EXEC SQL CLOSE c8;
+	return sqlca.sqlcode;
+}
+
+EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int ArrLen, char** oRet){
+	EXEC SQL BEGIN DECLARE SECTION;
+	char vSQL[1000];
+	char vRet[1000];
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+	strcpy(vSQL, pSQL);
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s82 FROM :vSQL;
+	EXEC SQL DECLARE c82 CURSOR FOR s82;
+	EXEC SQL OPEN c82;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "GetStringArrayFromQuery: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	for(int i=0;i<ArrLen;i++){
+		EXEC SQL FETCH c82 INTO :vRet;
+		if (sqlca.sqlcode != 0){
+			LogWrite_C(DebugParms, LOG_ERROR, "GetStringArrayFromQuery: SQL Error %d\n", 1, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		Trim_C(vRet); strcpy(oRet[i], vRet);
+	}
+	EXEC SQL CLOSE c82;
+	return sqlca.sqlcode;
+}
+
+EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int* oRet){
+	EXEC SQL BEGIN DECLARE SECTION;
+	char vSQL[1000];
+	int vRet = 0;
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+	strcpy(vSQL, pSQL);
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s1 FROM :vSQL;
+	EXEC SQL DECLARE c1 CURSOR FOR s1;
+	EXEC SQL OPEN c1;
+	EXEC SQL FETCH c1 INTO :vRet;
+
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(DebugParms, LOG_ERROR, "GetIntFromQuery: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+
+	(*oRet) = vRet;
+	EXEC SQL CLOSE c1;
+	return sqlca.sqlcode;
+}
+
+EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, char* pSQL, int pRecCount, int pSkipFirstN, tBar* oBar){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i = 0;  int j;
+	int retval = 0;
+	char vNDT[12 + 1];
+	//sql_context vCtx = pCtx;
+	struct sBar{
+		char NewDateTime[12 + 1];
+		double Open;
+		double High;
+		double Low;
+		double Close;
+		double OpenD;
+		double HighD;
+		double LowD;
+		double CloseD;
+		double Volume;
+		double VolumeD;
+	} *vBar;
+	char vSQL[1000];
+	EXEC SQL END DECLARE SECTION;
+	vBar = (struct sBar*)malloc((pRecCount + pSkipFirstN)*sizeof(struct sBar));
+	strcpy(vSQL, pSQL);
+
+	EXEC SQL CONTEXT USE :pCtx;
+	EXEC SQL PREPARE s4 FROM :vSQL;
+	EXEC SQL DECLARE c4 CURSOR FOR s4;
+	EXEC SQL OPEN c4;
+	for (i = 0; i<(pRecCount + pSkipFirstN); i++){
+		EXEC SQL FETCH c4 INTO :vNDT, :vBar[i].Open, :vBar[i].High, :vBar[i].Low, :vBar[i].Close, :vBar[i].Volume;
+		if (sqlca.sqlcode == 0){
+			strcpy(vBar[i].NewDateTime, vNDT);
+		}
+		else if (sqlca.sqlcode == 1403){
+			break;
+		}
+		else{
+			LogWrite_C(DebugInfo, LOG_ERROR, "GetBarsFromQuery (Loop): SQL Error %d\n", 1, sqlca.sqlcode);
+			retval = sqlca.sqlcode;
+			break;
+		}
+	}
+	EXEC SQL CLOSE c4;
+
+	if (i > 0) {
+		for (j = 0; j < pRecCount; j++){
+			memcpy(&oBar[j], &vBar[pSkipFirstN + j], sizeof(tBar));
+		}
+	}
+	free(vBar);
+	return retval;
+}
+
+EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int* pRecCount, tBar* oBar){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i = 0;
+	int retval = 0;
+	double tmpd;
+	sql_context vCtx = pCtx;
+
+	char vNDT[12 + 1];
+	double vOpen; double vHigh; double vLow; double vClose; double vOpenD; double vHighD; double vLowD; double vCloseD;
+
+	char vSQL[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	strcpy(vSQL, pSQL);
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s9 FROM :vSQL;
+	EXEC SQL DECLARE c9 CURSOR FOR s9;
+	EXEC SQL OPEN c9;
+	for (i = 0; i<(*pRecCount); i++){
+		EXEC SQL FETCH c9 INTO :vNDT, :vOpen, :vHigh, :vLow, :vClose, :vOpenD, :vHighD, :vLowD, :vCloseD;
+		if (sqlca.sqlcode == 0){
+			strcpy(oBar[i].NewDateTime, vNDT);
+			oBar[i].Open = vOpen; oBar[i].OpenD = vOpenD;
+			oBar[i].High = vHigh; oBar[i].HighD = vHighD;
+			oBar[i].Low = vLow; oBar[i].LowD = vLowD;
+			oBar[i].Close = vClose; oBar[i].CloseD = vCloseD;
+		}
+		else if (sqlca.sqlcode == 1403){
+			(*pRecCount) = i;
+			break;
+		}
+		else{
+			LogWrite_C(DebugParms, LOG_ERROR, "GetBarsFromQuery (Loop): SQL Error %d\n", 1, sqlca.sqlcode);
+			retval = sqlca.sqlcode;
+			(*pRecCount) = i;
+			break;
+		}
+	}
+	EXEC SQL CLOSE c9;
+
+	for (i = 0; i < (*pRecCount) / 2; i++){
+		tmpd = oBar[(*pRecCount) - i].Open;
+		oBar[(*pRecCount) - i].Open = oBar[i].Open;
+		oBar[i].Open = tmpd;
+	}
+
+	return retval;
+}
+
+EXPORT int __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* pSQL){
+	EXEC SQL BEGIN DECLARE SECTION;
+	char* vCtx = pCtx;
+	char* vSQL = pSQL;
+	EXEC SQL END   DECLARE SECTION;
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL ALTER SESSION SET NLS_DATE_FORMAT = 'YYYYMMDDHH24MI';
+	EXEC SQL EXECUTE IMMEDIATE :vSQL;
+
+	if (sqlca.sqlcode == 0) {
+		EXEC SQL COMMIT;
+		return 0;
+	}
+	else {
+		LogWrite_C(DebugInfo, LOG_ERROR, "Insert Failed: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+
+
+}
+
+EXPORT void __stdcall OraAllocateCtx(sql_context pCtx[MAX_CONTEXTS]){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx[6];
+	EXEC SQL END   DECLARE SECTION;
+	for (int i = 0; i < MAX_CONTEXTS; i++){
+		EXEC SQL CONTEXT ALLOCATE :vCtx[i];
+		pCtx[i] = vCtx[i];
+	}
+	return;
+}
+
+EXPORT void __stdcall OraEnableThreads(){
+	EXEC SQL ENABLE THREADS;
+	return;
+}
+
+EXPORT void __stdcall OraContextFree(sql_context pCtx){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL COMMIT WORK RELEASE;
+	EXEC SQL CONTEXT FREE :vCtx;
+}
+
+EXPORT void __stdcall OraDisconnect(sql_context pCtx){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL COMMIT WORK RELEASE;
+}
+
+EXPORT int __stdcall GetDataShapeFromDB(tDebugInfo* pDebugParms, tDBConnection* pLogDB, tEngineHandle* pEngineHandle, tDataShape* oTestData){
+	EXEC SQL BEGIN DECLARE SECTION;
+	int ret;
+	sql_context vCtx = pLogDB->DBCtx;
+	char stmt[300];
+	int vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
+	double /*vScaleMin, vScaleMax,*/ vWiggleRoom;
+	EXEC SQL END   DECLARE SECTION;
+
+	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 1\n", 0);
+	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 2\n", 0);
+
+	//-- Connects to DB only once
+	if (vCtx == NULL){
+		if (OraConnect(pDebugParms, pLogDB) != 0) printf("LoadEngine could not connect to Log Database...\n");
+		vCtx = pLogDB->DBCtx;
+	}
+
+	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 2 - pEngine->ProcessId=%d ; pEngine->ThreadId=%d\n", 2, pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+	//sprintf(&stmt[0], "select HistoryLen, SampleLen, PredictionLen, DataTransformation/*, ScaleMin, ScaleMax, WiggleRoom from DataParms where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+	sprintf(&stmt[0], "select HistoryLen, SampleLen, PredictionLen, DataTransformation, WiggleRoom from DataParms where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 3 - stmt = %s\n", 1, stmt);
+
+	//-- Executes SQL 
+	vCtx = pLogDB->DBCtx;
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL PREPARE s15 FROM :stmt;
+	EXEC SQL DECLARE c15 CURSOR FOR s15;
+	EXEC SQL OPEN c15;
+	EXEC SQL FETCH c15 INTO :vHistoryLen, :vSampleLen, :vPredictionLen, :vDataTransformation/*, :vScaleMin, :vScaleMax*/, :vWiggleRoom;
+	ret = sqlca.sqlcode;
+	if (sqlca.sqlcode != 0){
+		LogWrite_C(pDebugParms, LOG_ERROR, "GetDataShapeFromDB: SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL CLOSE c15;
+	ret = sqlca.sqlcode;
+
+	//-- Fill oTestData, and returns
+	oTestData->HistoryLen = vHistoryLen;
+	oTestData->SampleLen = vSampleLen;
+	oTestData->PredictionLen = vPredictionLen;
+	oTestData->DataTransformation = vDataTransformation;
+	//oTestData->ScaleMin = vScaleMin;
+	//oTestData->ScaleMax = vScaleMax;
+	oTestData->wiggleRoom = vWiggleRoom;
+	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB(): HistoryLen=%d ; SampleLen=%d ; PredictionLen=%d \n", 3, oTestData->HistoryLen, oTestData->SampleLen, oTestData->PredictionLen);
+	return 0;
+}
+
+EXPORT void __stdcall OraCommit(void* pCtx){
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pCtx;
+	EXEC SQL END   DECLARE SECTION;
+
+	EXEC SQL CONTEXT USE :vCtx;
+	EXEC SQL COMMIT;
+}
+
+//=== ConcordanceCalc() stuff ===
+EXPORT int __stdcall GetHRecCount(tDebugInfo* DebugParms, void* pCtx, char* pHSymbol, char* pTimeFrame, char* pCFromDate, int pDelta, int pIsFilled, int* HRecCount){
+	//--- Select... 
+	char stmt[1000];
+	strcpy(stmt, "select count(*) from History.");
+	strcat(stmt, pHSymbol);
+	strcat(stmt, "_");
+	strcat(stmt, pTimeFrame);
+	strcat(stmt, (pIsFilled == 1) ? "_FILLED " : " ");
+	strcat(stmt, "where NewDateTime < to_date('");
+	strcat(stmt, pCFromDate);
+	strcat(stmt, "','YYYYMMDDHH24MI')");
+
+	return(GetIntFromQuery(DebugParms, pCtx, stmt, HRecCount));
+
+}
+
+EXPORT int __stdcall LoadCurrentRecord(tDebugInfo* DebugParms, void* pCtx, char* pCSymbol, char* pTimeFrame, char* pCToDate, int pPastDepth, int pDelta, int pIsFilled, int pCRecCount, tBar* oCRec){
+	char stmt[1000];
+	char vPastDepth[4];
+
+	strcpy(stmt, "select * from (");
+	strcat(stmt, "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, Open-nvl(lag(Open) over(order by NewDateTime), 0), High-nvl(lag(High) over(order by NewDateTime), 0), Low-nvl(lag(Low) over(order by NewDateTime), 0), Close-nvl(lag(Close) over(order by NewDateTime), 0) from History.");
+	strcat(stmt, pCSymbol);
+	strcat(stmt, "_");
+	strcat(stmt, pTimeFrame);
+	strcat(stmt, (pIsFilled == 1) ? "_FILLED " : " ");
+	strcat(stmt, "where NewDateTime <= to_date('");
+	strcat(stmt, pCToDate);
+	strcat(stmt, "','YYYYMMDDHH24MI') order by NewDateTime desc");
+	strcat(stmt, ") where rownum<=");
+	sprintf(&vPastDepth[0], "%d", pPastDepth);
+	strcat(stmt, vPastDepth);
+	strcat(stmt, " order by 1");
+	//LogWrite_C(pDebugLevel, pLogFile, "%s LoadCurrentRecord() executing: %s\n", 2, timestamp_C, stmt);
+
+	return (GetBarsFromQuery(DebugParms, pCtx, stmt, pPastDepth, 0, oCRec));
+}
+
+EXPORT int __stdcall LoadHistoryRecord(tDebugInfo* DebugParms, void* pCtx, char* pCSymbol, char* pTimeFrame, char* pCFromDate, int pDelta, int pIsFilled, int pHRecCount, tBar* oHRec){
+	char stmt[1000];
+
+	strcpy(stmt, "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, Open-nvl(lag(Open) over(order by NewDateTime), 0), High-nvl(lag(High) over(order by NewDateTime), 0), Low-nvl(lag(Low) over(order by NewDateTime), 0), Close-nvl(lag(Close) over(order by NewDateTime), 0) from History.");
+	strcat(stmt, pCSymbol);
+	strcat(stmt, "_");
+	strcat(stmt, pTimeFrame);
+	strcat(stmt, (pIsFilled == 1) ? "_FILLED " : " ");
+	strcat(stmt, "where NewDateTime < to_date('");
+	strcat(stmt, pCFromDate);
+	strcat(stmt, "','YYYYMMDDHH24MI') order by 1");
+
+	return (GetBarsFromQuery(DebugParms, pCtx, stmt, pHRecCount, 0, oHRec));
+}
+
+EXPORT int __stdcall LoadTimeSeries(tDebugInfo* DebugParms, void* pCtx, char* pSymbol, char* pTimeFrame, char* pFromDate, int pDelta, int pIsFilled, int pRecCount, tBar* oRec){
+	char stmt[1000];
+
+	strcpy(stmt, "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, Open-nvl(lag(Open) over(order by NewDateTime), 0), High-nvl(lag(High) over(order by NewDateTime), 0), Low-nvl(lag(Low) over(order by NewDateTime), 0), Close-nvl(lag(Close) over(order by NewDateTime), 0) from History.");
+	strcat(stmt, pSymbol);
+	strcat(stmt, "_");
+	strcat(stmt, pTimeFrame);
+	strcat(stmt, (pIsFilled == 1) ? "_FILLED " : " ");
+	strcat(stmt, "where NewDateTime >= to_date('");
+	strcat(stmt, pFromDate);
+	strcat(stmt, "','YYYYMMDDHH24MI') order by 1");
+
+	return (GetBarsFromQuery(DebugParms, pCtx, stmt, pRecCount, 0, oRec));
+}
+//===

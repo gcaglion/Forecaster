@@ -1,0 +1,10 @@
+truncate table COREIMAGE_NN;
+truncate table COREIMAGE_SOM;
+truncate table COREPARMS_GA;
+truncate table COREPARMS_NN;
+truncate table COREPARMS_SOM;
+truncate table DATAPARMS;
+truncate table ENGINEPARMS;
+truncate table MYLOG_MSE;
+truncate table MYLOG_RUN;
+truncate table TESTERPARMS;
