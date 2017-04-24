@@ -23,7 +23,7 @@
 #include <Windows.h>
 
 /* interface to QP-solver */
-EXPORT double *optimize_qp(QP *, double *, long, double *, LEARN_PARM *);
+EXPORT double *optimize_qp(QP *, double *, long, int, double *, double *, long *, double *, double *, LEARN_PARM *);
 
 /*---------------------------------------------------------------------------*/
 
@@ -1182,7 +1182,7 @@ EXPORT long optimize_to_convergence(DOC **docs, long int *label, long int totdoc
 			     long int *inconsistent, long int *unlabeled, 
 			     double *a, double *lin, double *c, 
 			     TIMING *timing_profile, double *maxdiff, 
-			     long int heldout, long int retrain,
+			     long int heldout, long int retrain,				
 				 int saveMSE, int* itercnt, int maxEpochs, double* MSE)
      /* docs: Training vectors (x-part) */
      /* label: Training labels/value (y-part, zero if test example for
@@ -1251,6 +1251,11 @@ EXPORT long optimize_to_convergence(DOC **docs, long int *label, long int totdoc
   qp.opt_low=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
   qp.opt_up=(double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
   weights=(double *)my_malloc(sizeof(double)*(totwords+1));
+
+  double* primal = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  double* dual = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
+  long*   nonoptimal = (long *)my_malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
+  double* buffer = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
 
   choosenum=0;
   inconsistentnum=0;
@@ -1407,7 +1412,9 @@ EXPORT long optimize_to_convergence(DOC **docs, long int *label, long int totdoc
     if(retrain != 2) {
       optimize_svm(docs,label,unlabeled,inconsistent,0.0,chosen,active2dnum,
 		   model,totdoc,working2dnum,choosenum,a,lin,c,learn_parm,
-		   aicache,kernel_parm,&qp,&epsilon_crit_org);
+		   aicache,kernel_parm,&qp,
+		  (iteration==1), primal, dual, nonoptimal, buffer,
+		  &epsilon_crit_org);
     }
 
     if(verbosity>=2) t3=get_runtime();
@@ -1616,6 +1623,7 @@ EXPORT long optimize_to_convergence(DOC **docs, long int *label, long int totdoc
   free(qp.opt_low);
   free(qp.opt_up);
   free(weights);
+  free(primal); free(dual); free(nonoptimal); free(buffer);
 
   learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
   model->maxdiff=(*maxdiff);
@@ -1658,6 +1666,11 @@ EXPORT long optimize_to_convergence_sharedslack(DOC **docs, long int *label,
   double epsilon_crit_org,maxsharedviol; 
   double bestmaxdiff;
   long   bestmaxdiffiter,terminate;
+  
+  double* primal = (double *)my_malloc(sizeof(double)*learn_parm->svm_maxqpsize);
+  double* dual = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2));
+  long* nonoptimal = (long *)my_malloc(sizeof(long)*(learn_parm->svm_maxqpsize));
+  double* buffer = (double *)my_malloc(sizeof(double)*((learn_parm->svm_maxqpsize + 1) * 2 * (learn_parm->svm_maxqpsize + 1) * 2 + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize + 2 * (learn_parm->svm_maxqpsize + 1) * 2 + 2 * learn_parm->svm_maxqpsize + 1 + 2 * learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize + learn_parm->svm_maxqpsize*learn_parm->svm_maxqpsize));
 
   double *selcrit;  /* buffer for sorting */        
   CFLOAT *aicache;  /* buffer to keep one row of hessian */
@@ -1864,7 +1877,9 @@ EXPORT long optimize_to_convergence_sharedslack(DOC **docs, long int *label,
     if(jointstep) learn_parm->biased_hyperplane=1;
     optimize_svm(docs,label,unlabeled,ignore,eq_target,chosen,active2dnum,
 		 model,totdoc,working2dnum,choosenum,a,lin,c,learn_parm,
-		 aicache,kernel_parm,&qp,&epsilon_crit_org);
+		 aicache,kernel_parm,&qp,
+		(iteration==1), primal, dual, nonoptimal, buffer,
+		&epsilon_crit_org);
     learn_parm->biased_hyperplane=0;
 
     for(jj=0;(i=working2dnum[jj])>=0;jj++)   /* recompute sums of alphas */
@@ -2048,6 +2063,7 @@ EXPORT long optimize_to_convergence_sharedslack(DOC **docs, long int *label,
   free(qp.opt_low);
   free(qp.opt_up);
   free(weights);
+  free(primal); free(dual); free(nonoptimal); free(buffer);
 
   learn_parm->epsilon_crit=epsilon_crit_org; /* restore org */
   model->maxdiff=(*maxdiff);
@@ -2113,6 +2129,7 @@ EXPORT void optimize_svm(DOC **docs, long int *label, long int *unlabeled,
 		  long int totdoc, long int *working2dnum, long int varnum, 
 		  double *a, double *lin, double *c, LEARN_PARM *learn_parm, 
 		  CFLOAT *aicache, KERNEL_PARM *kernel_parm, QP *qp, 
+		  int firstcall, double* primal, double* dual, long* nonoptimal, double* buffer,
 		  double *epsilon_crit_target)
      /* Do optimization on the working set. */
 {
@@ -2131,6 +2148,7 @@ EXPORT void optimize_svm(DOC **docs, long int *label, long int *unlabeled,
     /* call the qp-subsolver */
     a_v=optimize_qp(qp,epsilon_crit_target,
 		    learn_parm->svm_maxqpsize,
+			firstcall, primal, dual, nonoptimal, buffer,
 		    &(model->b),   /* in case the optimizer gives us */
                                    /* the threshold for free. otherwise */
                                    /* b is calculated in calculate_model. */

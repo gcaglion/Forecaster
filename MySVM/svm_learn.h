@@ -49,10 +49,7 @@ EXPORT double compute_objective_function(double *, double *, double *, double,
 EXPORT void   clear_index(long *);
 EXPORT void   add_to_index(long *, long);
 EXPORT long   compute_index(long *,long, long *);
-EXPORT void   optimize_svm(DOC **, long *, long *, long *, double, long *, long *,
-		    MODEL *, 
-		    long, long *, long, double *, double *, double *, 
-		    LEARN_PARM *, CFLOAT *, KERNEL_PARM *, QP *, double *);
+EXPORT void   optimize_svm(DOC **, long *, long *, long *, double, long *, long *, MODEL *, long, long *, long, double *, double *, double *, LEARN_PARM *, CFLOAT *, KERNEL_PARM *, QP *, int, double *, double *, long *, double *, double *);
 EXPORT void   compute_matrices_for_optimization(DOC **, long *, long *, long *, double,
 					 long *,
 					 long *, long *, MODEL *, double *, 

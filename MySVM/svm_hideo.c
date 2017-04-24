@@ -50,14 +50,12 @@ long verbosity;
 # define EPSILON_HIDEO          1E-20
 # define EPSILON_EQ             1E-5
 
-double *optimize_qp(QP *, double *, long, double *, LEARN_PARM *);
-double *primal=0,*dual=0;
+double *optimize_qp(QP *, double *, long, double *, int, double *, long *, double *, double *, LEARN_PARM *);
 long   precision_violations=0;
 double opt_precision=DEF_PRECISION;
 long   maxiter=DEF_MAX_ITERATIONS;
 double lindep_sensitivity=DEF_LINDEP_SENSITIVITY;
-double *buffer;
-long   *nonoptimal;
+
 
 long  smallroundcount=0;
 long  roundnumber=0;
@@ -84,10 +82,15 @@ double calculate_qp_objective(long, double *, double *, double *);
 
 
 
-double *optimize_qp(qp,epsilon_crit,nx,threshold,learn_parm)
+double *optimize_qp(qp,epsilon_crit,nx,firstcall,primal,dual,nonoptimal,buffer,threshold,learn_parm)
 QP *qp;
 double *epsilon_crit;
 long nx; /* Maximum number of variables in QP */
+int firstcall;
+double *primal;
+double *dual;
+long   *nonoptimal;
+double *buffer;
 double *threshold; 
 LEARN_PARM *learn_parm;
 /* start the optimizer and return the optimal values */
@@ -102,13 +105,13 @@ LEARN_PARM *learn_parm;
 
   roundnumber++;
 
-  if(!primal) { /* allocate memory at first call */
+  if(firstcall) { /* allocate memory at first call */
+/*
     primal=(double *)my_malloc(sizeof(double)*nx);
     dual=(double *)my_malloc(sizeof(double)*((nx+1)*2));
     nonoptimal=(long *)my_malloc(sizeof(long)*(nx));
-    buffer=(double *)my_malloc(sizeof(double)*((nx+1)*2*(nx+1)*2+
-					       nx*nx+2*(nx+1)*2+2*nx+1+2*nx+
-					       nx+nx+nx*nx));
+    buffer=(double *)my_malloc(sizeof(double)*((nx+1)*2*(nx+1)*2+nx*nx+2*(nx+1)*2+2*nx+1+2*nx+nx+nx+nx*nx));
+*/
     (*threshold)=0;
     for(i=0;i<nx;i++) {
       primal[i]=0;
