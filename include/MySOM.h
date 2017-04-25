@@ -11,11 +11,6 @@
 #define LR_DECAY_STEPPED 2
 #define LR_DECAY_EXP 3
 
-//-- Weights Logging parameters (specific to SOM?)
-typedef struct{
-	DWORD ProcessId; DWORD  ThreadId; int TestId; int FromNeuron; int ToNeuron; double Weight;
-} tSOMWeight;
-
 //-- SOM engine specific parameters
 typedef struct {
 	int InputCount;

@@ -34,6 +34,20 @@ create table CoreImage_SOM(
 );
 alter table CoreImage_SOM add constraint CoreImage_SOM_PK primary key( ProcessId, ThreadId, FromNeuron, ToNeuron );
 
+drop table CoreImage_SVM;
+create table CoreImage_SVM(
+	ProcessId number,
+	ThreadId number,
+	TestId number,
+	LayerId number,
+	CoreId number,
+	DatasetId number,
+	SVId number,
+	VarId number,
+	Weight number
+);
+alter table CoreImage_SVM add constraint CoreImage_SVM_PK primary key( ProcessId, ThreadId, SVId, VarId );
+
 drop table TesterParms;
 create table TesterParms(
 	ProcessId number,
@@ -144,6 +158,26 @@ create table CoreParms_SOM(
 );
 alter table CoreParms_SOM add primary key( ProcessId, LayerId, TestId, CoreId );
 
+drop table CoreParms_SVM;
+create table CoreParms_SVM(
+	ProcessId number,
+	TestId number, 
+	LayerId number,
+	CoreId number,
+	InputCount number,
+	MaxEpochs number, 
+	C number,
+	Epsilon number,
+	IterToShrink number,
+	KernelType number,
+	PolyDegree number,
+	RBFGamma number,
+	CoefLin number,
+	CoefConst number,
+	KernelCacheSize number
+);
+alter table CoreParms_SVM add primary key( ProcessId, LayerId, TestId, CoreId );
+
 drop table MyLog_MSE;
 create table MyLog_MSE(
 	ProcessId number,
@@ -196,3 +230,17 @@ create table CoreLogs_NN_SCGD(
 	comp number
 );
 alter table CoreLogs_NN_SCGD add primary key(ProcessId, ThreadId, Epoch, BPid, K);
+
+drop   table CoreLogs_SVM;
+create table CoreLogs_SVM(
+	ProcessId number,
+	ThreadId number,
+	SVcount number,
+	ThresholdB number,
+	maxdiff number,
+	L1loss number,
+	WVnorm number,
+	LEVnorm number,
+	KEvCount number
+);
+alter table CoreLogs_SVM add primary key(ProcessId, ThreadId);

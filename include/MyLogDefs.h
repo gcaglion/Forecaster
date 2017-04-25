@@ -11,6 +11,50 @@
 #define LOG_TO_TEXT   1
 #define LOG_TO_ORCL	  2
 
+//================================================= NN-specific =============================================================================
+//-- NN Weights Logging parameters
+typedef struct {
+	int ProcessId; int ThreadId;  int TimeStep;
+	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
+} tNNWeight;
+//-- Internals Logging parameters
+typedef struct {
+	int ProcessId; int ThreadId; int TimeStep;
+	// Qing stuff
+	int sigma10; double ro10; double D10W; double adzev10; int hcp10; int sigma21; double ro21; double adzev21N; double norm_e;
+	// SCGD stuff
+	int Epoch; int BPid; int K;
+	double delta; double mu; double alpha; double beta; double lambda; double lambdau; double rnorm; double enorm; double comp;
+} tLogInt;
+//============================================================================================================================================
+
+//================================================= SOM-specific =============================================================================
+//-- SOM Weights Logging parameters
+typedef struct {
+	DWORD ProcessId; DWORD  ThreadId; int TestId; int FromNeuron; int ToNeuron; double Weight;
+} tSOMWeight;
+//============================================================================================================================================
+
+//================================================= SVM-specific =============================================================================
+//-- SVM Weights Logging parameters
+typedef struct {
+	DWORD ProcessId; DWORD  ThreadId; int TestId; int SVId; int VarId; double Weight;
+} tSVMWeight;
+//-- SVM training results
+typedef struct {
+	int ProcessId;
+	int ThreadId;
+	int SVcount;
+	double ThresholdB;
+	double maxdiff;
+	double L1loss;
+	double WVnorm;	// Norm of weight vector
+	double LEVnorm;	// Norm of longest example vector
+	int KEvCount;	// Number of kernel evaluations
+} tSVMResult;
+//============================================================================================================================================
+
+//================================================= Common structures========================================================================
 typedef struct sDebugInfo {
 	int DebugLevel;		//-- 0:Nothing ; 1:Screen-Only ; 2:File-Only ; 3:File+Screen
 	int DebugDest;		//-- ORCL | TEXT
@@ -39,8 +83,6 @@ typedef struct sDebugInfo {
 	}
 #endif
 } tDebugInfo;
-
-//=== tLogMSE and tLogRUN should be common across different Engines
 //-- MSE Logging parameters
 typedef struct{
 	int ProcessId;
@@ -68,37 +110,25 @@ typedef struct{
 	double ErrorP;
 	int NetProcessId; int NetThreadId; 
 } tLogRUN;
-//-- Internals Logging parameters
-typedef struct{
-	int ProcessId; int ThreadId; int TimeStep; 
-	// Qing stuff
-	int sigma10; double ro10; double D10W; double adzev10; int hcp10; int sigma21; double ro21; double adzev21N; double norm_e;
-	// SCGD stuff
-	int Epoch; int BPid; int K;
-	double delta; double mu; double alpha; double beta; double lambda; double lambdau; double rnorm; double enorm; double comp;
-} tLogInt;
-//===
-
-//-- NN Weights Logging parameters
-typedef struct {
-	int ProcessId; int ThreadId;  int TimeStep;
-	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
-} tNNWeight;
-
 //-- Core Logs
 typedef struct sCoreLog {
 	//-- common
 	int				ActualEpochs;		// If training was stopped before reaching MaxEpochs (because TargetMSE was reached, or because of Training Divergence), this saves the actual Epochs run
 	tLogMSE*		MSEOutput;		// [Epoch]
 	tLogRUN*		RunOutput;		// [pos]
+	
 	//-- NN-specific
-	tNNWeight***	FinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
+	tNNWeight***	NNFinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
 	int				IntCnt;	// number of IntP elements
 	tLogInt*		IntP;	// [TimeStep]
+
+	//-- SOM-specific
+	tSOMWeight**	SOMFinalW;	// [FromNeuron][ToNeuron] -- this is saved only once at the end of the training
+
 	//-- SVM-specific
-	double ThresholdB;
-	int SVcount;
-	double* alphaY;
-	double** SV;
+	tSVMWeight** SVMWeight;	// [SVid][VarId]
+	tSVMResult SVMResult;
 } tCoreLog;
+//===========================================================================================================================================
+
 

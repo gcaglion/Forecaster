@@ -6,6 +6,7 @@
 
 #include <MyNN.h>	// temporary, to allow saveinternalsdata
 #include <MySOM.h>
+#include <MySVM.h>
 
 
 //-- Save MSE and Run data should be common across engines
@@ -25,12 +26,15 @@ __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugPa
 //--
 __declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, NN_Parms* NNParms);
 __declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SOM_Parms* SOMParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SVM_Parms* SVMParms);
 //--
 __declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight);
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
+__declspec(dllexport) int __stdcall InsertCoreImage_SVM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight);
 //--
 __declspec(dllexport) int __stdcall InsertCoreLogs_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs);
 __declspec(dllexport) int __stdcall InsertCoreLogs_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, SOM_Logs* SOMLogs);
+__declspec(dllexport) int __stdcall InsertCoreLogs_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tCoreLog* SVMLogs);
 //--
 __declspec(dllexport) int __stdcall BulkMSEInsert(tDebugInfo* DebugParms, int pEngineType, int* pInsertCount, tLogMSE* pMSELog);
 __declspec(dllexport) int __stdcall BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount, int pHistoryLen, tLogRUN* RunData);

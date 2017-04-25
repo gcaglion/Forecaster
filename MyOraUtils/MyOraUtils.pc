@@ -306,6 +306,36 @@ EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, in
 	return 0;
 
 }
+EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SVM_Parms* SVMParms) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) {
+			printf("Ora_InsertCoreParms_SVM() could not connect to Log Database...\n");
+			return -1;
+		}
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+	//-- Builds Insert statement
+	sprintf(&stmt[0], "insert into CoreParms_SVM	(ProcessId, TestId, LayerId, CoreId, InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize)\
+												 values(%d, %d, %d, %d, %d, %d, %f, %f, %d, %d, %d, %f, %f, %f, %d)",\
+												pid, pTestId, pLayerId, pCoreId, SVMParms->InputCount, SVMParms->MaxEpochs, SVMParms->C, SVMParms->epsilon, SVMParms->svmIterToShrink, SVMParms->KernelType, SVMParms->PolyDegree, SVMParms->RBFGamma, SVMParms->CoefLin, SVMParms->CoefConst, SVMParms->KernelCacheSize);
+
+	//-- Executes Insert statements
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL EXECUTE IMMEDIATE : stmt;
+	if (sqlca.sqlcode != 0) {
+		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "Ora_InsertCoreParms_SVM() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	return 0;
+
+}
+
 //--
 EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight) {
 	EXEC SQL BEGIN DECLARE SECTION;
@@ -525,6 +555,109 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, int pLayerI
 	return 0;
 
 }
+EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	int i, sv, var;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	int vInsertCount = (SVMParms->InputCount+1)*(SVMResult->SVcount-1);	// +1 is for alpha
+	int* vProcessId;
+	int* vThreadId;
+	int* vTestId;
+	int* vLayerId;
+	int* vCoreId;
+	int* vDatasetId;
+	int* vSVId;
+	int* vVarId;
+	double* vWeight;
+	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
+	int int_type = 3;	// 
+	unsigned int dbl_len = sizeof(double);
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_InsertCoreImage_SVM() could not connect to Log Database...\n");
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	vProcessId = (int*)malloc(vInsertCount * sizeof(int));
+	vThreadId = (int*)malloc(vInsertCount * sizeof(int));
+	vTestId = (int*)malloc(vInsertCount * sizeof(int));
+	vLayerId = (int*)malloc(vInsertCount * sizeof(int));
+	vCoreId = (int*)malloc(vInsertCount * sizeof(int));
+	vDatasetId = (int*)malloc(vInsertCount * sizeof(int));
+	vSVId = (int*)malloc(vInsertCount * sizeof(int));
+	vVarId = (int*)malloc(vInsertCount * sizeof(int));
+	vWeight = (double*)malloc(vInsertCount * sizeof(double));
+
+	i = 0;
+	for (sv = 1; sv < SVMResult->SVcount; sv++) {
+		for (var = 0; var <= SVMParms->InputCount; var++) {	// +1 is for alpha
+			vProcessId[i] = SVMWeight[sv][var].ProcessId;
+			vThreadId[i] = SVMWeight[sv][var].ThreadId;
+			vTestId[i] = pTestId;
+			vLayerId[i] = pLayerId;
+			vCoreId[i] = pCoreId;
+			vDatasetId[i] = pDatasetId;
+			vSVId[i] = SVMWeight[sv][var].SVId;
+			vVarId[i] = SVMWeight[sv][var].VarId;
+			vWeight[i] = SVMWeight[sv][var].Weight;
+			i++;
+		}
+	}
+
+	//-- Then, Build the Insert statement
+	sprintf(&stmt[0], "insert into CoreImage_SVM (ProcessId, ThreadId, TestId, LayerId, CoreId, DatasetId, SVId, VarId, Weight)");
+	strcat(stmt, " values(:WSVM01, :WSVM02, :WSVM03, :WSVM04, :WSVM05, :WSVM06, :WSVM07, :WSVM08, :WSVM09)");
+
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'WSVM';
+	EXEC SQL SET DESCRIPTOR 'WSVM' COUNT = 9;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 1 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 2 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 3 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 4 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 5 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 6 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 7 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 8 TYPE = :int_type;
+	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 9 TYPE = :dbl_type;
+
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 1 DATA = : vProcessId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 2 DATA = : vThreadId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 3 DATA = : vTestId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 4 DATA = : vLayerId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 5 DATA = : vCoreId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 6 DATA = : vDatasetId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 7 DATA = : vSVId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 8 DATA = : vVarId;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WSVM' VALUE 9 DATA = : vWeight;
+
+	EXEC SQL PREPARE DynWSVMs FROM : stmt;
+	EXEC SQL FOR : vInsertCount EXECUTE DynWSVMs USING DESCRIPTOR 'WSVM';
+
+	if (sqlca.sqlcode != 0) {
+		LogWrite_C(DebugParms, LOG_ERROR, "Ora_InsertCoreImage_SVM() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	EXEC SQL DEALLOCATE DESCRIPTOR 'WSVM';
+
+
+	//-- free()s
+	free(vProcessId);
+	free(vThreadId);
+	free(vTestId);
+	free(vLayerId);
+	free(vCoreId);
+	free(vDatasetId);
+	free(vSVId);
+	free(vVarId);
+	free(vWeight);
+
+	return 0;
+
+}
 //--
 EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
 	EXEC SQL BEGIN DECLARE SECTION;
@@ -652,8 +785,35 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertCoreLogs_SOM(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
+EXPORT int __stdcall Ora_InsertCoreLogs_SOM(tDebugInfo* pDebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
 	return 0;
+}
+EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* SVMResult) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) {
+			printf("Ora_InsertCoreLogs_SVM() could not connect to Log Database...\n");
+			return -1;
+		}
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+	//-- Builds Insert statement
+	sprintf(&stmt[0], "insert into CoreLogs_SVM (ProcessId, ThreadId, SVCount, ThresholdB, maxdiff, L1loss, WVnorm, LEVnorm, KEvCount) values(%d, %d, %d, %f, %f, %f, %f, %f, %d)", SVMResult->ProcessId, SVMResult->ThreadId, SVMResult->SVcount, SVMResult->ThresholdB, SVMResult->maxdiff, SVMResult->L1loss, SVMResult->WVnorm, SVMResult->LEVnorm, SVMResult->KEvCount);
+
+	//-- Executes Insert statements
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL EXECUTE IMMEDIATE : stmt;
+	if (sqlca.sqlcode != 0) {
+		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "Ora_InsertCoreLogs_SVM() failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		return sqlca.sqlcode;
+	}
+	return 0;
+
 }
 //--
 EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount, tLogMSE* MSEData){
@@ -1412,7 +1572,7 @@ EXPORT int __stdcall Ora_LoadEngineData(tDebugInfo* DebugParms, int pEngineType,
 		while (TRUE) {
 			EXEC SQL FETCH c2 INTO vNeuronLevel, vFromNeuron, vToNeuron, vWeight;
 			if (sqlca.sqlcode == 0){
-				coreLog->FinalW[vNeuronLevel][vFromNeuron][vToNeuron].Weight = vWeight;
+				coreLog->NNFinalW[vNeuronLevel][vFromNeuron][vToNeuron].Weight = vWeight;
 			}
 			else if (sqlca.sqlcode == 1403){
 				break;

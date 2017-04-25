@@ -229,11 +229,17 @@ int Txt_InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pTestId, int pLa
 int Txt_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SOM_Parms* SOMParms) {
 	return 0;
 }
+int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SVM_Parms* SVMParms) {
+	return 0;
+}
 //--
 int Txt_InsertCoreImage_NN(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight) {
 	return 0;
 }
 int Txt_InsertCoreImage_SOM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SOM_Parms* SOMParms, tSOMWeight** SOMWeight) {
+	return 0;
+}
+int Txt_InsertCoreImage_SVM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** pCoreLog) {
 	return 0;
 }
 //--
@@ -243,6 +249,10 @@ int Txt_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, 
 int Txt_InsertCoreLogs_SOM(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
 	return 0;
 }
+int Txt_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* SVMResult) {
+	return 0;
+}
+
 //===
 
 //=== Log Retrieve functions, Text
@@ -347,6 +357,14 @@ __declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms,
 		return Txt_InsertCoreParms_SOM(pDebugParms, pid, pTestId, pLayerId, pCoreId, SOMParms);
 	}
 }
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SVM_Parms* SVMParms) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreParms_SVM(pDebugParms, pid, pTestId, pLayerId, pCoreId, SVMParms);
+	}
+	else {
+		return Txt_InsertCoreParms_SVM(pDebugParms, pid, pTestId, pLayerId, pCoreId, SVMParms);
+	}
+}
 //--
 __declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
@@ -364,6 +382,13 @@ __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms,
 		return Txt_InsertCoreImage_SOM(pDebugParms, pLayerId, pCoreId, pDatasetId, pTestId, SOMParms, SOMWeight);
 	}
 }
+__declspec(dllexport) int __stdcall InsertCoreImage_SVM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreImage_SVM(pDebugParms, pLayerId, pCoreId, pDatasetId, pTestId, SVMParms, SVMResult, SVMWeight);
+	} else {
+		return Txt_InsertCoreImage_SVM(pDebugParms, pLayerId, pCoreId, pDatasetId, pTestId, SVMParms, SVMResult, SVMWeight);
+	}
+}
 //--
 __declspec(dllexport) int __stdcall InsertCoreLogs_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
@@ -373,12 +398,20 @@ __declspec(dllexport) int __stdcall InsertCoreLogs_NN(tDebugInfo* pDebugParms, N
 		return Txt_InsertCoreLogs_NN(pDebugParms, NNParms->BP_Algo, NNLogs->IntCnt, NNLogs->IntP);
 	}
 }
-__declspec(dllexport) int __stdcall InsertCoreLogs_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, SOM_Logs* SOMLogs) {
+__declspec(dllexport) int __stdcall InsertCoreLogs_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tCoreLog* SOMLogs) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
 		return Ora_InsertCoreLogs_SOM(pDebugParms, NULL, SOMLogs->ActualEpochs, SOMLogs->IntP);
 	}
 	else {
 		return Txt_InsertCoreLogs_SOM(pDebugParms, NULL, SOMLogs->ActualEpochs, SOMLogs->IntP);
+	}
+}
+__declspec(dllexport) int __stdcall InsertCoreLogs_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tCoreLog* SVMLogs) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreLogs_SVM(pDebugParms, &SVMLogs->SVMResult);
+	}
+	else {
+		return Txt_InsertCoreLogs_SVM(pDebugParms, &SVMLogs->SVMResult);
 	}
 }
 //--

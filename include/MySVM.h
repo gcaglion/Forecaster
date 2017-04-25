@@ -43,23 +43,7 @@ typedef struct sSVMParms{
 	double CoefLin;			// -s
 	double CoefConst;		// -r
 	char CustomKernel[50];	// -u
-#ifdef __cplusplus
-	sSVMParms() {};
-	~sSVMParms() {};
-#endif
 } SVM_Parms;
-
-typedef struct {
-	int ProcessId; int ThreadId;  int TimeStep;
-	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
-} tSVMWeight;
-
-typedef struct {
-	int ActualEpochs;		// If training was stopped before reaching MaxEpochs (because TargetMSE was reached, or because of Training Divergence), this saves the actual Epochs run
-	tLogMSE* MSEOutput;		// [Epoch]
-	tLogRUN* RunOutput;		// [pos]
-	//tSVMWeight*** FinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
-} SVM_Logs;
 
 __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen);
 __declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV);

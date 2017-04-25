@@ -214,6 +214,10 @@ typedef struct model {
   double  *lin_weights;                       /* weights for linear case using
 						 folding */
   double  maxdiff;                            /* precision, up to which this model is accurate */
+  double L1loss;
+  double WVnorm;
+  double LEVnorm;
+  int KEvCount;
 
   int retcode;
 } MODEL;

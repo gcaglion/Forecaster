@@ -50,11 +50,11 @@ __declspec(dllexport) void __stdcall mallocNNLog(tCoreLog* coreLog, int levelsCn
 	//-- mallocs specific portions of coreLog (FinalW, IntP)
 
 	//-- FinalW
-	coreLog->FinalW = (tNNWeight***)malloc((levelsCnt - 1) * sizeof(tNNWeight**));
+	coreLog->NNFinalW = (tNNWeight***)malloc((levelsCnt - 1) * sizeof(tNNWeight**));
 	for (int l = 0; l < (levelsCnt - 1); l++) {
-		coreLog->FinalW[l] = (tNNWeight**)malloc(nodesCnt[l+1] * sizeof(tNNWeight*));
+		coreLog->NNFinalW[l] = (tNNWeight**)malloc(nodesCnt[l+1] * sizeof(tNNWeight*));
 		for (int fn = 0; fn < nodesCnt[l+1]; fn++) {
-			coreLog->FinalW[l][fn] = (tNNWeight*)malloc(nodesCnt[l] * sizeof(tNNWeight));
+			coreLog->NNFinalW[l][fn] = (tNNWeight*)malloc(nodesCnt[l] * sizeof(tNNWeight));
 		}
 	}
 	//-- IntP
@@ -64,11 +64,11 @@ __declspec(dllexport) void __stdcall freeNNLog(tCoreLog* coreLog, int levelsCnt,
 	//-- FinalW
 	for (int l = 0; l < (levelsCnt - 1); l++) {
 		for (int fn = 0; fn < nodesCnt[l + 1]; fn++) {
-			free(coreLog->FinalW[l][fn]);
+			free(coreLog->NNFinalW[l][fn]);
 		}
-		free(coreLog->FinalW[l]);
+		free(coreLog->NNFinalW[l]);
 	}
-	free(coreLog->FinalW);
+	free(coreLog->NNFinalW);
 	//-- IntP
 	free(coreLog->IntP);
 }
@@ -79,14 +79,14 @@ void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double
 	for (l = 0; l<(NNParms->LevelsCount-1); l++){
 		for (j = 0; j < NNParms->NodesCount[l+1]; j++){
 			for (i = 0; i < NNParms->NodesCount[l]; i++){
-				NNLog->FinalW[l][j][i].ProcessId = pid;
-				NNLog->FinalW[l][j][i].ThreadId = tid;
-				NNLog->FinalW[l][j][i].NeuronLevel = l;
-				NNLog->FinalW[l][j][i].FromNeuron = j;
-				NNLog->FinalW[l][j][i].ToNeuron = i;
-				NNLog->FinalW[l][j][i].Weight = W[l][t0][j][i];
+				NNLog->NNFinalW[l][j][i].ProcessId = pid;
+				NNLog->NNFinalW[l][j][i].ThreadId = tid;
+				NNLog->NNFinalW[l][j][i].NeuronLevel = l;
+				NNLog->NNFinalW[l][j][i].FromNeuron = j;
+				NNLog->NNFinalW[l][j][i].ToNeuron = i;
+				NNLog->NNFinalW[l][j][i].Weight = W[l][t0][j][i];
 				//-- Context neurons
-				if (l==0) NNLog->FinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
+				if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
 			}
 		}
 	}
@@ -1308,11 +1308,11 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 	MxData.NN = Malloc_NNMem(NNParms);
 	double* tmpSample = (double*)malloc(NNParms->NodesCount[0] * sizeof(double));
 
-	//-- 1. Load W*** from NNParms->FinalW[Level][FromN][ToN] 
+	//-- 1. Load W*** from NNParms->NNFinalW[Level][FromN][ToN] 
 	for (l = 0; l<NNParms->LevelsCount; l++){
 		for (j = 0; j<NNParms->NodesCount[l+1]; j++){
 			for (i = 0; i<NNParms->NodesCount[l]; i++){
-				MxData.NN.W[l][t0][j][i] = NNLogs->FinalW[l][j][i].Weight;
+				MxData.NN.W[l][t0][j][i] = NNLogs->NNFinalW[l][j][i].Weight;
 			}
 		}
 	}

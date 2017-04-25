@@ -589,57 +589,58 @@ int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, int pid, i
 	return 0;
 }
 int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId) {
-/*
+
+	//-- for each core, this performs 3 separate operations:
+	//-- 1. save cores parameters into CoreParms_<XXX>
+	//-- 2. save cores images     into CoreImage_<XXX> . For NN, image is defined by tNNWeight info; for SVM, image is defined by alphaY[] and SV[][]
+	//-- 3. save cores logs       into CoreLogs_<XXX>
+
+	tCore* core;
 	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
-	SOM_Parms* SOMParms = nullptr;	tSOMWeight*** SOMWeight = nullptr;
+	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
 	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
-	SVM_Parms* SVMParms = nullptr;	tSVMWeight*** SVMWeight = nullptr;
+	SVM_Parms* SVMParms = nullptr;	
 
 	for (int l = 0; l < pEngineParms->LayersCount; l++) {
 		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
-			switch (pEngineParms->CoreEngineType[l][n]) {
+			core = &pEngineParms->Core[l][n];
+			switch (core->CoreType) {
 			case ENGINE_NN:
-				NNParms = (NN_Parms*)pEngineParms->CoreSpecs[l][n];
+				NNParms = (NN_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
 				if (InsertCoreParms_NN(pDebugParms, pid, pTestId, l, n, NNParms) != 0) return -1;
 				//-- 2. save final image (weights) , for each dataset
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					NNWeight = ((NN_Logs*)pEngineParms->CoreLogs[l][n][d])->FinalW;
+					NNWeight = core->CoreLog[d].NNFinalW;
 					if (InsertCoreImage_NN(pDebugParms, l, n, d, pTestId, NNParms, NNWeight) != 0) return -1;
+					if (InsertCoreLogs_NN(pDebugParms, (NN_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 				}
 				break;
 			case ENGINE_GA:
 				break;
 			case ENGINE_SOM:
-				break;
-			case ENGINE_SVM:
-				break;
-			}
-		}
-	}
-*/
-	return 0;
-}
-int LogSave_CoreLogs(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms) {
-/*
-	for (int l = 0; l < pEngineParms->LayersCount; l++) {
-		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
-			switch (pEngineParms->CoreEngineType[l][n]) {
-			case ENGINE_NN:
+				SOMParms = (SOM_Parms*)core->CoreSpecs;
+				//-- 1. save engine parameters
+				if (InsertCoreParms_SOM(pDebugParms, pid, pTestId, l, n, SOMParms) != 0) return -1;
+				//-- 2. save final image (weights) , for each dataset
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					if (InsertCoreLogs_NN(pDebugParms, (NN_Parms*)pEngineParms->CoreSpecs[l][n], (NN_Logs*)pEngineParms->CoreLogs[l][n][d] ) != 0) return -1;
+					SOMWeight = core->CoreLog[d].SOMFinalW;
+					if (InsertCoreImage_SOM(pDebugParms, l, n, d, pTestId, SOMParms, SOMWeight) != 0) return -1;
 				}
 				break;
-			case ENGINE_GA:
-				break;
-			case ENGINE_SOM:
-				break;
 			case ENGINE_SVM:
+				SVMParms = (SVM_Parms*)core->CoreSpecs;
+				//-- 1. save engine parameters
+				if (InsertCoreParms_SVM(pDebugParms, pid, pTestId, l, n, SVMParms) != 0) return -1;
+				//-- 2. save final image (weights) , for each dataset
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					if (InsertCoreImage_SVM(pDebugParms, l, n, d, pTestId, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMWeight) != 0) return -1;
+					if (InsertCoreLogs_SVM(pDebugParms, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
+				}
 				break;
 			}
 		}
 	}
-*/
 	return 0;
 }
 //--
@@ -1128,7 +1129,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
 	if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, pid, pTestId) != 0) return -1;
 	if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
-	if (LogSave_CoreLogs(&fp.DebugParms, &fp.EngineParms, &fp.DataParms) != 0) return -1;
 	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 

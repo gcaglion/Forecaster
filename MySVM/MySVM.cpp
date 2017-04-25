@@ -19,29 +19,47 @@ int calcSVcnt(MODEL* model) {
 
 void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen) {
 	//-- mallocs specific portions of coreLog (alphaY, SV). This is not called by MyForecast(), as we can only know the number of SVs after training
-	coreLog->alphaY = MallocArray<double>(SVcnt);
-	coreLog->SV = MallocArray<double>(SVcnt, slen);
+	coreLog->SVMWeight = MallocArray<tSVMWeight>(SVcnt, slen + 1);	// +1 because we save alpha along with vars
+	//coreLog->alphaY = MallocArray<double>(SVcnt);
+	//coreLog->SV = MallocArray<double>(SVcnt, slen);
 }
 __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen) {
-	if (coreLog->SVcount > 0) {
-		FreeArray(coreLog->SVcount, coreLog->alphaY);
-		FreeArray(coreLog->SVcount, slen, coreLog->SV);
+	if (coreLog->SVMResult.SVcount > 0) {
+		FreeArray(coreLog->SVMResult.SVcount, slen, coreLog->SVMWeight);
 	}
 }
 
 void 	SaveFinalV(SVM_Parms* SVMParms, tCoreLog* SVMLog, DWORD pid, DWORD tid, MODEL* model) {
 	//-- replaces svm_common::write_model()
-	int i, j;
+	int sv, j;
 	SVECTOR* v;
 
-	SVMLog->SVcount = model->sv_num;
-	SVMLog->ThresholdB = model->b;
-	for (i = 1; i<model->sv_num; i++) {
-		for (v = model->supvec[i]->fvec; v; v = v->next) {
-			SVMLog->alphaY[i] = model->alpha[i] * v->factor;		//fprintf(modelfl, "%.32g ", model->alpha[i] * v->factor);
+	SVMLog->SVMResult.ProcessId = pid;
+	SVMLog->SVMResult.ThreadId = tid;
+	SVMLog->SVMResult.SVcount = model->sv_num;
+	SVMLog->SVMResult.ThresholdB = model->b;
+	SVMLog->SVMResult.maxdiff = model->maxdiff;
+	SVMLog->SVMResult.L1loss = model->L1loss;
+	SVMLog->SVMResult.WVnorm = model->WVnorm;
+	SVMLog->SVMResult.LEVnorm = model->LEVnorm;
+	SVMLog->SVMResult.KEvCount = model->KEvCount;
+
+	for (sv = 1; sv<model->sv_num; sv++) {
+		for (v = model->supvec[sv]->fvec; v; v = v->next) {
+			//-- SV 
 			for (j = 0; (v->words[j]).wnum; j++) {
-				SVMLog->SV[i][j] = (double)(v->words[j]).weight;		//fprintf(modelfl, "%ld:%.8g ", (long)(v->words[j]).wnum, (double)(v->words[j]).weight);
+				SVMLog->SVMWeight[sv][j].ProcessId = pid;
+				SVMLog->SVMWeight[sv][j].ThreadId = tid;
+				SVMLog->SVMWeight[sv][j].SVId = sv;
+				SVMLog->SVMWeight[sv][j].VarId=j;
+				SVMLog->SVMWeight[sv][j].Weight = (double)(v->words[j]).weight;
 			}
+			//-- alpha is saved at (samplelen+1) position
+			SVMLog->SVMWeight[sv][j].ProcessId = pid;
+			SVMLog->SVMWeight[sv][j].ThreadId = tid;
+			SVMLog->SVMWeight[sv][j].SVId = sv;
+			SVMLog->SVMWeight[sv][j].VarId = j;
+			SVMLog->SVMWeight[sv][j].Weight = model->alpha[sv] * v->factor;
 		}
 	}
 
@@ -281,8 +299,8 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 	//--
 	Mymodel->totwords = vSampleLen;
 	Mymodel->totdoc = 2*pSampleCount;
-	Mymodel->sv_num = SVMLogs->SVcount;
-	Mymodel->b = SVMLogs->ThresholdB;
+	Mymodel->sv_num = SVMLogs->SVMResult.SVcount;
+	Mymodel->b = SVMLogs->SVMResult.ThresholdB;
 	//--
 	Mymodel->supvec= (DOC **)malloc(sizeof(DOC *)*Mymodel->sv_num+2);
 	Mymodel->alpha = (double *)malloc(sizeof(double)*Mymodel->sv_num+2);
@@ -290,14 +308,14 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 	Mymodel->lin_weights = NULL;
 	//--
 
-	for (int sv = 1; sv < SVMLogs->SVcount; sv++) {
+	for (int sv = 1; sv < SVMLogs->SVMResult.SVcount; sv++) {
 		for (int i = 0; i < vSampleLen; i++) {
 			words[i].wnum = i+1;
-			words[i].weight = (float)SVMLogs->SV[sv][i];
+			words[i].weight = (float)SVMLogs->SVMWeight[sv][i].Weight;
 		}
 		words[vSampleLen].wnum = 0;
 		Mymodel->supvec[sv] = create_example(-1, 0, 0, 0.0, create_svector(words, "blah", 1.0));
-		Mymodel->alpha[sv] = SVMLogs->alphaY[sv];
+		Mymodel->alpha[sv] = SVMLogs->SVMWeight[sv][vSampleLen].Weight;
 	}
 	//--
 
@@ -337,7 +355,7 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 	}
 
 	if (Mymodel->kernel_parm.kernel_type == 0) free(Mymodel->lin_weights);
-	for (int sv = 1; sv < SVMLogs->SVcount; sv++) {
+	for (int sv = 1; sv < SVMLogs->SVMResult.SVcount; sv++) {
 		free(Mymodel->supvec[sv]->fvec->words);
 		free(Mymodel->supvec[sv]->fvec->userdefined);
 		free(Mymodel->supvec[sv]->fvec);
