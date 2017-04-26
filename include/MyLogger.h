@@ -24,9 +24,9 @@ __declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugPa
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid);
 __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms);
 //--
-__declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, NN_Parms* NNParms);
-__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SOM_Parms* SOMParms);
-__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SVM_Parms* SVMParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* NNParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* SOMParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* SVMParms);
 //--
 __declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight);
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
@@ -52,7 +52,6 @@ __declspec(dllexport) tLogRUN* __stdcall GetRunLogFromEngine(tEngineDef* pEngine
 __declspec(dllexport) int __stdcall WriteTestLog(tDebugInfo* DebugParms, tFXData* FXDataSource, tDataShape* DataInfo, tEngineDef* EngineParms, char* pTrainingStart, char* pTrainingEnd);
 __declspec(dllexport) int __stdcall WriteTestLog_EngineInfo(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, int pTestId);
 __declspec(dllexport) int __stdcall WriteTestLog_DataInfo(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pTestId);
-__declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* NNParms);
 __declspec(dllexport) int __stdcall BulkMSEInsert(tDebugInfo* DebugParms, int pEngineType, int* pInsertCount, tLogMSE* pMSELog);
 __declspec(dllexport) int __stdcall BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount, int pHistoryLen, tLogRUN* RunData);
 __declspec(dllexport) int __stdcall BulkWeightInsert_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight);

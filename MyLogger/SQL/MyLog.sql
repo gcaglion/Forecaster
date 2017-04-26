@@ -94,7 +94,6 @@ alter table EngineParms add constraint EngineParms_PK primary key( ProcessId );
 drop table CoreParms_NN;
 create table CoreParms_NN(
 	ProcessId number,
-	TestId number, 
 	LayerId number,
 	CoreId number,
 	InputCount number,
@@ -113,12 +112,11 @@ create table CoreParms_NN(
 	HCPbeta number,
 	Mu number
 );
-alter table CoreParms_NN add primary key( ProcessId, LayerId, TestId, CoreId );
+alter table CoreParms_NN add primary key( ProcessId, LayerId, CoreId );
 
 drop table CoreParms_GA;
 create table CoreParms_GA(
 	ProcessId number,
-	TestId number, 
 	LayerId number,
 	CoreId number,
 	InputCount number,
@@ -137,12 +135,11 @@ create table CoreParms_GA(
 	ADF_Tree_DataPoints_Ratio number, 
 	ADF_Leaf_FixedValues_Ratio number
 );
-alter table CoreParms_GA add primary key( ProcessId, LayerId, TestId, CoreId );
+alter table CoreParms_GA add primary key( ProcessId, LayerId, CoreId );
 
 drop table CoreParms_SOM;
 create table CoreParms_SOM(
 	ProcessId number,
-	TestId number, 
 	LayerId number,
 	CoreId number,
 	UseContext number,
@@ -154,12 +151,11 @@ create table CoreParms_SOM(
 	LRFunction number, 
 	BaseLR number
 );
-alter table CoreParms_SOM add primary key( ProcessId, LayerId, TestId, CoreId );
+alter table CoreParms_SOM add primary key( ProcessId, LayerId, CoreId );
 
 drop table CoreParms_SVM;
 create table CoreParms_SVM(
 	ProcessId number,
-	TestId number, 
 	LayerId number,
 	CoreId number,
 	InputCount number,
@@ -174,7 +170,7 @@ create table CoreParms_SVM(
 	CoefConst number,
 	KernelCacheSize number
 );
-alter table CoreParms_SVM add primary key( ProcessId, LayerId, TestId, CoreId );
+alter table CoreParms_SVM add primary key( ProcessId, LayerId, CoreId );
 
 drop table MyLog_MSE;
 create table MyLog_MSE(

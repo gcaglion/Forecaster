@@ -40,4 +40,4 @@ EXPORT double __stdcall TSKurtosis(int VLen, double* V);
 EXPORT double __stdcall TSTurningPoints(int VLen, double* V);
 EXPORT double __stdcall TSShannonEntropy(int VLen, double* V);
 EXPORT double __stdcall TSHistoricalVolatility(int VLen, double* V);
-EXPORT void __stdcall TSFCalc(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTSLen, double* pTS, tTSF* pTSF);
+EXPORT void   __stdcall CalcTSF(int TSFcnt, int* TSFid, tDataShape* pDataParms, int pTSLen, double* pTS, double* pTSF);

@@ -30,9 +30,6 @@
 #define NN_ACTIVATION_TANH 1	// y=tanh(x)				=> range is [-1 ÷ 1]
 #define NN_ACTIVATION_EXP4 2	// y = 1 / (1+exp(-4*x))	=> range is [ 0 ÷ 1]
 
-
-
-
 //-- NN engine core parameters
 typedef struct {
 	int InputCount;
@@ -55,19 +52,7 @@ typedef struct {
 	double HCPbeta;
 	double mu;	// used by QuickProp
 } NN_Parms;
-/*
-typedef struct {
-	int ActualEpochs;		// If training was stopped before reaching MaxEpochs (because TargetMSE was reached, or because of Training Divergence), this saves the actual Epochs run
-	tLogMSE* MSEOutput;		// [Epoch]
-	tLogRUN* RunOutput;		// [pos]
-	tNNWeight*** FinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
-	int IntCnt;				// number of IntP elements
-	tLogInt* IntP;			// [TimeStep]
-	double**** IntW;		// [NeuronLevel][TimeStep][FromNeuron][ToNeuron] -- this is saved at every cycle, after FF and before BP
-	double***  IntF;		// [NeuronLevel][TimeStep][Neuron]				 -- this is saved at every cycle, after FF and before BP
-	double***  Inta;		// [NeuronLevel][TimeStep][Neuron]				 -- this is saved at every cycle, after FF and before BP
-} NN_Logs;
-*/
+
 typedef struct {
 	//-- node levels -> [Levels][Time]
 	double*** a;

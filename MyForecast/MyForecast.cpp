@@ -605,7 +605,9 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 			case ENGINE_NN:
 				NNParms = (NN_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
-				if (InsertCoreParms_NN(pDebugParms, pid, pTestId, l, n, NNParms) != 0) return -1;
+				if (pTestId == 0) {
+					if (InsertCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
+				}
 				//-- 2. save final image (weights) , for each dataset
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					NNWeight = core->CoreLog[d].NNFinalW;
@@ -618,7 +620,9 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 			case ENGINE_SOM:
 				SOMParms = (SOM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
-				if (InsertCoreParms_SOM(pDebugParms, pid, pTestId, l, n, SOMParms) != 0) return -1;
+				if (pTestId == 0) {
+					if (InsertCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
+				}
 				//-- 2. save final image (weights) , for each dataset
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					SOMWeight = core->CoreLog[d].SOMFinalW;
@@ -628,7 +632,9 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 			case ENGINE_SVM:
 				SVMParms = (SVM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
-				if (InsertCoreParms_SVM(pDebugParms, pid, pTestId, l, n, SVMParms) != 0) return -1;
+				if (pTestId == 0) {
+					if (InsertCoreParms_SVM(pDebugParms, pid, l, n, SVMParms) != 0) return -1;
+				}
 				//-- 2. save final image (weights) , for each dataset
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					if (InsertCoreImage_SVM(pDebugParms, l, n, d, pTestId, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMWeight) != 0) return -1;
@@ -846,46 +852,6 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 	}
 }
 
-void CalcTSF(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTSLen, double* pTS, double* pTSF) {
-
-	double scaleM, scaleP;	// unused!
-
-	for (int t = 0; t < pEngineParms->TSFcnt; t++) {
-		switch (pEngineParms->TSFid[t]) {
-		case TSF_MEAN:
-			pTSF[pEngineParms->TSFid[t]] = TSMean(pTSLen, pTS);
-			break;
-		case TSF_MAD:
-			pTSF[pEngineParms->TSFid[t]] = TSMeanAbsoluteDeviation(pTSLen, pTS);
-			break;
-		case TSF_VARIANCE:
-			pTSF[pEngineParms->TSFid[t]] = TSVariance(pTSLen, pTS);
-			break;
-		case TSF_SKEWNESS:
-			pTSF[pEngineParms->TSFid[t]] = TSSkewness(pTSLen, pTS);
-			break;
-		case TSF_KURTOSIS:
-			pTSF[pEngineParms->TSFid[t]] = TSKurtosis(pTSLen, pTS);
-			break;
-		case TSF_TURNINGPOINTS:
-			pTSF[pEngineParms->TSFid[t]] = TSTurningPoints(pTSLen, pTS);
-			break;
-		case TSF_SHE:
-			pTSF[pEngineParms->TSFid[t]] = TSShannonEntropy(pTSLen, pTS);
-			break;
-		case TSF_HISTVOL:
-			pTSF[pEngineParms->TSFid[t]] = TSHistoricalVolatility(pTSLen, pTS);
-			break;
-		}
-	}
-
-	//-- TSF Scaling - Scaling across different TSFs ; REVIEW!!
-	if (pEngineParms->TSFcnt>0) {
-		DataScale(pEngineParms->TSFcnt, pTSF, -1, 1, pTSF, &scaleM, &scaleP);
-	}
-
-}
-
 void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId, double* scaleM, double* scaleP, double* baseVal, double* minVal, double** hd_trs, double** wd_bw, int pOOS, double** fd_trs, tLogRUN** runLog_o, double** oPredictedData) {
 	int d, i;
 
@@ -1081,8 +1047,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 0);
 		SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], 0);
 
-		CalcTSF(&fp.EngineParms, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
-		CalcTSF(&fp.EngineParms, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
+		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
+		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
 	}
 
 	DumpArrayD(wlen, wd[0], "c:/temp/wd0.txt");

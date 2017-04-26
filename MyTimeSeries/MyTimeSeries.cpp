@@ -709,48 +709,43 @@ EXPORT double __stdcall TSHistoricalVolatility(int VLen, double* V) {
 	return sqrt(s);
 }
 
-EXPORT void __stdcall TSFCalc(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTSLen, double* pTS, tTSF* pTSF) {
-	double* tmp_i = (double*)malloc(pEngineParms->TSFcnt * sizeof(double));
-	double* tmp_s = (double*)malloc(pEngineParms->TSFcnt * sizeof(double));
+EXPORT void __stdcall CalcTSF(int TSFcnt, int* TSFid, tDataShape* pDataParms, int pTSLen, double* pTS, double* pTSF) {
+	double scaleM, scaleP;	// unused!
 
-	for (int t = 0; t < pEngineParms->TSFcnt; t++) {
-		switch (pEngineParms->TSFid[t]) {
+	for (int t = 0; t < TSFcnt; t++) {
+		switch (TSFid[t]) {
 		case TSF_MEAN:
-			pTSF[pEngineParms->TSFid[t]].Data = TSMean(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSMean(pTSLen, pTS);
 			break;
 		case TSF_MAD:
-			pTSF[pEngineParms->TSFid[t]].Data = TSMeanAbsoluteDeviation(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSMeanAbsoluteDeviation(pTSLen, pTS);
 			break;
 		case TSF_VARIANCE:
-			pTSF[pEngineParms->TSFid[t]].Data = TSVariance(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSVariance(pTSLen, pTS);
 			break;
 		case TSF_SKEWNESS:
-			pTSF[pEngineParms->TSFid[t]].Data = TSSkewness(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSSkewness(pTSLen, pTS);
 			break;
 		case TSF_KURTOSIS:
-			pTSF[pEngineParms->TSFid[t]].Data = TSKurtosis(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSKurtosis(pTSLen, pTS);
 			break;
 		case TSF_TURNINGPOINTS:
-			pTSF[pEngineParms->TSFid[t]].Data = TSTurningPoints(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSTurningPoints(pTSLen, pTS);
 			break;
 		case TSF_SHE:
-			pTSF[pEngineParms->TSFid[t]].Data = TSShannonEntropy(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSShannonEntropy(pTSLen, pTS);
 			break;
 		case TSF_HISTVOL:
-			pTSF[pEngineParms->TSFid[t]].Data = TSHistoricalVolatility(pTSLen, pTS);
+			pTSF[TSFid[t]] = TSHistoricalVolatility(pTSLen, pTS);
 			break;
 		}
-		tmp_i[t] = pTSF[pEngineParms->TSFid[t]].Data;
 	}
 
 	//-- TSF Scaling - Scaling across different TSFs ; REVIEW!!
-	if (pEngineParms->TSFcnt>0) {
-		DataScale(pEngineParms->TSFcnt, tmp_i, pTSF->ScaleMin, pTSF->ScaleMax, tmp_s, &pTSF->ScaleM, &pTSF->ScaleP);
-		for (int i = 0; i< pEngineParms->TSFcnt; i++) pTSF[i].Data_S = tmp_s[i];
+	if (TSFcnt>0) {
+		DataScale(TSFcnt, pTSF, -1, 1, pTSF, &scaleM, &scaleP);
 	}
-	//-----
 
-	free(tmp_i); free(tmp_s);
 }
 
 EXPORT int __stdcall FXDataCompact(char* INfilename, int INtimeframe, char* OUTfilename, int OUTtimeframe) {
