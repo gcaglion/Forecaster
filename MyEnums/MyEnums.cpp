@@ -96,7 +96,7 @@ __declspec(dllexport) int __stdcall getEnumVal(char* edesc, char* eval) {
 	}
 	else if (strcmp(edesc, "DATASOURCE.SOURCETYPE") == 0) {
 	}
-	else if (strcmp(edesc, "TESTDATA.DATATRANSFORMATION") == 0) {
+	else if (strcmp(edesc, "DATAPARMS.DATATRANSFORMATION") == 0) {
 		if (strcmp(eval, "DT_NONE") == 0) return DT_NONE;
 		if (strcmp(eval, "DT_DELTA") == 0) return DT_DELTA;
 		if (strcmp(eval, "DT_LOG") == 0) return DT_LOG;
@@ -111,7 +111,7 @@ __declspec(dllexport) int __stdcall getEnumVal(char* edesc, char* eval) {
 		if (strcmp(eval, "VOLUME") == 0) return VOLUME;
 		if (strcmp(eval, "OTHER") == 0) return OTHER;
 	}
-	else if (strcmp(edesc, "TESTDATA.TSFEATURES") == 0) {
+	else if (strcmp(edesc, "DATAPARMS.TSFEATURES") == 0) {
 		if (strcmp(eval, "TSF_MEAN") == 0) return TSF_MEAN;
 		if (strcmp(eval, "TSF_MAD") == 0) return TSF_MAD;
 		if (strcmp(eval, "TSF_VARIANCE") == 0) return TSF_VARIANCE;

@@ -1088,6 +1088,9 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		CalcTSF(&fp.EngineParms, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
 	}
 
+	DumpArrayD(wlen, wd[0], "c:/temp/wd0.txt");
+	DumpArrayD(wlen, wd_trs[0], "c:/temp/wd_trs0.txt");
+
 	for (l = 0; l < fp.EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
 			switch (fp.EngineParms.EngineType) {
