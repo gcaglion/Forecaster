@@ -16,6 +16,8 @@
 /*                                                                      */
 /************************************************************************/
 
+#include <vld.h>
+
 # include "ctype.h"
 # include "svm_common.h"
 # include "kernel.h"           /* this contains a user supplied kernel */

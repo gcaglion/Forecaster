@@ -41,6 +41,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{04ED7492-1DBC-4647-84B3-602443797C54}"
 	ProjectSection(SolutionItems) = preProject
 		include\AlgoDB.h = include\AlgoDB.h
+		include\DataShape.h = include\DataShape.h
 		include\DBConnection.h = include\DBConnection.h
 		include\FileData.h = include\FileData.h
 		include\FXData.h = include\FXData.h

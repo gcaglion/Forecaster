@@ -201,7 +201,7 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms) {
 int Txt_InsertTesterParms(tDebugInfo* pDebugParms, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pTesterEngine, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName) {
 	return 0;
 }
-int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pTestId, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
+int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
 	char LogFileName[MAX_PATH];
 	FILE* LogFileHandler;
 
@@ -219,7 +219,7 @@ int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pTestId, int pData
 
 	return 0;
 }
-int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pTestId, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	return 0;
 }
 //--
@@ -275,7 +275,7 @@ __declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugPa
 		return Txt_InsertTesterParms(pDebugParms, pSimulationLen, pSimulationStart, pElapsedS, pTesterEngine, pDoTraining, pDoRun, pDataSourceType, pDataSourceFileName);
 	}
 }
-__declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid, int pTestId) {
+__declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid) {
 	int d;
 	char vDSFileName[MAX_PATH];
 	char vSymbol[10];
@@ -312,16 +312,16 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 
 	for (d = 0; d<pDataParms->DatasetsCount; d++) {
 		if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-			if (ret == 0) ret = Ora_InsertDataParms(pDebugParms, pid, pTestId, d, pDataParms->DataSourceType, vDSFileName, vSymbol, vTimeFrame, vIsFilled, vBarData[d], pDataParms->DataTransformation, pDataParms->wiggleRoom, pDataParms->HistoryLen, pDataParms->SampleLen, pDataParms->PredictionLen);
+			if (ret == 0) ret = Ora_InsertDataParms(pDebugParms, pid, d, pDataParms->DataSourceType, vDSFileName, vSymbol, vTimeFrame, vIsFilled, vBarData[d], pDataParms->DataTransformation, pDataParms->wiggleRoom, pDataParms->HistoryLen, pDataParms->SampleLen, pDataParms->PredictionLen);
 		}
 		else {
-			if (ret == 0) ret = Txt_InsertDataParms(pDebugParms, pid, pTestId, d, pDataParms->DataSourceType, vDSFileName, vSymbol, vTimeFrame, vIsFilled, vBarData[d], pDataParms->DataTransformation, pDataParms->wiggleRoom, pDataParms->HistoryLen, pDataParms->SampleLen, pDataParms->PredictionLen);
+			if (ret == 0) ret = Txt_InsertDataParms(pDebugParms, pid, d, pDataParms->DataSourceType, vDSFileName, vSymbol, vTimeFrame, vIsFilled, vBarData[d], pDataParms->DataTransformation, pDataParms->wiggleRoom, pDataParms->HistoryLen, pDataParms->SampleLen, pDataParms->PredictionLen);
 		}
 	}
 	free(vBarData);
 	return ret;
 }
-__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, int pTestId, tEngineDef* pEngineParms) {
+__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms) {
 	int vDecompLevel;
 	char Wtype[30];
 	if (pEngineParms->EngineType == ENGINE_WNN) {
@@ -334,10 +334,10 @@ __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugPa
 		strcpy(Wtype, "");
 	}
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineParms(pDebugParms, pid, pTestId, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
+		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
 	}
 	else {
-		return Txt_InsertEngineParms(pDebugParms, pid, pTestId, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
+		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
 	}
 }
 //--

@@ -21,8 +21,8 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms);
 
 //=== Log Write functions
 __declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pTesterEngine, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName);
-__declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid, int pTestId);
-__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, int pTestId, tEngineDef* pEngineParms);
+__declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid);
+__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms);
 //--
 __declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int pTestId, int pLayerId, int pCoreId, NN_Parms* NNParms);
 __declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int pTestId, int pLayerId, int pCoreId, SOM_Parms* SOMParms);

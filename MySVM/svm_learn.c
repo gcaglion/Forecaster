@@ -15,7 +15,7 @@
 /*   use of this software.                                             */
 /*                                                                     */
 /***********************************************************************/
-
+#include <vld.h>
 
 # include "svm_common.h"
 # include "svm_learn.h"
@@ -657,30 +657,31 @@ EXPORT void svm_learn_regression(DOC **docs, double *value, long int totdoc,
       printf("Number of SV: %ld (including %ld at upper bound)\n",
 	     model->sv_num-1,upsupvecnum);
     }
-	
-    if((verbosity>=1) && (!learn_parm->skip_final_opt_check)) {
-      loss=0;
-      model_length=0; 
-      for(i=0;i<totdoc;i++) {
-	if((lin[i]-model->b)*(double)label[i] < (-learn_parm->eps+(double)label[i]*c[i])-learn_parm->epsilon_crit)
-	  loss+=-learn_parm->eps+(double)label[i]*c[i]-(lin[i]-model->b)*(double)label[i];
-	model_length+=a[i]*label[i]*lin[i];
-      }
-      model_length=sqrt(model_length);
-      fprintf(stdout,"L1 loss: loss=%.5f\n",loss);
-      fprintf(stdout,"Norm of weight vector: |w|=%.5f\n",model_length);
-      example_length=estimate_sphere(model,kernel_parm); 
-	  levnorm = length_of_longest_document_vector(docs, totdoc, kernel_parm);
-      fprintf(stdout,"Norm of longest example vector: |x|=%.5f\n",levnorm);
-    }
-    if(verbosity>=1) {
-      printf("Number of kernel evaluations: %ld\n",kernel_cache_statistic);
-    }
   }
-  model->L1loss = loss;
-  model->WVnorm = model_length;
-  model->LEVnorm = levnorm;
-  model->KEvCount = kernel_cache_statistic;
+
+	if((!learn_parm->skip_final_opt_check)) {
+		loss=0;
+		model_length=0; 
+		for(i=0;i<totdoc;i++) {
+			if((lin[i]-model->b)*(double)label[i] < (-learn_parm->eps+(double)label[i]*c[i])-learn_parm->epsilon_crit)
+			loss+=-learn_parm->eps+(double)label[i]*c[i]-(lin[i]-model->b)*(double)label[i];
+			model_length+=a[i]*label[i]*lin[i];
+		}
+		model_length=sqrt(model_length);
+		example_length = estimate_sphere(model, kernel_parm);
+		levnorm = length_of_longest_document_vector(docs, totdoc, kernel_parm);
+		if(verbosity >= 1){
+			fprintf(stdout, "L1 loss: loss=%.5f\n", loss);
+			fprintf(stdout, "Norm of weight vector: |w|=%.5f\n", model_length);
+			fprintf(stdout, "Norm of longest example vector: |x|=%.5f\n", levnorm);
+		}
+	}
+	if(verbosity>=1) printf("Number of kernel evaluations: %ld\n",kernel_cache_statistic);
+	
+	model->L1loss = loss;
+	model->WVnorm = model_length;
+	model->LEVnorm = levnorm;
+	model->KEvCount = kernel_cache_statistic;
 
   if(learn_parm->alphafile[0])
     write_alphas(learn_parm->alphafile,a,label,totdoc);

@@ -775,7 +775,7 @@ EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pSimulati
 	}
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* pDebugParms, int pid, int pTestId, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
+EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = pDebugParms->DebugDB->DBCtx;
@@ -789,9 +789,9 @@ EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* pDebugParms, int pid, int
 	}
 	LogWrite_C(pDebugParms, LOG_INFO, "Ora_InsertDataParms() CheckPoint 2 - LogDB->DBCtx=%p , vCtx=%p\n", 2, pDebugParms->DebugDB->DBCtx, vCtx);
 
-	sprintf(&stmt[0], "insert into DataParms (ProcessId, DatasetId, TestId, DatasourceType, DatasourceFileName, Symbol, Timeframe, IsFilled, BarData, DataTransformation, WiggleRoom, HistoryLen, SampleLen, PredictionLen)\
-					  values				(%d,			%d,		%d,			%d,				'%s',					'%s',		'%s',		%d,			%d,		%d,					%f,			%d,			%d,			%d)", \
-		pid, pDatasetId, pTestId, pDSType, pDSFileName, pSymbol, pTimeFrame, pIsFilled, pBarData, pDataTransformation, pwiggleRoom, pHistoryLen, pSampleLen, pPredictionLen);
+	sprintf(&stmt[0], "insert into DataParms (ProcessId, DatasetId, DatasourceType, DatasourceFileName, Symbol, Timeframe, IsFilled, BarData, DataTransformation, WiggleRoom, HistoryLen, SampleLen, PredictionLen)\
+					  values				(%d,			%d,		%d,				'%s',					'%s',		'%s',		%d,			%d,		%d,					%f,			%d,			%d,			%d)", \
+		pid, pDatasetId, pDSType, pDSFileName, pSymbol, pTimeFrame, pIsFilled, pBarData, pDataTransformation, pwiggleRoom, pHistoryLen, pSampleLen, pPredictionLen);
 	/* EXEC SQL EXECUTE IMMEDIATE : stmt; */ 
 
 {
@@ -835,7 +835,7 @@ EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* pDebugParms, int pid, int
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pTestId, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = pDebugParms->DebugDB->DBCtx;
@@ -850,7 +850,7 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int
 	LogWrite_C(pDebugParms, LOG_INFO, "Ora_InsertEngineParms() CheckPoint 2 - LogDB->DBCtx=%p , vCtx=%p\n", 2, pDebugParms->DebugDB->DBCtx, vCtx);
 
 	//-- 1. Insert into EngineParms
-	sprintf(&stmt[0], "insert into EngineParms(ProcessId, TestId, EngineType, LayersCount, WNN_DecompLevel, WNN_WaveletType) values(%d, %d, %d, %d, %d, '%s')",	pid, pTestId, pEngineType, pLayersCount, pWNNDecompLevel, pWNNWaveletType);
+	sprintf(&stmt[0], "insert into EngineParms(ProcessId, EngineType, LayersCount, WNN_DecompLevel, WNN_WaveletType) values(%d, %d, %d, %d, '%s')",	pid, pEngineType, pLayersCount, pWNNDecompLevel, pWNNWaveletType);
 	/* EXEC SQL EXECUTE IMMEDIATE : stmt; */ 
 
 {

@@ -67,7 +67,6 @@ drop table DataParms;
 create table DataParms(
 	ProcessId number,
 	DatasetId number,
-	TestId number,
 	DataSourceType number,
 	DataSourceFileName varchar2(100),
 	Symbol varchar2(8),
@@ -80,18 +79,17 @@ create table DataParms(
 	SampleLen number,
 	PredictionLen number
 );
-alter table DataParms add constraint DataParms_PK primary key( ProcessId, DatasetId, TestId);
+alter table DataParms add constraint DataParms_PK primary key( ProcessId, DatasetId);
 
 drop table EngineParms;
 create table EngineParms(
 	ProcessId number,
-	TestId number,
 	EngineType number,
 	LayersCount number,
 	WNN_DecompLevel number,
 	WNN_WaveletType varchar2(16)
 );
-alter table EngineParms add constraint EngineParms_PK primary key( ProcessId, TestId );
+alter table EngineParms add constraint EngineParms_PK primary key( ProcessId );
 
 drop table CoreParms_NN;
 create table CoreParms_NN(

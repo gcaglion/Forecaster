@@ -140,12 +140,10 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 	//-- 4. set TSFs
 	int useTSF;
-	//ioParms->EngineParms.TSFid = MallocArray<int>(MAX_TSFCOUNT);
 	if (getParam(ioParms, "DataParms.UseTSFeatures", &useTSF) < 0) return -1;
 	if (useTSF > 0) {
 		ioParms->EngineParms.TSFcnt = getParam(ioParms, "DataParms.TSFeatures", &ioParms->EngineParms.TSFid, enumlist); if (ioParms->EngineParms.TSFcnt < 0) return -1;
-	}
-	else {
+	} else {
 		ioParms->EngineParms.TSFcnt = 0;
 	}
 
@@ -415,7 +413,6 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		CoreInfo = &ioParms->EngineParms.Core[0][1];
 		CoreInfo->CoreSpecs = new NN_Parms();
 		CoreInfo->CoreType = ENGINE_NN;
-		CoreInfo->CoreLog = MallocArray<tCoreLog>(ioParms->DataParms.DatasetsCount);
 		NNInfo = (NN_Parms*)ioParms->EngineParms.Core[0][1].CoreSpecs;
 		if (NNInfo->BP_Algo == BP_QING) ioParms->DataParms.PredictionLen = ioParms->DataParms.SampleLen;
 		NNInfo->InputCount = ioParms->DataParms.SampleLen;
@@ -547,8 +544,8 @@ void freeSampleTarget(tEngineDef* pEngineParms, tDataShape* pDataParms, double**
 }
 
 //--
-int LogSave_Data(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid, int pTestId) {
-	if (SaveTestLog_DataParms(pDebugParms, pDataParms, pid, pTestId) != 0) return -1;
+int LogSave_Data(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid) {
+	if (SaveTestLog_DataParms(pDebugParms, pDataParms, pid) != 0) return -1;
 	return 0;
 }
 int LogSave_MSE  (tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId) {
@@ -584,8 +581,8 @@ int LogSave_Run  (tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 
 	return 0;
 }
-int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, int pid, int pTestId){
-	if (SaveTestLog_EngineParms(pDebugParms, pid, pTestId, pEngineParms) != 0) return -1;
+int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, int pid){
+	if (SaveTestLog_EngineParms(pDebugParms, pid, pEngineParms) != 0) return -1;
 	return 0;
 }
 int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId) {
@@ -1127,10 +1124,12 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
 
-	if (LogSave_Data(&fp.DebugParms, &fp.DataParms, pid, pTestId) != 0) return -1;
-	if (LogSave_MSE (&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) !=0) return -1;
+	if (pTestId == 0) {
+		if (LogSave_Data(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+		if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, pid) != 0) return -1;
+	}
+	if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
 	if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
-	if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, pid, pTestId) != 0) return -1;
 	if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
 	LogCommit(&fp.DebugParms);
 
