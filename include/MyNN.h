@@ -109,7 +109,7 @@ typedef struct {
 	int		SCGD_progK;
 	int		ScreenPos;
 	HANDLE	ScreenMutex;
-	FILE*	fIntLog;
+	//FILE*	fIntLog;
 } NN_MxData;
 
 __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN);

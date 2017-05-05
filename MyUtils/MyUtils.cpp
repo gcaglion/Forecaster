@@ -194,6 +194,18 @@ EXPORT char* MyGetCurrentDirectory(){
 #define SHIFT_FORWARD 1
 #define SHIFT_BACKWARD 2
 
+EXPORT void		__stdcall ShuffleArray(int *array, size_t n) {
+	srand((unsigned int)time(NULL));
+	if (n > 1) {
+		size_t i;
+		for (i = 0; i < n - 1; i++)	{
+			size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+			int t = array[j];
+			array[j] = array[i];
+			array[i] = t;
+		}
+	}
+}
 
 EXPORT void			__stdcall ShiftArray(int direction, int ArrLen, double* Arr, double NewVal){
 	int j;

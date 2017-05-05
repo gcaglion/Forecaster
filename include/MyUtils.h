@@ -48,10 +48,10 @@ EXPORT char* MyGetCurrentDirectory();
 #define SHIFT_FORWARD 1
 #define SHIFT_BACKWARD 2
 
-//EXPORT void			__stdcall ShiftArray(int ArrLen, double* Arr, double NewVal, int pDelta, int pScale);
-EXPORT void			__stdcall ShiftArray(int direction, int ArrLen, double* Arr, double NewVal);
-EXPORT void			__stdcall InvertArray(int ArrLen, double* Arr);
-EXPORT int			__stdcall DumpArrayD(int ArrLen, double* Arr, char* fname);
+EXPORT void	__stdcall ShuffleArray(int *array, size_t n);
+EXPORT void	__stdcall ShiftArray(int direction, int ArrLen, double* Arr, double NewVal);
+EXPORT void	__stdcall InvertArray(int ArrLen, double* Arr);
+EXPORT int	__stdcall DumpArrayD(int ArrLen, double* Arr, char* fname);
 
 //------	Arrays Utilities	- End	--------------
 

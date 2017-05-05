@@ -237,7 +237,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		if (getParam(ioParms, "NNInfo.mu", &NNInfo->mu) < 0)											return -1;
 		if (getParam(ioParms, "NNInfo.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 
-		CoreInfo->TimeStepsCount = NNInfo->MaxEpochs;
+		CoreInfo->TimeStepsCount = NNInfo->MaxEpochs * ((NNInfo->BP_Algo==BP_SCGD)? ioParms->DataParms.SampleCount :1);
 		CoreInfo->SampleLen = NNInfo->InputCount;
 		CoreInfo->TargetLen = NNInfo->OutputCount;
 		CoreInfo->MSECount = NNInfo->MaxEpochs;

@@ -515,7 +515,7 @@ double E_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new){
 	return ret;
 }
 
-void BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN, int pNetId, int TestId, int SampleId, NN_MxData* Mx){
+void BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN, int pNetId, int TestId, NN_MxData* Mx){
 	int i;
 
 	//== L21
@@ -581,7 +581,7 @@ void BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN,
 	Mx->NN.adzev[10][0] += Mx->NN.Q_sigma[10] / Mx->NN.Q_ro[10] * Mx->NN.norm_e;
 }
 
-void BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, int SampleId, NN_MxData* Mx){
+void BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
 	//-- as per QuickProp2.pdf, 2.6.3	
 	int l, j, i;
 	
@@ -618,7 +618,7 @@ void BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms
 	}
 }
 
-void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, int SampleId, NN_MxData* Mx){
+void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
 	int k;
 	int maxk = NN->MaxEpochs;
 
@@ -766,8 +766,7 @@ void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 		//-- 9. if the steepest descent direction r>epsilon and success=true, then set k=k+1 and go to 2, else terminate and return w as the desired minimum
 		rnorm = Vnorm(NN->WeightsCountTotal, r);
 		SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, rnorm, Mx->NN.norm_e, comp);
-
-		fprintf(Mx->fIntLog, "%d, %d, %d, %d, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f \n", pid, tid, pEpoch, Mx->BPCount, 0, 0, k, delta, mu, alpha, beta, lambda, lambdau, rnorm, Mx->NN.norm_e, comp);
+		SaveMSEData(NNLogs, pid, tid, Mx->SCGD_progK, sqrt(Mx->NN.norm_e), 0);	// === TODO : sqrt(norm_e) is NOT the same as MSE! Also, MSE_V is missing!
 
 		k++; Mx->SCGD_progK++;
 	} while ((rnorm>epsilon) && (k<maxk));
@@ -775,7 +774,7 @@ void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	//-- save the total dW for this neuron into Mx->dW[l][t0][n]
 	VCopy(NN->WeightsCountTotal, TotdW, Mx->NN.LVV_dW[t0]);
 
-	fprintf(Mx->fIntLog, "%d, %d, %d, %d, %d, %d, %d, , , , , , , , , \n", pid, tid, pEpoch, Mx->BPCount, 0, 0, k);
+	//fprintf(Mx->fIntLog, "%d, %d, %d, %d, %d, %d, %d, , , , , , , , , \n", pid, tid, pEpoch, Mx->BPCount, 0, 0, k);
 
 	free(p); free(r); free(s); free(dW); free(TotdW); free(prev_r); free(bp); free(newW); free(dE0); free(dE1); free(dE); free(lp); free(sigmap);
 
@@ -783,7 +782,7 @@ void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	for (int l = 0; l < (NN->LevelsCount - 1); l++) MCopy(NN->NodesCount[l + 1], NN->NodesCount[l], Mx->NN.W[l][t1], Mx->NN.W[l][t0]);
 }
 
-void BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, int SampleId, NN_MxData* Mx){
+void BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
 	/*
 	int i, h, o;
 	double sk;
@@ -864,18 +863,18 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 	Mx->BPCount = 0; Mx->SCGD_progK = 0;
 }
 
-void Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN, tCoreLog* NNLogs, int pSampleId, NN_MxData* Mx){
+void Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
 	//-- All the BP routines should only set Mx->dW , and NOT change Mx->W
 
 	switch (NN->BP_Algo){
 	case BP_STD:
-		BP_Std(pid, tid, pEpoch, pDebugParms, NN, pSampleId, Mx);
+		BP_Std(pid, tid, pEpoch, pDebugParms, NN, Mx);
 		break;
 	case BP_QUICKPROP:
-		BP_QuickProp(pid, tid, pEpoch, pDebugParms, NN, pSampleId, Mx);
+		BP_QuickProp(pid, tid, pEpoch, pDebugParms, NN, Mx);
 		break;
 	case BP_SCGD:
-		BP_scgd(pid, tid, pEpoch, pDebugParms, NN, NNLogs, pSampleId, Mx);
+		BP_scgd(pid, tid, pEpoch, pDebugParms, NN, NNLogs, Mx);
 		break;
 	}
 
@@ -910,21 +909,17 @@ double CalcNetworkTSE(NN_Parms* NN, NN_MxData* Mx, double* pSample, double* pTar
 }
 
 void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
+
 	int s;
 	int epoch;
-	//int MaxEpochs = (NNParms->BP_Algo == BP_SCGD)?1:NNParms->MaxEpochs;
-	int MaxEpochs = NNParms->MaxEpochs;
 	double MSE_T=1, TSE_T;
 	double MSE_V, TSE_V=0;
 	double prevMSE_T;
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
+	int maxepochs = (NNParms->BP_Algo == BP_SCGD) ? 1 : NNParms->MaxEpochs;
 
-	FILE* fTLog = fopen("C:/temp/SCGD_log.csv", "w");
-	Mx->fIntLog = fTLog;
-	fprintf(fTLog, "pid, tid, Epoch, BPCount, level, node, k, delta, mu, alpha, beta, lambda, lambdau, rnorm, norm_e, comp \n");
-
-	for (epoch = 0; epoch < MaxEpochs; epoch++){
+	for (epoch = 0; epoch < maxepochs; epoch++){
 
 		//-- 0. reset BdW=0, TSE=0
 		InitBdW(NNParms, Mx);
@@ -936,7 +931,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 			TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 			//-- 1.2 Calc dW for every sample based on BP algorithm
-			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, s, Mx);
+			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 			//-- 1.3 BdW = BdW + dW
 			Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
 		}
@@ -960,15 +955,13 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		WaitForSingleObject(Mx->ScreenMutex, 10);
 		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
 		ReleaseMutex(Mx->ScreenMutex);
-		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, MSE_V);
+		if(NNParms->BP_Algo != BP_SCGD) SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, MSE_V);
 		if (MSE_T < NNParms->TargetMSE) break;
 	}
 	NNLogs->ActualEpochs = epoch;
 	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
 
 	LogWrite(pDebugParms, LOG_INFO, "NNTrain_Batch() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
-
-	fclose(fTLog);
 
 }
 
@@ -1000,7 +993,7 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 //			}
 
 			//-- 3. BackPropagation calculates dW 
-			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, s, Mx);
+			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 
 			//-- 4. Update Weights
 			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.dW);
