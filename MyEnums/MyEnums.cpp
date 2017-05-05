@@ -310,7 +310,7 @@ int CLFail(int p) {
 }
 __declspec(dllexport) int __stdcall	CLProcess(int argc, char* argv[], tForecastParms* iniParms) {
 	bool altIniFile = false;
-	iniParms->CLparamCount = argc-1;
+	iniParms->CLparamCount = argc;
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		char* pch = strchr(argv[p], '=');
 		if (pch == NULL || argv[p][0] != '-' || argv[p][1] != '-') return CLFail(p);
@@ -338,45 +338,52 @@ __declspec(dllexport) int __stdcall	CLProcess(int argc, char* argv[], tForecastP
 
 //-- single value (int, double, char*, enum)
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int* oparamVal) {
+	char* vparamName = _strdup(paramName);
+	UpperCase(vparamName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
-		if (strcmp(iniParms->CLparamName[p], paramName) == 0) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atoi(iniParms->CLparamVal[p]);
 			return 0;
 		}
 	}
+	free(vparamName);
 	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, double* oparamVal) {
+	char* vparamName = _strdup(paramName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
-		if (strcmp(iniParms->CLparamName[p], paramName) == 0) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atof(iniParms->CLparamVal[p]);
 			return 0;
 		}
 	}
+	free(vparamName);
 	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, char* oparamVal) {
+	char* vparamName = _strdup(paramName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
-		if (strcmp(iniParms->CLparamName[p], paramName) == 0) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(oparamVal, iniParms->CLparamVal[p]);
 			return 0;
 		}
 	}
+	free(vparamName);
 	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int* oparamVal, bool isenum) {
+	char* vparamName = _strdup(paramName);
 	char evals[100];
-	char pname[1000];
-	strcpy(pname, paramName);	// otherwise Uppercase() fails with access violation
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
-		if (strcmp(iniParms->CLparamName[p], pname) == 0) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(evals, iniParms->CLparamVal[p]);
-			(*oparamVal) = getEnumVal(pname, evals);
+			(*oparamVal) = getEnumVal(vparamName, evals);
 			return 0;
 		}
 	}
-	if (ReadParamFromFile(iniParms->IniFileName, pname, evals) != 0) return -1;
-	(*oparamVal) = getEnumVal(pname, evals);
+	if (ReadParamFromFile(iniParms->IniFileName, vparamName, evals) != 0) return -1;
+	(*oparamVal) = getEnumVal(vparamName, evals);
+	free(vparamName);
 	return 0;
 }
 

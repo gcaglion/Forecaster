@@ -146,10 +146,11 @@ EXPORT char* __stdcall left(char* str, int len) {
 	return(substr(str, 0, len));
 }
 
+
 EXPORT void __stdcall UpperCase(char* str){
 	int pos=0;
 	while (str[pos] != '\0')	{
-		str[pos] = toupper(str[pos]);
+		str[pos]=toupper(str[pos]);
 		pos++;
 	}
 }

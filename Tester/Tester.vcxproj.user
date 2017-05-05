@@ -5,8 +5,7 @@
 PATH=$(ORACLE_HOME1)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_Ext\fft\VisualStudio\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>
-    </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--DataParms.HistoryLen=1000</LocalDebuggerCommandArguments>
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='No_Orcl|x64'">
@@ -20,8 +19,7 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME2)
 PATH=$(ORACLE_HOME2)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_Ext\fft\VisualStudio\$(Platform)\$(Configuration);$(SolutionDir)..\AAA_Ext\vcomp120d\$(Platform)\$(Configuration)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>
-    </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--DataParms.HistoryLen=1000</LocalDebuggerCommandArguments>
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='No_Orcl|Win32'">
