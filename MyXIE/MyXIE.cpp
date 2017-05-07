@@ -1,7 +1,7 @@
 // MyXIE.cpp : Defines the exported functions for the DLL application.
 //
 
-#include <vld.h>
+////#include <vld.h>
 
 #include "stdafx.h"
 

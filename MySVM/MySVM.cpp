@@ -1,4 +1,4 @@
-#include <vld.h>
+////#include <vld.h>
 
 #include <MyUtils.h>
 #include <MyLogDefs.h>
@@ -19,13 +19,13 @@ int calcSVcnt(MODEL* model) {
 
 void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen) {
 	//-- mallocs specific portions of coreLog (alphaY, SV). This is not called by MyForecast(), as we can only know the number of SVs after training
-	coreLog->SVMWeight = MallocArray<tSVMWeight>(SVcnt, slen + 1);	// +1 because we save alpha along with vars
+	coreLog->SVMFinalW = MallocArray<tSVMWeight>(SVcnt, slen + 1);	// +1 because we save alpha along with vars
 	//coreLog->alphaY = MallocArray<double>(SVcnt);
 	//coreLog->SV = MallocArray<double>(SVcnt, slen);
 }
 __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen) {
 	if (coreLog->SVMResult.SVcount > 0) {
-		FreeArray(coreLog->SVMResult.SVcount, slen, coreLog->SVMWeight);
+		FreeArray(coreLog->SVMResult.SVcount, slen, coreLog->SVMFinalW);
 	}
 }
 
@@ -48,18 +48,18 @@ void 	SaveFinalV(SVM_Parms* SVMParms, tCoreLog* SVMLog, DWORD pid, DWORD tid, MO
 		for (v = model->supvec[sv]->fvec; v; v = v->next) {
 			//-- SV 
 			for (j = 0; (v->words[j]).wnum; j++) {
-				SVMLog->SVMWeight[sv][j].ProcessId = pid;
-				SVMLog->SVMWeight[sv][j].ThreadId = tid;
-				SVMLog->SVMWeight[sv][j].SVId = sv;
-				SVMLog->SVMWeight[sv][j].VarId=j;
-				SVMLog->SVMWeight[sv][j].Weight = (double)(v->words[j]).weight;
+				SVMLog->SVMFinalW[sv][j].ProcessId = pid;
+				SVMLog->SVMFinalW[sv][j].ThreadId = tid;
+				SVMLog->SVMFinalW[sv][j].SVId = sv;
+				SVMLog->SVMFinalW[sv][j].VarId=j;
+				SVMLog->SVMFinalW[sv][j].Weight = (double)(v->words[j]).weight;
 			}
 			//-- alpha is saved at (samplelen+1) position
-			SVMLog->SVMWeight[sv][j].ProcessId = pid;
-			SVMLog->SVMWeight[sv][j].ThreadId = tid;
-			SVMLog->SVMWeight[sv][j].SVId = sv;
-			SVMLog->SVMWeight[sv][j].VarId = j;
-			SVMLog->SVMWeight[sv][j].Weight = model->alpha[sv] * v->factor;
+			SVMLog->SVMFinalW[sv][j].ProcessId = pid;
+			SVMLog->SVMFinalW[sv][j].ThreadId = tid;
+			SVMLog->SVMFinalW[sv][j].SVId = sv;
+			SVMLog->SVMFinalW[sv][j].VarId = j;
+			SVMLog->SVMFinalW[sv][j].Weight = model->alpha[sv] * v->factor;
 		}
 	}
 
@@ -215,7 +215,7 @@ double SVMPredict(char* sample, int ktype, long max_words_doc, MODEL* model, svm
 	return pred;
 }
 
-__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
 
 	int i;
 	//--
@@ -310,11 +310,11 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 	for (int sv = 1; sv < SVMLogs->SVMResult.SVcount; sv++) {
 		for (int i = 0; i < vSampleLen; i++) {
 			words[i].wnum = i+1;
-			words[i].weight = (float)SVMLogs->SVMWeight[sv][i].Weight;
+			words[i].weight = (float)SVMLogs->SVMFinalW[sv][i].Weight;
 		}
 		words[vSampleLen].wnum = 0;
 		Mymodel->supvec[sv] = create_example(-1, 0, 0, 0.0, create_svector(words, "blah", 1.0));
-		Mymodel->alpha[sv] = SVMLogs->SVMWeight[sv][vSampleLen].Weight;
+		Mymodel->alpha[sv] = SVMLogs->SVMFinalW[sv][vSampleLen].Weight;
 	}
 	//--
 

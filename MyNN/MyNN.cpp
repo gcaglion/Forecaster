@@ -1,4 +1,4 @@
-#include <vld.h>
+////#include <vld.h>
 
 #include <Windows.h>
 #include <math.h>
@@ -13,7 +13,7 @@ __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN) {
 	int i;
 	int Levcnt;	// Levels count
 	//char** DescList = (char**)malloc(MAX_LEVELS * sizeof(char*)); for (i = 0; i < MAX_LEVELS; i++) DescList[i] = (char*)malloc(100);
-	char** DescList = MallocArray<char>(MAX_LEVELS, 100);
+	char** DescList = MallocArray<char>(MAX_LEVELS, 256);
 
 	//-- 1. Put the comma-separated string values into an array of strings. Max desc length=10
 	Levcnt = cslToArray(NN->LevelRatioS, ',', DescList);
@@ -109,6 +109,7 @@ void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, i
 	NNLog->IntP[timeStep].comp= comp;
 }
 
+// saving of internal parameters
 /*
 void SaveIntWFa(NN_Parms* NN, int pid, int tid, int DatasetId, int NetId, int Step, double*** a, double*** F, double**** W){
 	int i, j, l;
@@ -147,6 +148,7 @@ void SaveIntParms(NN_Parms* NN, int pid, int tid, int DatasetId, int NetId, int 
 	NN->IntP[DatasetId][0][Step].norm_e = norm_e;
 }
 */
+
 void SavePrevNeurons(NN_Parms* NNParms, NN_MxData* Mx){
 	int i, l;
 
@@ -929,7 +931,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		for (s = 0; s < pSampleCount; s++){
 			//-- 1.1 Present Sample, and Sum up Squared Error for every Sample
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
-			TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 			//-- 1.2 Calc dW for every sample based on BP algorithm
 			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 			//-- 1.3 BdW = BdW + dW
@@ -944,14 +946,14 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		for (s = 0; s < pSampleCount; s++){
 			//-- 1. Present Sample, and Sum up Squared Error for every Sample
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
-			TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 		}
 
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
 		prevMSE_T = MSE_T;	// save previous MSE
 		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
-		MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
-		if (NNParms->StopAtDivergence == 1 && MSE_T > prevMSE_T) break;
+		if (Mx->useValidation>0) MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
+		if (Mx->useValidation>0 && NNParms->StopAtDivergence == 1 && MSE_T > prevMSE_T) break;
 		WaitForSingleObject(Mx->ScreenMutex, 10);
 		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
 		ReleaseMutex(Mx->ScreenMutex);
@@ -983,8 +985,8 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 		for (s = 0; s < pSampleCount; s++){
 
 			//-- 1. Sum up Squared Error for every Sample
-			TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
+			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 
 			//-- 2. Save Internals
 //			if (pDebugParms->SaveInternals == 1){
@@ -1002,8 +1004,8 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 		//-- 6. Calc MSE for epoch , and exit if less than TargetMSE
 		prevMSE_T = MSE_T;	// save previous MSE
 		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
-		MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
-		if (NNParms->StopAtDivergence==1 && MSE_T > prevMSE_T) break;
+		if (Mx->useValidation>0) MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
+		if (Mx->useValidation>0 && NNParms->StopAtDivergence==1 && MSE_T > prevMSE_T) break;
 		//LogWrite(DebugParms, "NNTrain() CheckPoint 3 - epoch=%d ; MSE=%f\n", 2, epoch, MSE);
 		WaitForSingleObject(Mx->ScreenMutex, 10);
 		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
@@ -1290,6 +1292,9 @@ void   Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	free(NN.LVV_dJdW);
 }
 
+void NNLoadW(NN_Parms* NN, double*** W) {
+}
+
 __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget) {
 	int i, s, l, j;
 	int vTSCount = 1, d = 0;
@@ -1353,7 +1358,7 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 
 }
 
-__declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, NN_Parms* pNNParms, tCoreLog* pNNLogs, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+__declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, NN_Parms* pNNParms, tCoreLog* pNNLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
 
@@ -1365,6 +1370,7 @@ __declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMu
 	MxData.NN = Malloc_NNMem(pNNParms);
 	MxData.ScreenPos = pCorePos+1;
 	MxData.ScreenMutex = pScreenMutex;
+	MxData.useValidation = useValidation;
 
 	//-- Init Weights and Neurons
 	NNInit(pNNParms, &MxData);

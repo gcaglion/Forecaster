@@ -36,4 +36,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="SQL\DeletePid.sql" />
+    <None Include="SQL\DelLogs.sql" />
+    <None Include="SQL\MyLog.sql" />
+    <None Include="SQL\Report.sql" />
+  </ItemGroup>
 </Project>

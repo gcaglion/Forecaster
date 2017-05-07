@@ -1,4 +1,4 @@
-#include <vld.h>
+//#include <vld.h>
 
 #include <MyEnums.h>
 
@@ -343,6 +343,7 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atoi(iniParms->CLparamVal[p]);
+			free(vparamName);
 			return 0;
 		}
 	}
@@ -354,6 +355,7 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atof(iniParms->CLparamVal[p]);
+			free(vparamName);
 			return 0;
 		}
 	}
@@ -365,6 +367,7 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(oparamVal, iniParms->CLparamVal[p]);
+			free(vparamName);
 			return 0;
 		}
 	}
@@ -378,6 +381,7 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(evals, iniParms->CLparamVal[p]);
 			(*oparamVal) = getEnumVal(vparamName, evals);
+			free(vparamName);
 			return 0;
 		}
 	}

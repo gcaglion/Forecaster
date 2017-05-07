@@ -252,6 +252,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="SQL\DeletePid.sql" />
+    <None Include="SQL\DelLogs.sql" />
+    <None Include="SQL\MyLog.sql" />
+    <None Include="SQL\Report.sql" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

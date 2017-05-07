@@ -40,12 +40,16 @@ __declspec(dllexport) int __stdcall BulkMSEInsert(tDebugInfo* DebugParms, int pE
 __declspec(dllexport) int __stdcall BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount, int pHistoryLen, tLogRUN* RunData);
 
 //=== Log Retrieve functions
-__declspec(dllexport) int __stdcall		 LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms);
-__declspec(dllexport) int __stdcall		 LoadEngineData(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms, void* oEngineLogs);
-__declspec(dllexport) int __stdcall		 LoadDataShape(tDebugInfo* pDebugParms, tDBConnection* pLogDB, tEngineHandle* pEngine, tDataShape* oTestData);
-__declspec(dllexport) int __stdcall		 GetActualEpochsFromEngine(tEngineDef* pEngineParms, int pLayer, int pCoreId, int pDatasetId);
-__declspec(dllexport) tLogMSE* __stdcall GetMSELogFromEngine(tEngineDef* pEngineParms, int pLayer, int pCoreId, int pDatasetId);
-__declspec(dllexport) tLogRUN* __stdcall GetRunLogFromEngine(tEngineDef* pEngineParms, int pLayer, int pCoreId, int pDatasetId, int* oStepsCount);
+__declspec(dllexport) int __stdcall LoadDataParms(tDebugInfo* DebugParms, int pid, int tid, tDataShape* oDataParms);
+__declspec(dllexport) int __stdcall LoadEngineParms(tDebugInfo* DebugParms, int pid, int tid, tEngineDef* oEngineParms);
+//--
+__declspec(dllexport) int __stdcall LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* oNNParms);
+__declspec(dllexport) int __stdcall LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* oSOMParms);
+__declspec(dllexport) int __stdcall LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* oSVMParms);
+//--
+__declspec(dllexport) int __stdcall LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight);
+__declspec(dllexport) int __stdcall LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight);
+__declspec(dllexport) int __stdcall LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight);
 //===
 
 

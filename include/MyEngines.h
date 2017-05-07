@@ -21,10 +21,10 @@
 //-- Engine Handle for Saving / Retrieval
 typedef struct {
 	int ProcessId;
-	int TestId;
-	int DatasetId;
+	//int TestId;
+	//int DatasetId;
 	int ThreadId;
-	int EngineType;
+	//int EngineType;
 } tEngineHandle;
 
 typedef struct sCore {

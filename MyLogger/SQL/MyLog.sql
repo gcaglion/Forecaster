@@ -142,7 +142,6 @@ create table CoreParms_SOM(
 	ProcessId number,
 	LayerId number,
 	CoreId number,
-	UseContext number,
 	InputCount number,
 	OutputCount number,
 	MaxEpochs number, 

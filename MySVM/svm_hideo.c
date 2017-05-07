@@ -15,7 +15,7 @@
 /*   use of this software.                                             */
 /*                                                                     */
 /***********************************************************************/
-#include <vld.h>
+////#include <vld.h>
 
 # include <math.h>
 # include "svm_common.h"

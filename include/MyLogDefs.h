@@ -126,7 +126,7 @@ typedef struct sCoreLog {
 	tSOMWeight**	SOMFinalW;	// [FromNeuron][ToNeuron] -- this is saved only once at the end of the training
 
 	//-- SVM-specific
-	tSVMWeight** SVMWeight;	// [SVid][VarId]
+	tSVMWeight** SVMFinalW;	// [SVid][VarId]
 	tSVMResult SVMResult;
 } tCoreLog;
 //===========================================================================================================================================

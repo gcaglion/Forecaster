@@ -52,9 +52,21 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 //===
 
 //=== Engine Load stuff
+EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, int tid, tDataShape* oDataParms);
+EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, int tid, tEngineDef* oEngineParms);
+//--
+EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* oNNParms);
+EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* oSOMParms);
+EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* oSVMParms);
+//--
+EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight);
+EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight);
+EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight);
+/*
 EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms);
 EXPORT int __stdcall Ora_LoadEngineData(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms, tCoreLog* oEngineLogs);
 EXPORT int __stdcall Ora_LoadDataShape(tDebugInfo* pDebugParms, tDBConnection* pLogDB, tEngineHandle* pEngine, tDataShape* oTestData);
+*/
 //===
 
 //=== Queries

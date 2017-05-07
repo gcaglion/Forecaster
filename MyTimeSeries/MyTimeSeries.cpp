@@ -1,4 +1,4 @@
-#include <vld.h>
+////#include <vld.h>
 
 //#define _NO_ORCL
 
@@ -127,62 +127,62 @@ EXPORT int __stdcall LoadData_FXDB(tDebugInfo* DebugParms, tFXData* DBParms, int
 	}
 
 	//=== 3. Get Validation Data ===
+	if (pValidationShift != 0) {
+		//-- first, find the new Date0
+		char newDate0[12 + 1];
+		sprintf(&stmt[0], "select to_char(min(newdatetime),'YYYYMMDDHH24MI') from( select * from (	select newdatetime from History.%s_%s%s where newdatetime %s to_date(%s,'YYYYMMDDHH24MI') order by 1 desc ) where rownum<%d)", \
+			DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), ((pValidationShift > 0) ? ">" : "<"), pDate0, abs(pValidationShift));
+		if (GetCharPFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, &newDate0[0])) return -1;
 
-	//-- first, find the new Date0
-	char newDate0[12 + 1];
-	sprintf(&stmt[0], "select to_char(min(newdatetime),'YYYYMMDDHH24MI') from( select * from (	select newdatetime from History.%s_%s%s where newdatetime %s to_date(%s,'YYYYMMDDHH24MI') order by 1 desc ) where rownum<%d)",\
-						DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled>0)?"FILLED":""), ((pValidationShift>0)?">":"<"), pDate0, abs(pValidationShift));
-	if (GetCharPFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, &newDate0[0]) ) return -1;
-
-	//-- then, same as for HistoryData
-	sprintf(&stmt[0], "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, nvl(Volume,0) from History.%s_%s%s where newdatetime <= to_date(%s,'YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), newDate0);
+		//-- then, same as for HistoryData
+		sprintf(&stmt[0], "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, nvl(Volume,0) from History.%s_%s%s where newdatetime <= to_date(%s,'YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), newDate0);
 
 
 #ifndef _NO_ORCL
-	if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen+1, 1, PastBar) != 0) return -1;	//-- ValidationData
+		if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen + 1, 1, PastBar) != 0) return -1;	//-- ValidationData
 #endif
 																															//-- Repeat for each Dataset
-	for (d = 0; d < pDatasetCount; d++) {
+		for (d = 0; d < pDatasetCount; d++) {
 
-		//-- HistoryData
-		for (i = 0; i<pHistoryLen; i++) {
+			//-- HistoryData
+			for (i = 0; i < pHistoryLen; i++) {
+				switch (DBParms->BarDataType[d]) {
+				case OPEN:
+					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Open;
+					break;
+				case HIGH:
+					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].High;
+					break;
+				case LOW:
+					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Low;
+					break;
+				case CLOSE:
+					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Close;
+					break;
+				case VOLUME:
+					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Volume;
+					break;
+				}
+			}
 			switch (DBParms->BarDataType[d]) {
 			case OPEN:
-				oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Open;
+				oPrevValV[d] = PastBar[pHistoryLen].Open;
 				break;
 			case HIGH:
-				oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].High;
+				oPrevValV[d] = PastBar[pHistoryLen].High;
 				break;
 			case LOW:
-				oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Low;
+				oPrevValV[d] = PastBar[pHistoryLen].Low;
 				break;
 			case CLOSE:
-				oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Close;
+				oPrevValV[d] = PastBar[pHistoryLen].Close;
 				break;
 			case VOLUME:
-				oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Volume;
+				oPrevValV[d] = PastBar[pHistoryLen].Volume;
 				break;
 			}
 		}
-		switch (DBParms->BarDataType[d]) {
-		case OPEN:
-			oPrevValV[d] = PastBar[pHistoryLen].Open;
-			break;
-		case HIGH:
-			oPrevValV[d] = PastBar[pHistoryLen].High;
-			break;
-		case LOW:
-			oPrevValV[d] = PastBar[pHistoryLen].Low;
-			break;
-		case CLOSE:
-			oPrevValV[d] = PastBar[pHistoryLen].Close;
-			break;
-		case VOLUME:
-			oPrevValV[d] = PastBar[pHistoryLen].Volume;
-			break;
-		}
 	}
-
 	free(PastBar); free(FutureBar);
 
 	return 0;

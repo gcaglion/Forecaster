@@ -16,7 +16,7 @@
 /*                                                                      */
 /************************************************************************/
 
-#include <vld.h>
+////#include <vld.h>
 
 # include "ctype.h"
 # include "svm_common.h"
