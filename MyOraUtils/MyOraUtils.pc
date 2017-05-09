@@ -1695,8 +1695,8 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	//-- Load Network Weights from NetImage_NN
-	sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from NetImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
+	//-- Load Network Weights from CoreImage_NN
+	sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from CoreImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
 	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt=%s\n", 2, __func__, stmt);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLINN FROM : stmt;
@@ -1735,8 +1735,8 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	//-- Load Network Weights from NetImage_NN
-	sprintf(&stmt[0], "select FromNeuron, ToNeuron, Weight from NetImage_SOM where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
+	//-- Load Network Weights from CoreImage_NN
+	sprintf(&stmt[0], "select FromNeuron, ToNeuron, Weight from CoreImage_SOM where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
 	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt=%s\n", 2, __func__, stmt);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLISOM FROM : stmt;
@@ -1765,7 +1765,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
 	int retval = 0;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
-	//-- Network Weights variables
+	//-- Support Vector variables
 	int vSVid; int vVarId; double vWeight;
 	EXEC SQL END DECLARE SECTION;
 
@@ -1775,8 +1775,8 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	//-- Load Network Weights from NetImage_NN
-	sprintf(&stmt[0], "select SVid, VarId, Weight from NetImage_SVM where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
+	//-- Load Support Vectors from CoreImage_SVM
+	sprintf(&stmt[0], "select SVid, VarId, Weight from CoreImage_SVM where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
 	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt=%s\n", 2, __func__, stmt);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLISVM FROM : stmt;
@@ -1786,11 +1786,9 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
 		EXEC SQL FETCH cLISVM INTO vSVid, vVarId, vWeight;
 		if (sqlca.sqlcode == 0) {
 			oSVMWeight[vSVid][vVarId].Weight = vWeight;
-		}
-		else if (sqlca.sqlcode == 1403) {
+		} else if (sqlca.sqlcode == 1403) {
 			break;
-		}
-		else {
+		} else {
 			LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
 			retval = sqlca.sqlcode;
 			break;
@@ -1800,7 +1798,83 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
 
 	return retval;
 }
+//--
+EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	int retval = 0;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	//-- SVM Training Results variables
+	double vThresholdB, vMaxDiff, vL1Loss, vWVNorm, vLevNorm;
+	int vSVCount, vKevCount;
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("%s() could not connect to Log Database...\n", __func__);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	//-- 2. Load SVM Training results from CoreLogs_SVM
+	sprintf(&stmt[0], "select SVCount, ThresholdB, MaxDiff, L1Loss, WVNorm, LevNorm, KevCount from CoreLogs_SVM where ProcessId=%d and ThreadId=%d", pid, tid);
+	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt=%s\n", 2, __func__, stmt);
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL PREPARE sLISVM FROM : stmt;
+	EXEC SQL DECLARE cLISVM2 CURSOR FOR sLISVM;
+	EXEC SQL OPEN cLISVM2;
+	EXEC SQL FETCH cLISVM2 INTO vSVCount, vThresholdB, vMaxDiff, vL1Loss, vWVNorm, vLevNorm, vKevCount;
+	if (sqlca.sqlcode == 0) {
+		oSVMResult->SVcount = vSVCount;
+		oSVMResult->ThresholdB = vThresholdB;
+		oSVMResult->maxdiff = vMaxDiff;
+		oSVMResult->L1loss = vL1Loss;
+		oSVMResult->WVnorm = vWVNorm;
+		oSVMResult->LEVnorm = vLevNorm;
+		oSVMResult->KEvCount = vKevCount;
+	} else {
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+		retval = sqlca.sqlcode;
+	}
+	EXEC SQL CLOSE cLISVM2;
+
+	return retval;
+}
 /*
+EXPORT int __stdcall Ora_getSVcnt(tDebugInfo* DebugParms, int pid, int tid) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	int ret, SVcnt;
+	sql_context vCtx = DebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	EXEC SQL END   DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("%s() could not connect to Log Database...\n", __func__);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	sprintf(&stmt[0], "select SVcount from corelogs_svm where ProcessId=%d and ThreadId=%d", pid, tid);
+	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt = %s\n", 2, __func__, stmt);
+
+	//-- Executes SQL 
+	vCtx = DebugParms->DebugDB->DBCtx;
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL PREPARE sSVcnt FROM : stmt;
+	EXEC SQL DECLARE cSVcnt CURSOR FOR sSVcnt;
+	EXEC SQL OPEN cSVcnt;
+	EXEC SQL FETCH cSVcnt INTO :SVcnt;
+	ret = sqlca.sqlcode;
+	if (sqlca.sqlcode != 0) {
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+		return -1;
+	}
+	EXEC SQL CLOSE cSVcnt;
+	ret = SVcnt;
+
+	LogWrite_C(DebugParms, LOG_INFO, "%s(): SVcnt=%d \n", 2, __func__, ret);
+	return ret;
+}
+
 EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms){
 	EXEC SQL BEGIN DECLARE SECTION;
 	int retval = 0;
@@ -1892,8 +1966,8 @@ EXPORT int __stdcall Ora_LoadEngineData(tDebugInfo* DebugParms, int pEngineType,
 	switch (pEngineType){
 	case ENGINE_NN:
 		vNNParms = (NN_Parms*)oEngineParms;
-		//-- Load Network Weights from NetImage_NN
-		sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from NetImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
+		//-- Load Network Weights from CoreImage_NN
+		sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from CoreImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
 		LogWrite_C(DebugParms, LOG_INFO, "Ora_LoadEngineData() CheckPoint 3 - stmt=%s\n", 1, stmt);
 		EXEC SQL CONTEXT USE :vCtx;
 		EXEC SQL PREPARE s2 FROM :stmt;

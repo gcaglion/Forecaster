@@ -45,6 +45,7 @@ typedef struct sSVMParms{
 	char CustomKernel[50];	// -u
 } SVM_Parms;
 
+__declspec(dllexport) void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen);
 __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen);
 __declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV);
 __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tCoreLog* SVMLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget);

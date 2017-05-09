@@ -50,6 +50,8 @@ __declspec(dllexport) int __stdcall LoadCoreParms_SVM(tDebugInfo* DebugParms, in
 __declspec(dllexport) int __stdcall LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight);
 __declspec(dllexport) int __stdcall LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight);
 __declspec(dllexport) int __stdcall LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight);
+//--
+__declspec(dllexport) int __stdcall LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult);
 //===
 
 

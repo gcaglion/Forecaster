@@ -17,7 +17,7 @@ int calcSVcnt(MODEL* model) {
 	return sv_num;
 }
 
-void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen) {
+__declspec(dllexport) void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen) {
 	//-- mallocs specific portions of coreLog (alphaY, SV). This is not called by MyForecast(), as we can only know the number of SVs after training
 	coreLog->SVMFinalW = MallocArray<tSVMWeight>(SVcnt, slen + 1);	// +1 because we save alpha along with vars
 	//coreLog->alphaY = MallocArray<double>(SVcnt);

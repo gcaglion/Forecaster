@@ -282,6 +282,11 @@ int Txt_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int
 int Txt_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
 	return 0;
 }
+//--
+int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+	return 0;
+}
+//===
 
 //=== Log Write functions, Generic 
 __declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pTesterEngine, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName) {
@@ -517,7 +522,15 @@ __declspec(dllexport) int __stdcall LoadCoreImage_SVM(tDebugInfo* DebugParms, in
 		return(Txt_LoadCoreImage_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMWeight));
 	}
 }
-
+//--
+__declspec(dllexport) int __stdcall LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+	if (DebugParms->DebugDest == LOG_TO_ORCL) {
+		return(Ora_LoadCoreLogs_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMResult));
+	}
+	else {
+		return(Txt_LoadCoreLogs_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMResult));
+	}
+}
 /*
 __declspec(dllexport) int		__stdcall LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {

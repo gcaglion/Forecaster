@@ -67,7 +67,7 @@ void mallocCoreLogs(tForecastParms* ioParms){
 					mallocNNLog(&ioParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, ioParms->EngineParms.Core[l][c].TimeStepsCount);
 				}
 				//-- GA-specific
-				//-- SVM-specific is called from SVMTrain()
+				//-- SVM-specific is called from SVMTrain() because we don't know SVMcount until the end of training
 				//-- SOM-specific
 			}
 		}
@@ -254,16 +254,12 @@ int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, int pid){
 	return 0;
 }
 //--
-int LogLoad_Cores(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+int LoadCoreParms(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	tCore* core;
 	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
 	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
 	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
 	SVM_Parms* SVMParms = nullptr;	tSVMWeight** SVMWeight = nullptr;
-
-	//-- for each core, this performs 2 separate operations:
-	//-- 1. Load Cores parameters	from CoreParms_<XXX>
-	//-- 2. Load Cores Images		from CoreImage_<XXX>
 
 	for (int l = 0; l < pEngineParms->LayersCount; l++) {
 		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
@@ -273,11 +269,6 @@ int LogLoad_Cores(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngine
 				NNParms = (NN_Parms*)core->CoreSpecs;
 				//-- 1. load engine parameters
 				if (LoadCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
-				//-- 2. load final image (weights) , for each dataset
-				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					NNWeight = core->CoreLog[d].NNFinalW;
-					if (LoadCoreImage_NN(pDebugParms, l, n, pid, tid, NNParms, NNWeight) != 0) return -1;
-				}
 				break;
 			case ENGINE_GA:
 				break;
@@ -285,20 +276,45 @@ int LogLoad_Cores(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngine
 				SOMParms = (SOM_Parms*)core->CoreSpecs;
 				//-- 1. load engine parameters
 				if (LoadCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
-				//-- 2. load final image (weights) , for each dataset
-				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					SOMWeight = core->CoreLog[d].SOMFinalW;
-					if (LoadCoreImage_SOM(pDebugParms, l, n, pid, tid, SOMParms, SOMWeight) != 0) return -1;
-				}
 				break;
 			case ENGINE_SVM:
 				SVMParms = (SVM_Parms*)core->CoreSpecs;
 				//-- 1. load engine parameters
 				if (LoadCoreParms_SVM(pDebugParms, pid, l, n, SVMParms) != 0) return -1;
-				//-- 2. load final image (weights) , for each dataset
+				break;
+			}
+		}
+	}
+	return 0;
+
+}
+int LoadCoreImage(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+	tCore* core;
+
+	for (int l = 0; l < pEngineParms->LayersCount; l++) {
+		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
+			core = &pEngineParms->Core[l][n];
+			switch (core->CoreType) {
+			case ENGINE_NN:
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					SVMWeight = core->CoreLog[d].SVMFinalW;
-					if (LoadCoreImage_SVM(pDebugParms, l, n, pid, tid, SVMParms, SVMWeight) != 0) return -1;
+					if (LoadCoreImage_NN(pDebugParms, l, n, pid, tid, (NN_Parms*)core->CoreSpecs, core->CoreLog[d].NNFinalW) != 0) return -1;
+				}
+				break;
+			case ENGINE_GA:
+				break;
+			case ENGINE_SOM:
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					if (LoadCoreImage_SOM(pDebugParms, l, n, pid, tid, (SOM_Parms*)core->CoreSpecs, core->CoreLog[d].SOMFinalW) != 0) return -1;
+				}
+				break;
+			case ENGINE_SVM:
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					//-- first, load SVM results from CoreLogs_SVM. This is needed here to set SVcnt
+					if (LoadCoreLogs_SVM(pDebugParms, l, n, pid, tid, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d].SVMResult) != 0) return -1;
+					//-- allocate SVMWeight (when Dotraining, this is called directly from SVMTrain)
+					mallocSVMLog(&core->CoreLog[d], core->CoreLog[d].SVMResult.SVcount, core->SampleLen);
+					//-- then, load SVs
+					if (LoadCoreImage_SVM(pDebugParms, l, n, pid, tid, (SVM_Parms*)core->CoreSpecs, core->CoreLog[d].SVMFinalW) != 0) return -1;
 				}
 				break;
 			}
@@ -522,6 +538,33 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)					return -1;
 	ioParms->DebugParms.DebugDB->DBCtx = NULL;
 
+	//-- 7. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
+	if (getParam(ioParms, "DataSource.SourceType", &ioParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
+	if (ioParms->DataParms.DataSourceType == SOURCE_DATA_FROM_FXDB) {
+		if (getParam(ioParms, "DataSource.DBConn.DBUser", ioParms->FXDBInfo.FXDB->DBUser) < 0)				return -1;
+		if (getParam(ioParms, "DataSource.DBConn.DBPassword", ioParms->FXDBInfo.FXDB->DBPassword) < 0)		return -1;
+		if (getParam(ioParms, "DataSource.DBConn.DBConnString", ioParms->FXDBInfo.FXDB->DBConnString) < 0)	return -1;
+		ioParms->FXDBInfo.FXDB->DBCtx = NULL;
+		if (getParam(ioParms, "DataSource.Symbol", ioParms->FXDBInfo.Symbol) < 0)							return -1;
+		if (getParam(ioParms, "DataSource.TimeFrame", ioParms->FXDBInfo.TimeFrame) < 0)						return -1;
+		if (getParam(ioParms, "DataSource.IsFilled", &ioParms->FXDBInfo.IsFilled) < 0)						return -1;
+		//-- bardatatypes, ioParms->DataParms->DatasetsCount...
+		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.BarDataTypes", &ioParms->FXDBInfo.BarDataType, enumlist); if (ioParms->DataParms.DatasetsCount < 0) return -1;
+		ioParms->FXDBInfo.BarDataTypeCount = ioParms->DataParms.DatasetsCount;
+		strcpy(ioParms->DataSourceFileInfo.FileName, "");
+		ioParms->DataParms.DataSource = &ioParms->FXDBInfo;
+	}
+	else {
+		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)			return -1;
+		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.FileDatasets", &ioParms->DataSourceFileInfo.FileDataSet);
+		strcpy(ioParms->FXDBInfo.Symbol, "");
+		strcpy(ioParms->FXDBInfo.TimeFrame, "");
+		ioParms->FXDBInfo.IsFilled = 0;
+		ioParms->FXDBInfo.BarDataTypeCount = 0;
+		ioParms->DataSourceFileInfo.FileDataSetsCount = ioParms->DataParms.DatasetsCount;
+		ioParms->DataParms.DataSource = &ioParms->DataSourceFileInfo;
+	}
+
 	//-- 1. DoTraining and HaveFutureData
 	if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.HaveFutureData", &ioParms->HaveFutureData) < 0)			return -1;
@@ -537,8 +580,13 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		//-- before loading cores, we need to set layout based on EngineType just loaded
 		if (setEngineLayout(ioParms) != 0) return -1;
 		setCoreInfo_Pre(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
-		if (LogLoad_Cores(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
+		//-- Core Parameters
+		if (LoadCoreParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
 		setCoreInfo_Post(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
+		//-- Core Logs
+		mallocCoreLogs(ioParms);
+		// Finally, Core Image
+		if (LoadCoreImage(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
 	} else {
 		if (getParam(ioParms, "Forecaster.Engine", &ioParms->EngineParms.EngineType, enumlist) < 0)	return -1;
 		if (setEngineLayout(ioParms) != 0) return -1;
@@ -706,6 +754,8 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 		setCoreInfo_Post(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
 
+		//-- Core Logs
+		mallocCoreLogs(ioParms);
 	}
 	ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 
@@ -719,34 +769,6 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	}
 
 
-	//-- 7. Tester Data Source parameters
-	if (getParam(ioParms, "DataSource.SourceType", &ioParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
-	if (ioParms->DataParms.DataSourceType == SOURCE_DATA_FROM_FXDB) {
-		if (getParam(ioParms, "DataSource.DBConn.DBUser", ioParms->FXDBInfo.FXDB->DBUser) < 0)				return -1;
-		if (getParam(ioParms, "DataSource.DBConn.DBPassword", ioParms->FXDBInfo.FXDB->DBPassword) < 0)		return -1;
-		if (getParam(ioParms, "DataSource.DBConn.DBConnString", ioParms->FXDBInfo.FXDB->DBConnString) < 0)	return -1;
-		ioParms->FXDBInfo.FXDB->DBCtx = NULL;
-		if (getParam(ioParms, "DataSource.Symbol", ioParms->FXDBInfo.Symbol) < 0)							return -1;
-		if (getParam(ioParms, "DataSource.TimeFrame", ioParms->FXDBInfo.TimeFrame) < 0)						return -1;
-		if (getParam(ioParms, "DataSource.IsFilled", &ioParms->FXDBInfo.IsFilled) < 0)						return -1;
-		//-- bardatatypes, ioParms->DataParms->DatasetsCount...
-		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.BarDataTypes", &ioParms->FXDBInfo.BarDataType, enumlist); if (ioParms->DataParms.DatasetsCount < 0) return -1;
-		ioParms->FXDBInfo.BarDataTypeCount = ioParms->DataParms.DatasetsCount;
-		strcpy(ioParms->DataSourceFileInfo.FileName, "");
-		ioParms->DataParms.DataSource = &ioParms->FXDBInfo;
-	} else {
-		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)			return -1;
-		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.FileDatasets", &ioParms->DataSourceFileInfo.FileDataSet);
-		strcpy(ioParms->FXDBInfo.Symbol, "");
-		strcpy(ioParms->FXDBInfo.TimeFrame, "");
-		ioParms->FXDBInfo.IsFilled = 0;
-		ioParms->FXDBInfo.BarDataTypeCount = 0;
-		ioParms->DataSourceFileInfo.FileDataSetsCount = ioParms->DataParms.DatasetsCount;
-		ioParms->DataParms.DataSource = &ioParms->DataSourceFileInfo;
-	}
-
-	//-- 11. Core Logs
-	mallocCoreLogs(ioParms);
 
 	return 0;
 }
@@ -919,7 +941,7 @@ void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* 
 	//-- free(s)
 	free(HTrain); free(kaz); free(tid);
 }
-void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pLayer, int pid, int pTestId, tRunParams* rp, double****** SampleData, double****** TargetData, int usefd, double** pFD_TRS) {
+void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pDoTraining, int pLayer, int pid, tTrainParams* tp, tRunParams* rp, double****** SampleData, double****** TargetData) {
 	//-- The only reason why we make this multi-thread is to have different ThreadIds, so not to violate pk on MyLog_Run
 	int ThreadCount = pDataParms->DatasetsCount*pEngineParms->TotalCoresCount;
 	HANDLE* HRun = (HANDLE*)malloc(ThreadCount * sizeof(HANDLE));
@@ -944,7 +966,7 @@ void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pD
 			HRun[t]= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Run_XXX, &rp[t], 0, tid[t]);
 
 			//-- set ThreadId
-			rp[t].tid = (*tid[t]);
+			rp[t].tid = (pDoTraining>0) ? tp[t].TrainInfo.ThreadId : (*tid[t]);
 			//Run_XXX(pDebugParms, pEngineParms, pDataParms, pLayer, n, d, pid, tp[i].TrainInfo.ThreadId, n, pTestId, pDataParms->SampleCount, SampleData[HD][d][pLayer][n], TargetData[HD][d][pLayer][n], usefd, pFD_TRS);
 			t++;
 		}
@@ -1219,7 +1241,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		}
 
 		if(fp.DoTraining) Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
-		Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, l, pid, pTestId, rp, Sample, Target, haveActualFuture, fd_trs);
+		Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, fp.DoTraining, l, pid, tp, rp, Sample, Target);
 		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.DoTraining, &fp.SavedEngine);
 	}
 
