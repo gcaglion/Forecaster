@@ -102,17 +102,17 @@ int setEngineLayout(tForecastParms* iniParms) {
 	//-- 1. set LayersCount, CoresCount, Core[]
 	switch (iniParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
-		iniParms->EngineParms.LayersCount = 2;
-		iniParms->EngineParms.CoresCount = MallocArray<int>(iniParms->EngineParms.LayersCount);
-		iniParms->EngineParms.CoresCount[0] = ((WNN_Arch*)iniParms->EngineParms.EngineArch)->DecompLevel + 1;
-		iniParms->EngineParms.CoresCount[1] = 1;
-		iniParms->EngineParms.Core = (tCore**)malloc(iniParms->EngineParms.LayersCount * sizeof(tCore*));
-		iniParms->EngineParms.Core[0] = MallocArray<tCore>(((WNN_Arch*)iniParms->EngineParms.EngineArch)->DecompLevel + 1);
-		iniParms->EngineParms.Core[1] = MallocArray<tCore>(1);
 		iniParms->EngineParms.EngineArch = new WNN_Arch;
 		WNNArch = (WNN_Arch*)iniParms->EngineParms.EngineArch;
 		if (getParam(iniParms, "WNNInfo.WaveletType", WNNArch->WaveletType) < 0)		return -1;
 		if (getParam(iniParms, "WNNInfo.DecompLevel", &WNNArch->DecompLevel) < 0)	return -1;
+		iniParms->EngineParms.LayersCount = 2;
+		iniParms->EngineParms.CoresCount = MallocArray<int>(iniParms->EngineParms.LayersCount);
+		iniParms->EngineParms.CoresCount[0] = WNNArch->DecompLevel + 1;
+		iniParms->EngineParms.CoresCount[1] = 1;
+		iniParms->EngineParms.Core = (tCore**)malloc(iniParms->EngineParms.LayersCount * sizeof(tCore*));
+		iniParms->EngineParms.Core[0] = MallocArray<tCore>(WNNArch->DecompLevel + 1);
+		iniParms->EngineParms.Core[1] = MallocArray<tCore>(1);
 
 		break;
 	case ENGINE_XIE:
@@ -486,7 +486,7 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		//-- L1
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[1][0].CoreSpecs;
 		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs;
-		pEngineParms->Core[1][0].SampleLen = (*NNInfo)->InputCount;
+		pEngineParms->Core[1][0].SampleLen = pEngineParms->Core[0][0].TargetLen*pEngineParms->CoresCount[0] + pEngineParms->TSFcnt;	//(*NNInfo)->InputCount;
 		pEngineParms->Core[1][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[1][0].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[1][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
@@ -499,16 +499,16 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		pEngineParms->Core[0][0].MSECount = (*SVMInfo)->MaxEpochs;
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L0nn
-		(*NNInfo) = (NN_Parms*)&pEngineParms->Core[0][1].CoreSpecs;
+		(*NNInfo) = (NN_Parms*)pEngineParms->Core[0][1].CoreSpecs;
 		pEngineParms->Core[0][1].TimeStepsCount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][1].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][1].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[0][1].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][1].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L1nn
-		(*NNInfo) = (NN_Parms*)&pEngineParms->Core[1][0].CoreSpecs;
+		(*NNInfo) = (NN_Parms*)pEngineParms->Core[1][0].CoreSpecs;
 		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs;
-		pEngineParms->Core[1][0].SampleLen = (*NNInfo)->InputCount;
+		pEngineParms->Core[1][0].SampleLen = pEngineParms->Core[0][0].TargetLen + pEngineParms->Core[0][1].TargetLen;	//(*NNInfo)->InputCount;
 		pEngineParms->Core[1][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[1][0].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[1][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
@@ -524,7 +524,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	SOM_Parms* SOMInfo = nullptr;
 	SVM_Parms* SVMInfo = nullptr;
 
-	//-- 5. get Debug Parameters (needs to be before LoadXXXParms)
+	//-- 1. get Debug Parameters (needs to be before LoadXXXParms)
 	if (getParam(ioParms, "Forecaster.DebugLevel", &ioParms->DebugParms.DebugLevel) < 0)				return -1;
 	if (getParam(ioParms, "Forecaster.DebugFileName", ioParms->DebugParms.fName) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.DebugFilePath", ioParms->DebugParms.fPath) < 0)					return -1;
@@ -538,7 +538,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)					return -1;
 	ioParms->DebugParms.DebugDB->DBCtx = NULL;
 
-	//-- 7. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
+	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
 	if (getParam(ioParms, "DataSource.SourceType", &ioParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
 	if (ioParms->DataParms.DataSourceType == SOURCE_DATA_FROM_FXDB) {
 		if (getParam(ioParms, "DataSource.DBConn.DBUser", ioParms->FXDBInfo.FXDB->DBUser) < 0)				return -1;
@@ -553,8 +553,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		ioParms->FXDBInfo.BarDataTypeCount = ioParms->DataParms.DatasetsCount;
 		strcpy(ioParms->DataSourceFileInfo.FileName, "");
 		ioParms->DataParms.DataSource = &ioParms->FXDBInfo;
-	}
-	else {
+	} else {
 		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)			return -1;
 		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.FileDatasets", &ioParms->DataSourceFileInfo.FileDataSet);
 		strcpy(ioParms->FXDBInfo.Symbol, "");
@@ -565,11 +564,21 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		ioParms->DataParms.DataSource = &ioParms->DataSourceFileInfo;
 	}
 
-	//-- 1. DoTraining and HaveFutureData
+	//-- 3. set TSFs
+	int useTSF;
+	if (getParam(ioParms, "DataParms.UseTSFeatures", &useTSF) < 0) return -1;
+	if (useTSF > 0) {
+		ioParms->EngineParms.TSFcnt = getParam(ioParms, "DataParms.TSFeatures", &ioParms->EngineParms.TSFid, enumlist); if (ioParms->EngineParms.TSFcnt < 0) return -1;
+	}
+	else {
+		ioParms->EngineParms.TSFcnt = 0;
+	}
+
+	//-- 4. DoTraining and HaveFutureData
 	if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.HaveFutureData", &ioParms->HaveFutureData) < 0)			return -1;
 
-	//-- 2. if using a saved engine, get EngineParms and DataShape here
+	//-- 5a. if using a saved engine, get EngineParms and DataShape here
 	if (ioParms->DoTraining == 0) {
 		if (getParam(ioParms, "SavedEngine.ProcessId", &ioParms->SavedEngine.ProcessId) < 0)	return -1;
 		if (getParam(ioParms, "SavedEngine.ThreadId", &ioParms->SavedEngine.ThreadId) < 0)	return -1;
@@ -588,6 +597,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		// Finally, Core Image
 		if (LoadCoreImage(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
 	} else {
+		//-- 5b
 		if (getParam(ioParms, "Forecaster.Engine", &ioParms->EngineParms.EngineType, enumlist) < 0)	return -1;
 		if (setEngineLayout(ioParms) != 0) return -1;
 
@@ -721,7 +731,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "XIEInfo.SVM.BatchSize", &SVMInfo->BatchSize) < 0)							return -1;
 			if (getParam(ioParms, "XIEInfo.SVM.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)						return -1;
 
-			NNInfo = (NN_Parms*)&ioParms->EngineParms.Core[0][1].CoreSpecs;
+			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[0][1].CoreSpecs;
 			if (getParam(ioParms, "XIEInfo.NN0.UseContext", &NNInfo->UseContext) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)							return -1;
@@ -735,7 +745,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "XIEInfo.NN0.mu", &NNInfo->mu) < 0)												return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 
-			NNInfo = (NN_Parms*)&ioParms->EngineParms.Core[1][0].CoreSpecs;
+			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[1][0].CoreSpecs;
 			if (getParam(ioParms, "XIEInfo.NN1.UseContext", &NNInfo->UseContext) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)							return -1;
@@ -758,17 +768,6 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		mallocCoreLogs(ioParms);
 	}
 	ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
-
-	//-- 4. set TSFs
-	int useTSF;
-	if (getParam(ioParms, "DataParms.UseTSFeatures", &useTSF) < 0) return -1;
-	if (useTSF > 0) {
-		ioParms->EngineParms.TSFcnt = getParam(ioParms, "DataParms.TSFeatures", &ioParms->EngineParms.TSFid, enumlist); if (ioParms->EngineParms.TSFcnt < 0) return -1;
-	} else {
-		ioParms->EngineParms.TSFcnt = 0;
-	}
-
-
 
 	return 0;
 }
