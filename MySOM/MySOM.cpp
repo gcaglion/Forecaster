@@ -290,10 +290,10 @@ __declspec(dllexport) int Train_SOM(tDebugInfo* pDebugParms, SOM_Parms* pSOMPara
 		//-- Train, and get forecast from output neurons
 		HTrain[d] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)TrainSave_SOM, &tp[d], 0, tid[d]);
 		//-- Store Engine Handler
-		//tp[d].TrainInfo.DatasetId = d; 
-		//tp[d].TrainInfo.ProcessId = pid; 
-		//tp[d].TrainInfo.ThreadId = (*tid[d]); 
-		//tp[d].TrainInfo.TestId = pTestId;
+		tp[d].TrainInfo.DatasetId = d; 
+		tp[d].TrainInfo.ProcessId = pid; 
+		tp[d].TrainInfo.ThreadId = (*tid[d]); 
+		tp[d].TrainInfo.TestId = pTestId;
 	}
 	WaitForMultipleObjects(pInputData->DatasetsCount, HTrain, TRUE, INFINITE);
 

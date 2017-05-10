@@ -25,17 +25,19 @@ EXPORT void __stdcall OraCommit(void* pCtx);
 //===
 
 //=== Basic Logs
-EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pTesterEngine, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName);
+EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName);
+EXPORT int __stdcall Ora_UpdateTesterDuration(tDebugInfo* DebugParms, int pid, double pElapsedSecs);
 EXPORT int __stdcall Ora_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen);
 EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType);
+EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms, tDataShape* pDataParms);
 //--
-EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* NNParms);
-EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* SOMParms);
-EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* SVMParms);
+EXPORT int __stdcall Ora_InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* NNParms);
+EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* SOMParms);
+EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms);
 //--
-EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, NN_Parms* NNParms, tNNWeight*** NNWeight);
-EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
-EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pDatasetId, int pTestId, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight);
+EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight);
+EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
+EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight);
 //--
 EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* pDebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs);
 EXPORT int __stdcall Ora_InsertCoreLogs_SOM(tDebugInfo* pDebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs);

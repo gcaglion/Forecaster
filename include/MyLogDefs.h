@@ -117,6 +117,9 @@ typedef struct sCoreLog {
 	tLogMSE*		MSEOutput;		// [Epoch]
 	tLogRUN*		RunOutput;		// [pos]
 	
+	//-- core handlers. used to save/retrieve core threadid to/from logs
+	int ThreadId;
+
 	//-- NN-specific
 	tNNWeight***	NNFinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
 	int				IntCnt;	// number of IntP elements

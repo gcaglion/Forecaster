@@ -102,7 +102,7 @@
     </Link>
     <PreBuildEvent>
       <Command>set ORACLE_HOME=$(ORACLE_HOME2)
-$(ORACLE_HOME2)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS userid=NNUser/NNPwd@Algo THREADS=YES DYNAMIC=ANSI TYPE_CODE=ORACLE</Command>
+$(ORACLE_HOME2)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS userid=LogUser/LogPwd@Algo THREADS=YES DYNAMIC=ANSI TYPE_CODE=ORACLE</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,7 +123,7 @@ $(ORACLE_HOME2)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS u
     </Link>
     <PreBuildEvent>
       <Command>set ORACLE_HOME=$(ORACLE_HOME1)
-$(ORACLE_HOME1)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS userid=NNUser/NNPwd@Algo THREADS=YES DYNAMIC=ANSI TYPE_CODE=ORACLE
+$(ORACLE_HOME1)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS userid=LogUser/LogPwd@Algo THREADS=YES DYNAMIC=ANSI TYPE_CODE=ORACLE
 </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>

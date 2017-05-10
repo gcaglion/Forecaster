@@ -13,10 +13,6 @@ typedef struct{
 	int DataSourceType;
 	void* DataSource;
 	int DatasetsCount;
-	char NDTStart[24];
-	char NDTEnd[24];
-	char NDTStart_V[24];
-	char NDTEnd_V[24];
 	int HistoryLen;
 	int SampleLen;
 	int SampleCount;

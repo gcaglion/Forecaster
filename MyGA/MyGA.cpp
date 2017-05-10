@@ -756,10 +756,10 @@ __declspec(dllexport) int Train_GA(tDebugInfo* pDebugParms, GA_Parms* pGAParams,
 		//-- Train and Save GA
 		HTrain[d] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)TrainAndSave_GA, &tp[d], 0, tid[d]);
 		//-- Store Engine Handler
-		//tp[d].TrainInfo[d].DatasetId = d; 
-		//tp[d].TrainInfo[d].ProcessId = pid;
-		//tp[d].TrainInfo[d].ThreadId = (*tid[d]); 
-		//tp[d].TrainInfo[d].TestId = pTestId;
+		tp[d].TrainInfo[d].DatasetId = d; 
+		tp[d].TrainInfo[d].ProcessId = pid;
+		tp[d].TrainInfo[d].ThreadId = (*tid[d]); 
+		tp[d].TrainInfo[d].TestId = pTestId;
 	}
 	WaitForMultipleObjects(pInputData->DatasetsCount, HTrain, TRUE, INFINITE);
 	//-- 0.2 Main ReRun Loop
