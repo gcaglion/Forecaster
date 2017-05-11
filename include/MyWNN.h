@@ -6,12 +6,6 @@
 #define L_OUT 1
 
 
-//-- WNN engine Architecture
-typedef struct {
-	int DecompLevel;
-	char WaveletType[8];
-} WNN_Arch;
-
 #include <MyNN.h>
 #include <MyLogDefs.h>
 

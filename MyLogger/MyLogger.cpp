@@ -198,7 +198,7 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms) {
 //===
 
 //=== Log Write functions, Text 
-int Txt_InsertTesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName) {
+int Txt_InsertTesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	return 0;
 }
 int Txt_UpdateTesterDuration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
@@ -225,7 +225,7 @@ int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pD
 int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	return 0;
 }
-int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	return 0;
 }
 //--
@@ -262,45 +262,49 @@ int Txt_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* SVMResult) {
 //===
 
 //=== Log Retrieve functions, Text
-int Txt_LoadDataParms(tDebugInfo* DebugParms, int pid, int tid, tDataShape* oDataParms) {
-	return 0;
-}
-int Txt_LoadEngineParms(tDebugInfo* DebugParms, int pid, int tid, tEngineDef* oEngineParms) {
+int Txt_getCoreThreadId(tDebugInfo* DebugParms, int pid, int testid, int DatasetId, int LayerId, int CoreId) {
 	return 0;
 }
 //--
-int Txt_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* oNNParms) {
+int Txt_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataShape* oDataParms) {
 	return 0;
 }
-int Txt_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* oSOMParms) {
-	return 0;
-}
-int Txt_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* oSVMParms) {
+int Txt_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngineDef* oEngineParms) {
 	return 0;
 }
 //--
-int Txt_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
+int Txt_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* oNNParms) {
 	return 0;
 }
-int Txt_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
+int Txt_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* oSOMParms) {
 	return 0;
 }
-int Txt_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
+int Txt_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* oSVMParms) {
 	return 0;
 }
 //--
-int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+int Txt_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
+	return 0;
+}
+int Txt_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
+	return 0;
+}
+int Txt_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
+	return 0;
+}
+//--
+int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
 	return 0;
 }
 //===
 
 //=== Log Write functions, Generic 
-__declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName) {
+__declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun, pDataSourceType, pDataSourceFileName);
+		return Ora_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
 	}
 	else {
-		return Txt_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun, pDataSourceType, pDataSourceFileName);
+		return Txt_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
 	}
 }
 __declspec(dllexport) int __stdcall UpdateTestLog_Duration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
@@ -358,30 +362,19 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 	return ret;
 }
 __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms) {
-	int vDecompLevel;
-	char Wtype[30];
-	if (pEngineParms->EngineType == ENGINE_WNN) {
-		WNN_Arch* WNNParms = (WNN_Arch*)pEngineParms->EngineArch;
-		vDecompLevel = WNNParms->DecompLevel;
-		strcpy(Wtype, WNNParms->WaveletType);
-	}
-	else {
-		vDecompLevel = 0;
-		strcpy(Wtype, "");
-	}
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
+		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 	else {
-		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, vDecompLevel, Wtype);
+		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 }
-__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineThreads(pDebugParms, pid, pEngineParms, pDataParms);
+		return Ora_InsertEngineThreads(pDebugParms, pid, testid, pEngineParms, pDataParms);
 	}
 	else {
-		return Txt_InsertEngineThreads(pDebugParms, pid, pEngineParms, pDataParms);
+		return Txt_InsertEngineThreads(pDebugParms, pid, testid, pEngineParms, pDataParms);
 	}
 }
 //--
@@ -479,78 +472,87 @@ __declspec(dllexport) int __stdcall BulkRunInsert(tDebugInfo* DebugParms, int* p
 //===
 
 //=== Log Retrieve functions, Generic
-__declspec(dllexport) int __stdcall LoadDataParms(tDebugInfo* DebugParms, int pid, int tid, tDataShape* oDataParms) {
+__declspec(dllexport) int __stdcall getCoreThreadId(tDebugInfo* DebugParms, int pid, int testid, int DatasetId, int LayerId, int CoreId) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadDataParms(DebugParms, pid, tid, oDataParms));
+		return(Ora_getCoreThreadId(DebugParms, pid, testid, DatasetId, LayerId, CoreId));
+	}
+	else {
+		return(Txt_getCoreThreadId(DebugParms, pid, testid, DatasetId, LayerId, CoreId));
+	}
+}
+//--
+__declspec(dllexport) int __stdcall LoadDataParms(tDebugInfo* DebugParms, int pid, tDataShape* oDataParms) {
+	if (DebugParms->DebugDest == LOG_TO_ORCL) {
+		return(Ora_LoadDataParms(DebugParms, pid, oDataParms));
 	} else {
-		return(Txt_LoadDataParms(DebugParms, pid, tid, oDataParms));
+		return(Txt_LoadDataParms(DebugParms, pid, oDataParms));
 	}
 }
-__declspec(dllexport) int __stdcall LoadEngineParms(tDebugInfo* DebugParms, int pid, int tid, tEngineDef* oEngineParms) {
+__declspec(dllexport) int __stdcall LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngineDef* oEngineParms) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadEngineParms(DebugParms, pid, tid, oEngineParms));
+		return(Ora_LoadEngineParms(DebugParms, pid, oEngineParms));
 	}
 	else {
-		return(Txt_LoadEngineParms(DebugParms, pid, tid, oEngineParms));
-	}
-}
-//--
-__declspec(dllexport) int __stdcall LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* oNNParms) {
-	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreParms_NN(DebugParms, pid, pLayerId, pCoreId, oNNParms));
-	}
-	else {
-		return(Txt_LoadCoreParms_NN(DebugParms, pid, pLayerId, pCoreId, oNNParms));
-	}
-}
-__declspec(dllexport) int __stdcall LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* oSOMParms) {
-	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreParms_SOM(DebugParms, pid, pLayerId, pCoreId, oSOMParms));
-	}
-	else {
-		return(Txt_LoadCoreParms_SOM(DebugParms, pid, pLayerId, pCoreId, oSOMParms));
-	}
-}
-__declspec(dllexport) int __stdcall LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* oSVMParms) {
-	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreParms_SVM(DebugParms, pid, pLayerId, pCoreId, oSVMParms));
-	}
-	else {
-		return(Txt_LoadCoreParms_SVM(DebugParms, pid, pLayerId, pCoreId, oSVMParms));
+		return(Txt_LoadEngineParms(DebugParms, pid, oEngineParms));
 	}
 }
 //--
-__declspec(dllexport) int __stdcall LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
+__declspec(dllexport) int __stdcall LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* oNNParms) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreImage_NN(DebugParms, pLayerId, pCoreId, pid, tid, NNParms, oNNWeight));
+		return(Ora_LoadCoreParms_NN(DebugParms, pid, tid, oNNParms));
 	}
 	else {
-		return(Txt_LoadCoreImage_NN(DebugParms, pLayerId, pCoreId, pid, tid, NNParms, oNNWeight));
+		return(Txt_LoadCoreParms_NN(DebugParms, pid, tid, oNNParms));
 	}
 }
-__declspec(dllexport) int __stdcall LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
+__declspec(dllexport) int __stdcall LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* oSOMParms) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreImage_SOM(DebugParms, pLayerId, pCoreId, pid, tid, SOMParms, oSOMWeight));
+		return(Ora_LoadCoreParms_SOM(DebugParms, pid, tid, oSOMParms));
 	}
 	else {
-		return(Txt_LoadCoreImage_SOM(DebugParms, pLayerId, pCoreId, pid, tid, SOMParms, oSOMWeight));
+		return(Txt_LoadCoreParms_SOM(DebugParms, pid, tid, oSOMParms));
 	}
 }
-__declspec(dllexport) int __stdcall LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
+__declspec(dllexport) int __stdcall LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* oSVMParms) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreImage_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMWeight));
+		return(Ora_LoadCoreParms_SVM(DebugParms, pid, tid, oSVMParms));
 	}
 	else {
-		return(Txt_LoadCoreImage_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMWeight));
+		return(Txt_LoadCoreParms_SVM(DebugParms, pid, tid, oSVMParms));
 	}
 }
 //--
-__declspec(dllexport) int __stdcall LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+__declspec(dllexport) int __stdcall LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
 	if (DebugParms->DebugDest == LOG_TO_ORCL) {
-		return(Ora_LoadCoreLogs_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMResult));
+		return(Ora_LoadCoreImage_NN(DebugParms, pid, tid, NNParms, oNNWeight));
 	}
 	else {
-		return(Txt_LoadCoreLogs_SVM(DebugParms, pLayerId, pCoreId, pid, tid, SVMParms, oSVMResult));
+		return(Txt_LoadCoreImage_NN(DebugParms, pid, tid, NNParms, oNNWeight));
+	}
+}
+__declspec(dllexport) int __stdcall LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
+	if (DebugParms->DebugDest == LOG_TO_ORCL) {
+		return(Ora_LoadCoreImage_SOM(DebugParms, pid, tid, SOMParms, oSOMWeight));
+	}
+	else {
+		return(Txt_LoadCoreImage_SOM(DebugParms, pid, tid, SOMParms, oSOMWeight));
+	}
+}
+__declspec(dllexport) int __stdcall LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
+	if (DebugParms->DebugDest == LOG_TO_ORCL) {
+		return(Ora_LoadCoreImage_SVM(DebugParms, pid, tid, SVMParms, oSVMWeight));
+	}
+	else {
+		return(Txt_LoadCoreImage_SVM(DebugParms, pid, tid, SVMParms, oSVMWeight));
+	}
+}
+//--
+__declspec(dllexport) int __stdcall LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+	if (DebugParms->DebugDest == LOG_TO_ORCL) {
+		return(Ora_LoadCoreLogs_SVM(DebugParms, pid, tid, SVMParms, oSVMResult));
+	}
+	else {
+		return(Txt_LoadCoreLogs_SVM(DebugParms, pid, tid, SVMParms, oSVMResult));
 	}
 }
 /*

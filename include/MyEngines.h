@@ -25,7 +25,6 @@ typedef struct {
 	int TestId;
 	int DatasetId;
 	int ThreadId;
-	//int EngineType;
 } tEngineHandle;
 
 typedef struct sCore {
@@ -50,10 +49,13 @@ typedef struct sEngineDef {
 	int TotalCoresCount;
 	int TSFcnt;
 	int* TSFid;
-	void*   EngineArch;	// only used for multi-layer engines. points to a <XXX>_Arch structure	
+	int WNN_DecompLevel;
+	char WNN_WaveletType[30];
 #ifdef __cplusplus
 	sEngineDef() {
 		TSFid = MallocArray<int>(MAX_TSFCOUNT);
+		WNN_DecompLevel = 0;
+		strcpy(WNN_WaveletType, "Unused");
 	}
 
 	~sEngineDef() {

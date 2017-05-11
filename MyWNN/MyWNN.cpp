@@ -99,7 +99,7 @@ __declspec(dllexport) void BuildLayer1Input_WNN(int dataSet, int sampleCnt, int 
 
 __declspec(dllexport) void BuildLayerInput_WNN(int layer, tEngineDef* pEngineParms, int dataTrx, int dataSet, int sampleCnt, int l0tslen, double* l0its, double l0ibv, double** l0ots, double* l0obv, double* tsf, tCore* l0log, double** l1target, double** oSample, double** oTarget) {
 	if (layer == 0) {
-		BuildLayer0Input_WNN(dataSet, ((WNN_Arch*)pEngineParms->EngineArch)->DecompLevel, ((WNN_Arch*)pEngineParms->EngineArch)->WaveletType, l0tslen, l0its, l0ibv, l0ots, l0obv);
+		BuildLayer0Input_WNN(dataSet, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType, l0tslen, l0its, l0ibv, l0ots, l0obv);
 	}
 	else {
 		BuildLayer1Input_WNN(dataSet, sampleCnt, pEngineParms->Core[0][0].SampleLen, pEngineParms->Core[1][0].SampleLen, pEngineParms->TSFcnt, tsf, pEngineParms->CoresCount[0], pEngineParms->Core[0][0].TargetLen, pEngineParms->Core[1][0].TargetLen, l0log, l1target, oSample, oTarget);

@@ -314,79 +314,83 @@ static const short sqlcud0[] =
 3925,0,0,21,0,0,45,1488,0,0,0,0,0,1,0,
 3940,0,0,21,0,0,13,1489,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,97,0,0,
 3971,0,0,21,0,0,15,1495,0,0,0,0,0,1,0,
-3986,0,0,22,0,0,17,1528,0,0,1,1,0,1,0,1,97,0,0,
-4005,0,0,22,0,0,45,1530,0,0,0,0,0,1,0,
-4020,0,0,22,0,0,13,1535,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
+3986,0,0,22,0,0,17,1527,0,0,1,1,0,1,0,1,97,0,0,
+4005,0,0,22,0,0,45,1529,0,0,0,0,0,1,0,
+4020,0,0,22,0,0,13,1534,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
 0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,2,4,0,0,2,4,0,0,
-4079,0,0,22,0,0,15,1548,0,0,0,0,0,1,0,
-4094,0,0,23,0,0,17,1569,0,0,1,1,0,1,0,1,97,0,0,
-4113,0,0,23,0,0,45,1571,0,0,0,0,0,1,0,
-4128,0,0,23,0,0,13,1576,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4079,0,0,22,0,0,15,1547,0,0,0,0,0,1,0,
+4094,0,0,23,0,0,17,1568,0,0,1,1,0,1,0,1,97,0,0,
+4113,0,0,23,0,0,45,1570,0,0,0,0,0,1,0,
+4128,0,0,23,0,0,13,1575,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
 2,3,0,0,2,4,0,0,
-4171,0,0,23,0,0,15,1588,0,0,0,0,0,1,0,
-4186,0,0,24,0,0,17,1609,0,0,1,1,0,1,0,1,97,0,0,
-4205,0,0,24,0,0,45,1611,0,0,0,0,0,1,0,
-4220,0,0,24,0,0,13,1616,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
+4171,0,0,23,0,0,15,1587,0,0,0,0,0,1,0,
+4186,0,0,24,0,0,17,1608,0,0,1,1,0,1,0,1,97,0,0,
+4205,0,0,24,0,0,45,1610,0,0,0,0,0,1,0,
+4220,0,0,24,0,0,13,1615,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
 2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
-4279,0,0,24,0,0,15,1628,0,0,0,0,0,1,0,
-4294,0,0,25,0,0,17,1652,0,0,1,1,0,1,0,1,97,0,0,
-4313,0,0,25,0,0,45,1654,0,0,0,0,0,1,0,
-4328,0,0,25,0,0,13,1656,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4359,0,0,25,0,0,15,1669,0,0,0,0,0,1,0,
-4374,0,0,26,0,0,17,1692,0,0,1,1,0,1,0,1,97,0,0,
-4393,0,0,26,0,0,45,1694,0,0,0,0,0,1,0,
-4408,0,0,26,0,0,13,1696,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4435,0,0,26,0,0,15,1709,0,0,0,0,0,1,0,
-4450,0,0,27,0,0,17,1732,0,0,1,1,0,1,0,1,97,0,0,
-4469,0,0,27,0,0,45,1734,0,0,0,0,0,1,0,
-4484,0,0,27,0,0,13,1736,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4511,0,0,27,0,0,15,1747,0,0,0,0,0,1,0,
-4526,0,0,27,0,0,17,1772,0,0,1,1,0,1,0,1,97,0,0,
-4545,0,0,27,0,0,45,1774,0,0,0,0,0,1,0,
-4560,0,0,27,0,0,13,1775,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4279,0,0,24,0,0,15,1627,0,0,0,0,0,1,0,
+4294,0,0,25,0,0,17,1649,0,0,1,1,0,1,0,1,97,0,0,
+4313,0,0,25,0,0,45,1651,0,0,0,0,0,1,0,
+4328,0,0,25,0,0,13,1652,0,0,1,0,0,1,0,2,3,0,0,
+4347,0,0,25,0,0,15,1657,0,0,0,0,0,1,0,
+4362,0,0,26,0,0,17,1681,0,0,1,1,0,1,0,1,97,0,0,
+4381,0,0,26,0,0,45,1683,0,0,0,0,0,1,0,
+4396,0,0,26,0,0,13,1685,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4427,0,0,26,0,0,15,1698,0,0,0,0,0,1,0,
+4442,0,0,27,0,0,17,1721,0,0,1,1,0,1,0,1,97,0,0,
+4461,0,0,27,0,0,45,1723,0,0,0,0,0,1,0,
+4476,0,0,27,0,0,13,1725,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4503,0,0,27,0,0,15,1738,0,0,0,0,0,1,0,
+4518,0,0,28,0,0,17,1761,0,0,1,1,0,1,0,1,97,0,0,
+4537,0,0,28,0,0,45,1763,0,0,0,0,0,1,0,
+4552,0,0,28,0,0,13,1765,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4579,0,0,28,0,0,15,1776,0,0,0,0,0,1,0,
+4594,0,0,28,0,0,17,1801,0,0,1,1,0,1,0,1,97,0,0,
+4613,0,0,28,0,0,45,1803,0,0,0,0,0,1,0,
+4628,0,0,28,0,0,13,1804,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,3,0,0,
-4603,0,0,27,0,0,15,1788,0,0,0,0,0,1,0,
-4618,0,0,28,0,0,17,2027,0,0,1,1,0,1,0,1,97,0,0,
-4637,0,0,28,0,0,45,2029,0,0,0,0,0,1,0,
-4652,0,0,28,0,0,13,2030,0,0,1,0,0,1,0,2,97,0,0,
-4671,0,0,28,0,0,15,2035,0,0,0,0,0,1,0,
-4686,0,0,29,0,0,17,2046,0,0,1,1,0,1,0,1,97,0,0,
-4705,0,0,29,0,0,45,2048,0,0,0,0,0,1,0,
-4720,0,0,29,0,0,13,2049,0,0,1,0,0,1,0,2,3,0,0,
-4739,0,0,29,0,0,15,2054,0,0,0,0,0,1,0,
-4754,0,0,30,0,0,17,2099,0,0,1,1,0,1,0,1,97,0,0,
-4773,0,0,30,0,0,45,2101,0,0,0,0,0,1,0,
-4788,0,0,30,0,0,13,2108,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
-4815,0,0,30,0,0,15,2118,0,0,0,0,0,1,0,
-4830,0,0,31,0,0,17,2131,0,0,1,1,0,1,0,1,97,0,0,
-4849,0,0,31,0,0,45,2133,0,0,0,0,0,1,0,
-4864,0,0,31,0,0,13,2138,0,0,1,0,0,1,0,2,97,0,0,
-4883,0,0,31,0,0,15,2144,0,0,0,0,0,1,0,
-4898,0,0,32,0,0,17,2156,0,0,1,1,0,1,0,1,97,0,0,
-4917,0,0,32,0,0,45,2158,0,0,0,0,0,1,0,
-4932,0,0,32,0,0,13,2164,0,0,1,0,0,1,0,2,97,0,0,
-4951,0,0,32,0,0,15,2171,0,0,0,0,0,1,0,
-4966,0,0,33,0,0,17,2183,0,0,1,1,0,1,0,1,97,0,0,
-4985,0,0,33,0,0,45,2185,0,0,0,0,0,1,0,
-5000,0,0,33,0,0,13,2186,0,0,1,0,0,1,0,2,3,0,0,
-5019,0,0,33,0,0,15,2194,0,0,0,0,0,1,0,
-5034,0,0,34,0,0,17,2222,0,0,1,1,0,1,0,1,97,0,0,
-5053,0,0,34,0,0,45,2224,0,0,0,0,0,1,0,
-5068,0,0,34,0,0,13,2226,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4671,0,0,28,0,0,15,1817,0,0,0,0,0,1,0,
+4686,0,0,29,0,0,17,1842,0,0,1,1,0,1,0,1,97,0,0,
+4705,0,0,29,0,0,45,1844,0,0,0,0,0,1,0,
+4720,0,0,29,0,0,13,1845,0,0,1,0,0,1,0,2,97,0,0,
+4739,0,0,29,0,0,15,1850,0,0,0,0,0,1,0,
+4754,0,0,30,0,0,17,1861,0,0,1,1,0,1,0,1,97,0,0,
+4773,0,0,30,0,0,45,1863,0,0,0,0,0,1,0,
+4788,0,0,30,0,0,13,1864,0,0,1,0,0,1,0,2,3,0,0,
+4807,0,0,30,0,0,15,1869,0,0,0,0,0,1,0,
+4822,0,0,31,0,0,17,1914,0,0,1,1,0,1,0,1,97,0,0,
+4841,0,0,31,0,0,45,1916,0,0,0,0,0,1,0,
+4856,0,0,31,0,0,13,1923,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
+4883,0,0,31,0,0,15,1933,0,0,0,0,0,1,0,
+4898,0,0,32,0,0,17,1946,0,0,1,1,0,1,0,1,97,0,0,
+4917,0,0,32,0,0,45,1948,0,0,0,0,0,1,0,
+4932,0,0,32,0,0,13,1953,0,0,1,0,0,1,0,2,97,0,0,
+4951,0,0,32,0,0,15,1959,0,0,0,0,0,1,0,
+4966,0,0,33,0,0,17,1971,0,0,1,1,0,1,0,1,97,0,0,
+4985,0,0,33,0,0,45,1973,0,0,0,0,0,1,0,
+5000,0,0,33,0,0,13,1979,0,0,1,0,0,1,0,2,97,0,0,
+5019,0,0,33,0,0,15,1986,0,0,0,0,0,1,0,
+5034,0,0,34,0,0,17,1998,0,0,1,1,0,1,0,1,97,0,0,
+5053,0,0,34,0,0,45,2000,0,0,0,0,0,1,0,
+5068,0,0,34,0,0,13,2001,0,0,1,0,0,1,0,2,3,0,0,
+5087,0,0,34,0,0,15,2009,0,0,0,0,0,1,0,
+5102,0,0,35,0,0,17,2037,0,0,1,1,0,1,0,1,97,0,0,
+5121,0,0,35,0,0,45,2039,0,0,0,0,0,1,0,
+5136,0,0,35,0,0,13,2041,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,
-5107,0,0,34,0,0,15,2239,0,0,0,0,0,1,0,
-5122,0,0,35,0,0,17,2264,0,0,1,1,0,1,0,1,97,0,0,
-5141,0,0,35,0,0,45,2266,0,0,0,0,0,1,0,
-5156,0,0,35,0,0,13,2268,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+5175,0,0,35,0,0,15,2054,0,0,0,0,0,1,0,
+5190,0,0,36,0,0,17,2079,0,0,1,1,0,1,0,1,97,0,0,
+5209,0,0,36,0,0,45,2081,0,0,0,0,0,1,0,
+5224,0,0,36,0,0,13,2083,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
-5207,0,0,35,0,0,15,2287,0,0,0,0,0,1,0,
-5222,0,0,36,52,0,1,2374,0,0,0,0,0,1,0,
-5237,0,0,37,0,0,24,2375,0,0,1,1,0,1,0,1,97,0,0,
-5256,0,0,38,0,0,29,2378,0,0,0,0,0,1,0,
-5271,0,0,0,0,0,58,2393,0,0,1,1,0,1,0,3,109,0,0,
-5290,0,0,0,0,0,60,2399,0,0,0,0,0,1,0,
-5305,0,0,39,0,0,30,2407,0,0,0,0,0,1,0,
-5320,0,0,0,0,0,59,2408,0,0,1,1,0,1,0,3,109,0,0,
+5275,0,0,36,0,0,15,2102,0,0,0,0,0,1,0,
+5290,0,0,37,52,0,1,2189,0,0,0,0,0,1,0,
+5305,0,0,38,0,0,24,2190,0,0,1,1,0,1,0,1,97,0,0,
+5324,0,0,39,0,0,29,2193,0,0,0,0,0,1,0,
+5339,0,0,0,0,0,58,2208,0,0,1,1,0,1,0,3,109,0,0,
+5358,0,0,0,0,0,60,2214,0,0,0,0,0,1,0,
+5373,0,0,40,0,0,30,2222,0,0,0,0,0,1,0,
+5388,0,0,0,0,0,59,2223,0,0,1,1,0,1,0,3,109,0,0,
 };
 
 
@@ -706,7 +710,7 @@ EXPORT void __stdcall OraCommit(void* pCtx) {
 //===
 
 //=== Basic Logs
-EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun, int pDataSourceType, char* pDataSourceFileName) {
+EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -723,9 +727,9 @@ EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into TesterParms(ProcessId, TesterStart,	SimulationLen,	Duration, 	  SimulationStart,					DoTraining, DoRun, DataSourceType, DataSourceFileName) \
-						values(					%d,			sysdate,	%d,				%f,			  to_date('%s','YYYYMMDDHH24MI'),	%d,			%d,			%d,			'%s')",
-		pid, pSimulationLen, pElapsedSecs, pSimulationStart, pDoTraining, pDoRun, pDataSourceType, pDataSourceFileName);
+	sprintf(&stmt[0], "insert into TesterParms(ProcessId, TesterStart,	SimulationLen,	Duration, 	  SimulationStart,					DoTraining, DoRun) \
+						values(					%d,			sysdate,	%d,				%f,			  to_date('%s','YYYYMMDDHH24MI'),	%d,			%d)",
+		pid, pSimulationLen, pElapsedSecs, pSimulationStart, pDoTraining, pDoRun);
 	//-- Executes Insert statement
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
@@ -948,13 +952,13 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(pDebugParms, LOG_ERROR, "Ora_InsertEngineParms() Insert into EngineParms failed. SQL Error %d\n", 1, sqlca.sqlcode);
+		LogWrite_C(pDebugParms, LOG_ERROR, "Ora_InsertEngineParms() Insert into EngineParms failed. SQL Error %d ; stmt=%s\n", 2, sqlca.sqlcode, stmt);
 		return sqlca.sqlcode;
 	}
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int l, c, d;
@@ -973,7 +977,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, t
 	for (l = 0; l < pEngineParms->LayersCount; l++) {
 		for (c = 0; c < pEngineParms->CoresCount[l]; c++) {
 			for (d = 0; d < pDataParms->DatasetsCount; d++) {
-				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, LayerId, CoreId, DatasetId, ThreadId) values(%d, %d, %d, %d, %d)", pid, l, c, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
+				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d)", pid, testid, l, c, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
 				/* EXEC SQL EXECUTE IMMEDIATE : stmt; */ 
 
 {
@@ -1011,7 +1015,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, t
 
 
 				if (sqlca.sqlcode != 0) {
-					LogWrite_C(pDebugParms, LOG_ERROR, "%s() Insert into EngineParms failed. SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+					LogWrite_C(pDebugParms, LOG_ERROR, "%s() Insert into EngineParms failed. SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
 					return sqlca.sqlcode;
 				}
 			}
@@ -7229,7 +7233,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 //===
 
 //=== Engine Load stuff
-EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, int tid, tDataShape* oDataParms) {
+EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataShape* oDataParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int ret;
@@ -7418,7 +7422,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, int tid,
 	LogWrite_C(DebugParms, LOG_INFO, "%s(): HistoryLen=%d ; SampleLen=%d ; PredictionLen=%d \n", 4, __func__, oDataParms->HistoryLen, oDataParms->SampleLen, oDataParms->PredictionLen);
 	return ret;
 }
-EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, int tid, tEngineDef* oEngineParms) {
+EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngineDef* oEngineParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int ret;
@@ -7594,15 +7598,14 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, int ti
 	oEngineParms->EngineType = vEngineType;
 	oEngineParms->LayersCount = vLayersCount;
 	if (vEngineType == ENGINE_WNN) {
-		WNN_Arch* WNNParms = (WNN_Arch*)oEngineParms->EngineArch;
-		WNNParms->DecompLevel = vDecompLevel;
-		strcpy(WNNParms->WaveletType, vWType);
+		oEngineParms->WNN_DecompLevel = vDecompLevel;
+		strcpy(oEngineParms->WNN_WaveletType, vWType);
 	}
 	LogWrite_C(DebugParms, LOG_INFO, "%s(): EngineType=%d ; LayersCount=%d\n", 3, __func__, oEngineParms->EngineType, oEngineParms->LayersCount);
 	return ret;
 }
 //--
-EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, NN_Parms* oNNParms) {
+EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* oNNParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -7620,7 +7623,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int p
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and LayerId=%d and CoreId=%d", pid, pLayerId, pCoreId);
+	sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
 	/* EXEC SQL PREPARE sLEPNN FROM : stmt; */ 
@@ -7684,7 +7687,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int p
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); system("pause");
+		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL FETCH cLEPNN INTO vInputCount, vOutputCount, vLevelRatios, vUseContext, vMaxEpochs, vBP_Algo, vLearningRate, vLearningMomentum, vActivationFunction, vHCPBeta, vTargetMSE; */ 
@@ -7811,11 +7814,11 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int p
 		strcpy(oNNParms->LevelRatioS, vLevelRatios);
 	}
 	else if (sqlca.sqlcode == 1403) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; LayerId=%d ; CoreId=%d\n", 4, __func__, pid, pLayerId, pCoreId);
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; ThreadId=%d\n", 3, __func__, pid, tid);
 		return sqlca.sqlcode;
 	}
 	else {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d in fetch\n", 2, __func__, sqlca.sqlcode);
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL CLOSE cLEPNN; */ 
@@ -7839,7 +7842,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int p
 
 	return 0;
 }
-EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SOM_Parms* oSOMParms) {
+EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* oSOMParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -7856,7 +7859,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR from CoreParms_SOM where ProcessId=%d and LayerId=%d and CoreId=%d", pid, pLayerId, pCoreId);
+	sprintf(&stmt[0], "select InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR from CoreParms_SOM where ProcessId=%d and ThreadId=%d", pid, tid);
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
 	/* EXEC SQL PREPARE sLEPSOM FROM : stmt; */ 
@@ -8014,7 +8017,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 		oSOMParms->InputCount = vInputCount; oSOMParms->OutputCount = vOutputCount; oSOMParms->MaxEpochs = vMaxEpochs; oSOMParms->TDFunction = vTDFunction; oSOMParms->BaseTD = vBaseTD; oSOMParms->LRFunction = vLRFunction; oSOMParms->BaseLR = vBaseLR;
 	}
 	else if (sqlca.sqlcode == 1403) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; LayerId=%d ; CoreId=%d\n", 4, __func__, pid, pLayerId, pCoreId);
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; ThreadId=%d\n", 3, __func__, pid, tid);
 		return sqlca.sqlcode;
 	}
 	else {
@@ -8042,7 +8045,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 	return 0;
 }
-EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int pLayerId, int pCoreId, SVM_Parms* oSVMParms) {
+EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* oSVMParms) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -8059,7 +8062,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize from CoreParms_SVM where ProcessId=%d and LayerId=%d and CoreId=%d", pid, pLayerId, pCoreId);
+	sprintf(&stmt[0], "select InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize from CoreParms_SVM where ProcessId=%d and ThreadId=%d", pid, tid);
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
 	/* EXEC SQL PREPARE sLEPSVM FROM : stmt; */ 
@@ -8249,7 +8252,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 		oSVMParms->InputCount = vInputCount; oSVMParms->MaxEpochs = vMaxEpochs; oSVMParms->C = vC; oSVMParms->epsilon = vEpsilon; oSVMParms->svmIterToShrink = vIterToShrink; oSVMParms->KernelType = vKernelType; oSVMParms->PolyDegree = vPolyDegree; oSVMParms->RBFGamma = vRBFGamma; oSVMParms->CoefLin = vCoefLin; oSVMParms->CoefConst = vCoefConst; oSVMParms->KernelCacheSize = vKernelCacheSize;
 	}
 	else if (sqlca.sqlcode == 1403) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; LayerId=%d ; CoreId=%d\n", 4, __func__, pid, pLayerId, pCoreId);
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; ThreadId=%d\n", 3, __func__, pid, tid);
 		return sqlca.sqlcode;
 	}
 	else {
@@ -8278,7 +8281,152 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 	return 0;
 }
 //--
-EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
+EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int testid, int DatasetId, int LayerId, int CoreId) {
+	/* EXEC SQL BEGIN DECLARE SECTION; */ 
+
+	sql_context vCtx = DebugParms->DebugDB->DBCtx; 
+	char stmt[1000];
+	int Ctid;
+	/* EXEC SQL END   DECLARE SECTION; */ 
+
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("%s() could not connect to Log Database...\n", __func__);
+		vCtx = DebugParms->DebugDB->DBCtx;
+	}
+
+	sprintf(&stmt[0], "select ThreadId from EngineThreads where ProcessId=%d and TestId=%d and DatasetId=%d and LayerId=%d and CoreId=%d", pid, testid, DatasetId, LayerId, CoreId);
+	//-- Executes SQL 
+	vCtx = DebugParms->DebugDB->DBCtx;
+	/* EXEC SQL CONTEXT USE : vCtx; */ 
+
+	/* EXEC SQL PREPARE sCtid FROM : stmt; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 13;
+ sqlstm.arrsiz = 11;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.stmt = "";
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )4294;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqhstv[0] = (         void  *)stmt;
+ sqlstm.sqhstl[0] = (unsigned int  )1000;
+ sqlstm.sqhsts[0] = (         int  )0;
+ sqlstm.sqindv[0] = (         void  *)0;
+ sqlstm.sqinds[0] = (         int  )0;
+ sqlstm.sqharm[0] = (unsigned int  )0;
+ sqlstm.sqadto[0] = (unsigned short )0;
+ sqlstm.sqtdso[0] = (unsigned short )0;
+ sqlstm.sqphsv = sqlstm.sqhstv;
+ sqlstm.sqphsl = sqlstm.sqhstl;
+ sqlstm.sqphss = sqlstm.sqhsts;
+ sqlstm.sqpind = sqlstm.sqindv;
+ sqlstm.sqpins = sqlstm.sqinds;
+ sqlstm.sqparm = sqlstm.sqharm;
+ sqlstm.sqparc = sqlstm.sqharc;
+ sqlstm.sqpadto = sqlstm.sqadto;
+ sqlstm.sqptdso = sqlstm.sqtdso;
+ sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+	/* EXEC SQL DECLARE cCtid CURSOR FOR sCtid; */ 
+
+	/* EXEC SQL OPEN cCtid; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 13;
+ sqlstm.arrsiz = 11;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.stmt = "";
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )4313;
+ sqlstm.selerr = (unsigned short)1;
+ sqlstm.sqlpfmem = (unsigned int  )0;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqcmod = (unsigned int )0;
+ sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+	/* EXEC SQL FETCH cCtid INTO :Ctid; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 13;
+ sqlstm.arrsiz = 11;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )4328;
+ sqlstm.selerr = (unsigned short)1;
+ sqlstm.sqlpfmem = (unsigned int  )0;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqfoff = (           int )0;
+ sqlstm.sqfmod = (unsigned int )2;
+ sqlstm.sqhstv[0] = (         void  *)&Ctid;
+ sqlstm.sqhstl[0] = (unsigned int  )sizeof(int);
+ sqlstm.sqhsts[0] = (         int  )0;
+ sqlstm.sqindv[0] = (         void  *)0;
+ sqlstm.sqinds[0] = (         int  )0;
+ sqlstm.sqharm[0] = (unsigned int  )0;
+ sqlstm.sqadto[0] = (unsigned short )0;
+ sqlstm.sqtdso[0] = (unsigned short )0;
+ sqlstm.sqphsv = sqlstm.sqhstv;
+ sqlstm.sqphsl = sqlstm.sqhstl;
+ sqlstm.sqphss = sqlstm.sqhsts;
+ sqlstm.sqpind = sqlstm.sqindv;
+ sqlstm.sqpins = sqlstm.sqinds;
+ sqlstm.sqparm = sqlstm.sqharm;
+ sqlstm.sqparc = sqlstm.sqharc;
+ sqlstm.sqpadto = sqlstm.sqadto;
+ sqlstm.sqptdso = sqlstm.sqtdso;
+ sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+	if (sqlca.sqlcode != 0) {
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+		return -1;
+	}
+	/* EXEC SQL CLOSE cCtid; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 13;
+ sqlstm.arrsiz = 11;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )4347;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+
+	return Ctid;
+}
+//--
+EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* NNParms, tNNWeight*** oNNWeight) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int retval = 0;
@@ -8310,7 +8458,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4294;
+ sqlstm.offset = (unsigned int  )4362;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8348,7 +8496,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4313;
+ sqlstm.offset = (unsigned int  )4381;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8370,7 +8518,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4328;
+  sqlstm.offset = (unsigned int  )4396;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8445,7 +8593,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4359;
+ sqlstm.offset = (unsigned int  )4427;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8457,7 +8605,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pLayerId, 
 
 	return retval;
 }
-EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
+EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* SOMParms, tSOMWeight** oSOMWeight) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int retval = 0;
@@ -8489,7 +8637,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4374;
+ sqlstm.offset = (unsigned int  )4442;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8527,7 +8675,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4393;
+ sqlstm.offset = (unsigned int  )4461;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8549,7 +8697,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4408;
+  sqlstm.offset = (unsigned int  )4476;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8616,7 +8764,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4435;
+ sqlstm.offset = (unsigned int  )4503;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8628,7 +8776,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pLayerId,
 
 	return retval;
 }
-EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
+EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMWeight** oSVMWeight) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int retval = 0;
@@ -8660,7 +8808,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4450;
+ sqlstm.offset = (unsigned int  )4518;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8698,7 +8846,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4469;
+ sqlstm.offset = (unsigned int  )4537;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8720,7 +8868,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4484;
+  sqlstm.offset = (unsigned int  )4552;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8785,7 +8933,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4511;
+ sqlstm.offset = (unsigned int  )4579;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8798,7 +8946,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pLayerId,
 	return retval;
 }
 //--
-EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, int pCoreId, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
+EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms, tSVMResult* oSVMResult) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	int retval = 0;
@@ -8831,7 +8979,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4526;
+ sqlstm.offset = (unsigned int  )4594;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8869,7 +9017,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4545;
+ sqlstm.offset = (unsigned int  )4613;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8890,7 +9038,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4560;
+ sqlstm.offset = (unsigned int  )4628;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8989,7 +9137,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4603;
+ sqlstm.offset = (unsigned int  )4671;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9001,220 +9149,6 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pLayerId, 
 
 	return retval;
 }
-/*
-EXPORT int __stdcall Ora_getSVcnt(tDebugInfo* DebugParms, int pid, int tid) {
-	EXEC SQL BEGIN DECLARE SECTION;
-	int ret, SVcnt;
-	sql_context vCtx = DebugParms->DebugDB->DBCtx;
-	char stmt[1000];
-	EXEC SQL END   DECLARE SECTION;
-
-	//-- Connects to DB only once
-	if (vCtx == NULL) {
-		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("%s() could not connect to Log Database...\n", __func__);
-		vCtx = DebugParms->DebugDB->DBCtx;
-	}
-
-	sprintf(&stmt[0], "select SVcount from corelogs_svm where ProcessId=%d and ThreadId=%d", pid, tid);
-	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt = %s\n", 2, __func__, stmt);
-
-	//-- Executes SQL 
-	vCtx = DebugParms->DebugDB->DBCtx;
-	EXEC SQL CONTEXT USE : vCtx;
-	EXEC SQL PREPARE sSVcnt FROM : stmt;
-	EXEC SQL DECLARE cSVcnt CURSOR FOR sSVcnt;
-	EXEC SQL OPEN cSVcnt;
-	EXEC SQL FETCH cSVcnt INTO :SVcnt;
-	ret = sqlca.sqlcode;
-	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
-		return -1;
-	}
-	EXEC SQL CLOSE cSVcnt;
-	ret = SVcnt;
-
-	LogWrite_C(DebugParms, LOG_INFO, "%s(): SVcnt=%d \n", 2, __func__, ret);
-	return ret;
-}
-
-EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms){
-	EXEC SQL BEGIN DECLARE SECTION;
-	int retval = 0;
-	sql_context vCtx = DebugParms->DebugDB->DBCtx;
-	char stmt[1000];
-	//-- Network Properties variables
-	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction;
-	char vLevelRatios[256];
-	double vLearningRate, vLearningMomentum, vHCPBeta, vTargetMSE;
-	EXEC SQL END DECLARE SECTION;
-
-	NN_Parms* vNNParms;
-	//GA_Parms* vGAParms;
-	//SOM_Parms* vSOMParms;
-	//SVM_Parms* vSVMParms;
-
-	//vLevelRatios = (char*)malloc(256*sizeof(char));
-	//-- Connects to DB only once
-	if (vCtx == NULL){
-		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_LoadEngine could not connect to Log Database...\n");
-		vCtx = DebugParms->DebugDB->DBCtx;
-	}
-
-	switch (pEngineType){
-	case ENGINE_NN:
-		vNNParms = (NN_Parms*)oEngineParms;
-
-		//-- Load Network properties from EngineParms_NN
-		sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from EngineParms_NN where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
-		//LogWrite_C(DebugParms, "LoadEngine() CheckPoint 2\n", 0);
-		EXEC SQL CONTEXT USE :vCtx;
-		EXEC SQL PREPARE s1 FROM :stmt;
-		EXEC SQL DECLARE cle CURSOR FOR s1;
-		EXEC SQL OPEN cle;
-		if (sqlca.sqlcode != 0){
-			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: SQL Error %d\n", 1, sqlca.sqlcode); system("pause");
-			retval = sqlca.sqlcode;
-			break;
-		}
-		EXEC SQL FETCH cle INTO vInputCount, vOutputCount, vLevelRatios, vUseContext, vMaxEpochs, vBP_Algo, vLearningRate, vLearningMomentum, vActivationFunction, vHCPBeta, vTargetMSE;
-		if (sqlca.sqlcode == 0){
-			vNNParms->InputCount = vInputCount; vNNParms->OutputCount = vOutputCount; vNNParms->UseContext = vUseContext; vNNParms->MaxEpochs = vMaxEpochs; vNNParms->BP_Algo = vBP_Algo; vNNParms->LearningRate = vLearningRate; vNNParms->LearningMomentum = vLearningMomentum; vNNParms->ActivationFunction = vActivationFunction; vNNParms->HCPbeta = vHCPBeta; vNNParms->TargetMSE = vTargetMSE;
-			strcpy(vNNParms->LevelRatioS, vLevelRatios);
-		}
-		else if (sqlca.sqlcode == 1403){
-			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: Engine not found. ProcessId=%d ; ThreadId=%d ; TestId=%d\n", 3, pEngineHandle->ProcessId, pEngineHandle->ThreadId, pEngineHandle->TestId);
-			retval = sqlca.sqlcode;
-		}
-		else{
-			LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineParms: SQL Error %d\n", 1, sqlca.sqlcode);
-			retval = sqlca.sqlcode;
-		}
-		EXEC SQL CLOSE cle;
-		//free(vLevelRatios);
-
-		break;
-	case ENGINE_GA:
-		break;
-	case ENGINE_SVM:
-		break;
-	case ENGINE_SOM:
-		break;
-	}
-
-	return retval;
-}
-EXPORT int __stdcall Ora_LoadEngineData(tDebugInfo* DebugParms, int pEngineType, tEngineHandle* pEngineHandle, int pDatasetsCount, void* oEngineParms, tCoreLog* oEngineLogs){
-	EXEC SQL BEGIN DECLARE SECTION;
-	int retval = 0;
-	sql_context vCtx = DebugParms->DebugDB->DBCtx;
-	char stmt[1000];
-	//-- Network Weights variables
-	int vNeuronLevel; int vFromNeuron; int vToNeuron; double vWeight;
-	EXEC SQL END DECLARE SECTION;
-
-	NN_Parms* vNNParms;
-	tCoreLog* coreLog;
-	//GA_Parms* vGAParms;
-	//SOM_Parms* vSOMParms;
-	//SVM_Parms* vSVMParms;
-
-	//-- Connects to DB only once
-	if (vCtx == NULL){
-		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_LoadEngineData could not connect to Log Database...\n");
-		vCtx = DebugParms->DebugDB->DBCtx;
-	}
-
-	coreLog = oEngineLogs;
-	switch (pEngineType){
-	case ENGINE_NN:
-		vNNParms = (NN_Parms*)oEngineParms;
-		//-- Load Network Weights from CoreImage_NN
-		sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from CoreImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
-		LogWrite_C(DebugParms, LOG_INFO, "Ora_LoadEngineData() CheckPoint 3 - stmt=%s\n", 1, stmt);
-		EXEC SQL CONTEXT USE :vCtx;
-		EXEC SQL PREPARE s2 FROM :stmt;
-		EXEC SQL DECLARE c2 CURSOR FOR s2;
-		EXEC SQL OPEN c2;
-		while (TRUE) {
-			EXEC SQL FETCH c2 INTO vNeuronLevel, vFromNeuron, vToNeuron, vWeight;
-			if (sqlca.sqlcode == 0){
-				coreLog->NNFinalW[vNeuronLevel][vFromNeuron][vToNeuron].Weight = vWeight;
-			}
-			else if (sqlca.sqlcode == 1403){
-				break;
-			}
-			else{
-				LogWrite_C(DebugParms, LOG_ERROR, "Ora_LoadEngineData: SQL Error %d\n", 1, sqlca.sqlcode);
-				retval = sqlca.sqlcode;
-				break;
-			}
-		}
-		EXEC SQL CLOSE c2;
-
-
-		break;
-	case ENGINE_GA:
-		break;
-	case ENGINE_SVM:
-		break;
-	case ENGINE_SOM:
-		break;
-	}
-
-	return retval;
-}
-EXPORT int __stdcall Ora_LoadDataShape(tDebugInfo* pDebugParms, tDBConnection* pLogDB, tEngineHandle* pEngineHandle, tDataShape* oTestData) {
-	EXEC SQL BEGIN DECLARE SECTION;
-	int ret;
-	sql_context vCtx = pLogDB->DBCtx;
-	char stmt[300];
-	int vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
-	double vWiggleRoom;	//vScaleMin, vScaleMax,
-	EXEC SQL END   DECLARE SECTION;
-
-	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 1\n", 0);
-	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 2\n", 0);
-
-	//-- Connects to DB only once
-	if (vCtx == NULL) {
-		if (OraConnect(pDebugParms, pLogDB) != 0) printf("LoadEngine could not connect to Log Database...\n");
-		vCtx = pLogDB->DBCtx;
-	}
-
-	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 2 - pEngine->ProcessId=%d ; pEngine->ThreadId=%d\n", 2, pEngineHandle->ProcessId, pEngineHandle->ThreadId);
-	//sprintf(&stmt[0], "select HistoryLen, SampleLen, PredictionLen, DataTransformation, ScaleMin, ScaleMax, WiggleRoom from DataParms where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
-	sprintf(&stmt[0], "select HistoryLen, SampleLen, PredictionLen, DataTransformation, WiggleRoom from DataParms where ProcessId=%d and ThreadId=%d", pEngineHandle->ProcessId, pEngineHandle->ThreadId);
-	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB CheckPoint 3 - stmt = %s\n", 1, stmt);
-
-	//-- Executes SQL 
-	vCtx = pLogDB->DBCtx;
-	EXEC SQL CONTEXT USE : vCtx;
-	EXEC SQL PREPARE s15 FROM : stmt;
-	EXEC SQL DECLARE c15 CURSOR FOR s15;
-	EXEC SQL OPEN c15;
-	//EXEC SQL FETCH c15 INTO : vHistoryLen, : vSampleLen, : vPredictionLen, : vDataTransformation, :vScaleMin, :vScaleMax, : vWiggleRoom;
-	EXEC SQL FETCH c15 INTO : vHistoryLen, : vSampleLen, : vPredictionLen, : vDataTransformation, : vWiggleRoom;
-	ret = sqlca.sqlcode;
-	if (sqlca.sqlcode != 0) {
-		LogWrite_C(pDebugParms, LOG_ERROR, "GetDataShapeFromDB: SQL Error %d\n", 1, sqlca.sqlcode);
-		return sqlca.sqlcode;
-	}
-	EXEC SQL CLOSE c15;
-	ret = sqlca.sqlcode;
-
-	//-- Fill oTestData, and returns
-	oTestData->HistoryLen = vHistoryLen;
-	oTestData->SampleLen = vSampleLen;
-	oTestData->PredictionLen = vPredictionLen;
-	oTestData->DataTransformation = vDataTransformation;
-	//oTestData->ScaleMin = vScaleMin;
-	//oTestData->ScaleMax = vScaleMax;
-	oTestData->wiggleRoom = vWiggleRoom;
-	LogWrite_C(pDebugParms, LOG_INFO, "GetDataShapeFromDB(): HistoryLen=%d ; SampleLen=%d ; PredictionLen=%d \n", 3, oTestData->HistoryLen, oTestData->SampleLen, oTestData->PredictionLen);
-	return 0;
-}//===
-*/
-
 
 //=== Queries
 EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char* pSymbol, char* oSymbol, int* oScale){
@@ -9249,7 +9183,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4618;
+ sqlstm.offset = (unsigned int  )4686;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9287,7 +9221,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4637;
+ sqlstm.offset = (unsigned int  )4705;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9308,7 +9242,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4652;
+ sqlstm.offset = (unsigned int  )4720;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9351,7 +9285,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4671;
+ sqlstm.offset = (unsigned int  )4739;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9380,7 +9314,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4686;
+ sqlstm.offset = (unsigned int  )4754;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9418,7 +9352,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4705;
+ sqlstm.offset = (unsigned int  )4773;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9439,7 +9373,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4720;
+ sqlstm.offset = (unsigned int  )4788;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9482,7 +9416,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4739;
+ sqlstm.offset = (unsigned int  )4807;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9548,7 +9482,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4754;
+ sqlstm.offset = (unsigned int  )4822;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9586,7 +9520,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4773;
+ sqlstm.offset = (unsigned int  )4841;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9613,7 +9547,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4788;
+  sqlstm.offset = (unsigned int  )4856;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -9677,7 +9611,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4815;
+ sqlstm.offset = (unsigned int  )4883;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9711,7 +9645,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4830;
+ sqlstm.offset = (unsigned int  )4898;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9749,7 +9683,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4849;
+ sqlstm.offset = (unsigned int  )4917;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9774,7 +9708,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4864;
+ sqlstm.offset = (unsigned int  )4932;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9818,7 +9752,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4883;
+ sqlstm.offset = (unsigned int  )4951;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9851,7 +9785,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4898;
+ sqlstm.offset = (unsigned int  )4966;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9889,7 +9823,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4917;
+ sqlstm.offset = (unsigned int  )4985;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9915,7 +9849,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4932;
+  sqlstm.offset = (unsigned int  )5000;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -9960,7 +9894,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4951;
+ sqlstm.offset = (unsigned int  )5019;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9993,7 +9927,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4966;
+ sqlstm.offset = (unsigned int  )5034;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10031,7 +9965,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4985;
+ sqlstm.offset = (unsigned int  )5053;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10052,7 +9986,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5000;
+ sqlstm.offset = (unsigned int  )5068;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10098,7 +10032,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5019;
+ sqlstm.offset = (unsigned int  )5087;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10147,7 +10081,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5034;
+ sqlstm.offset = (unsigned int  )5102;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10185,7 +10119,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5053;
+ sqlstm.offset = (unsigned int  )5121;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10207,7 +10141,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5068;
+  sqlstm.offset = (unsigned int  )5136;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -10298,7 +10232,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5107;
+ sqlstm.offset = (unsigned int  )5175;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10344,7 +10278,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5122;
+ sqlstm.offset = (unsigned int  )5190;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10382,7 +10316,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5141;
+ sqlstm.offset = (unsigned int  )5209;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10404,7 +10338,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5156;
+  sqlstm.offset = (unsigned int  )5224;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -10525,7 +10459,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5207;
+ sqlstm.offset = (unsigned int  )5275;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10633,7 +10567,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "alter SESSION SET NLS_DATE_FORMAT = 'YYYYMMDDHH24MI'";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5222;
+ sqlstm.offset = (unsigned int  )5290;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10652,7 +10586,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5237;
+ sqlstm.offset = (unsigned int  )5305;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10689,7 +10623,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5256;
+  sqlstm.offset = (unsigned int  )5324;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10724,7 +10658,7 @@ EXPORT void __stdcall OraAllocateCtx(sql_context pCtx[MAX_CONTEXTS]) {
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5271;
+  sqlstm.offset = (unsigned int  )5339;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10765,7 +10699,7 @@ EXPORT void __stdcall OraEnableThreads() {
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5290;
+ sqlstm.offset = (unsigned int  )5358;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10793,7 +10727,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5305;
+ sqlstm.offset = (unsigned int  )5373;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10812,7 +10746,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5320;
+ sqlstm.offset = (unsigned int  )5388;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;

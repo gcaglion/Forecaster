@@ -28,9 +28,7 @@ create table TesterParms(
 	SimulationLen number,
 	SimulationStart date,
 	DoTraining number,
-	DoRun number,
-	DataSourceType number,
-	DataSourceFileName varchar2(100)
+	DoRun number
 );
 alter table TesterParms add constraint TesterParms_PK primary key( ProcessId );
 
@@ -65,12 +63,13 @@ alter table EngineParms add constraint EngineParms_PK primary key( ProcessId );
 drop table EngineThreads;
 create table EngineThreads(
 	ProcessId number,
+	TestId number,
+	DatasetId number,
 	LayerId number,
 	CoreId number,
-	DatasetId number,
 	ThreadId number
 );
-alter table EngineThreads add primary key (ProcessId, LayerId, CoreId, DatasetId);
+alter table EngineThreads add primary key (ProcessId, TestId, LayerId, CoreId, DatasetId);
 alter table EngineThreads add unique (ProcessId, ThreadId);
 
 drop table CoreImage_NN;

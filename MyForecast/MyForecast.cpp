@@ -34,7 +34,6 @@ typedef struct {
 void freeCoreParms(tForecastParms* ioParms) {
 	switch (ioParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
-		free(ioParms->EngineParms.EngineArch);
 		for (int c = 0; c < ioParms->EngineParms.CoresCount[1]; c++) free(ioParms->EngineParms.Core[1][c].CoreSpecs);
 		free(ioParms->EngineParms.Core[1]);
 		break;
@@ -98,20 +97,17 @@ void freeCoreLogs(tForecastParms* ioParms){
 }
 
 int setEngineLayout(tForecastParms* iniParms) {
-	WNN_Arch* WNNArch;
 	//-- 1. set LayersCount, CoresCount, Core[]
 	switch (iniParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
-		iniParms->EngineParms.EngineArch = new WNN_Arch;
-		WNNArch = (WNN_Arch*)iniParms->EngineParms.EngineArch;
-		if (getParam(iniParms, "WNNInfo.WaveletType", WNNArch->WaveletType) < 0)		return -1;
-		if (getParam(iniParms, "WNNInfo.DecompLevel", &WNNArch->DecompLevel) < 0)	return -1;
+		if (getParam(iniParms, "WNNInfo.WaveletType", iniParms->EngineParms.WNN_WaveletType) < 0)		return -1;
+		if (getParam(iniParms, "WNNInfo.DecompLevel", &iniParms->EngineParms.WNN_DecompLevel) < 0)	return -1;
 		iniParms->EngineParms.LayersCount = 2;
 		iniParms->EngineParms.CoresCount = MallocArray<int>(iniParms->EngineParms.LayersCount);
-		iniParms->EngineParms.CoresCount[0] = WNNArch->DecompLevel + 1;
+		iniParms->EngineParms.CoresCount[0] = iniParms->EngineParms.WNN_DecompLevel + 1;
 		iniParms->EngineParms.CoresCount[1] = 1;
 		iniParms->EngineParms.Core = (tCore**)malloc(iniParms->EngineParms.LayersCount * sizeof(tCore*));
-		iniParms->EngineParms.Core[0] = MallocArray<tCore>(WNNArch->DecompLevel + 1);
+		iniParms->EngineParms.Core[0] = MallocArray<tCore>(iniParms->EngineParms.WNN_DecompLevel + 1);
 		iniParms->EngineParms.Core[1] = MallocArray<tCore>(1);
 
 		break;
@@ -249,81 +245,11 @@ int LogSave_Run  (tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 
 	return 0;
 }
-int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid){
+int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId){
 	if (SaveTestLog_EngineParms(pDebugParms, pid, pEngineParms) != 0) return -1;
 
-	if (SaveTestLog_EngineThreads(pDebugParms, pid, pEngineParms, pDataParms) != 0) return -1;
+	if (SaveTestLog_EngineThreads(pDebugParms, pid, pTestId, pEngineParms, pDataParms) != 0) return -1;
 	return 0;
-}
-//--
-int LoadCoreParms(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
-	tCore* core;
-	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
-	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
-	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
-	SVM_Parms* SVMParms = nullptr;	tSVMWeight** SVMWeight = nullptr;
-
-	for (int l = 0; l < pEngineParms->LayersCount; l++) {
-		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
-			core = &pEngineParms->Core[l][n];
-			switch (core->CoreType) {
-			case ENGINE_NN:
-				NNParms = (NN_Parms*)core->CoreSpecs;
-				//-- 1. load engine parameters
-				if (LoadCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
-				break;
-			case ENGINE_GA:
-				break;
-			case ENGINE_SOM:
-				SOMParms = (SOM_Parms*)core->CoreSpecs;
-				//-- 1. load engine parameters
-				if (LoadCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
-				break;
-			case ENGINE_SVM:
-				SVMParms = (SVM_Parms*)core->CoreSpecs;
-				//-- 1. load engine parameters
-				if (LoadCoreParms_SVM(pDebugParms, pid, l, n, SVMParms) != 0) return -1;
-				break;
-			}
-		}
-	}
-	return 0;
-
-}
-int LoadCoreImage(tDebugInfo* pDebugParms, int pid, int tid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
-	tCore* core;
-
-	for (int l = 0; l < pEngineParms->LayersCount; l++) {
-		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
-			core = &pEngineParms->Core[l][n];
-			switch (core->CoreType) {
-			case ENGINE_NN:
-				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					if (LoadCoreImage_NN(pDebugParms, l, n, pid, tid, (NN_Parms*)core->CoreSpecs, core->CoreLog[d].NNFinalW) != 0) return -1;
-				}
-				break;
-			case ENGINE_GA:
-				break;
-			case ENGINE_SOM:
-				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					if (LoadCoreImage_SOM(pDebugParms, l, n, pid, tid, (SOM_Parms*)core->CoreSpecs, core->CoreLog[d].SOMFinalW) != 0) return -1;
-				}
-				break;
-			case ENGINE_SVM:
-				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- first, load SVM results from CoreLogs_SVM. This is needed here to set SVcnt
-					if (LoadCoreLogs_SVM(pDebugParms, l, n, pid, tid, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d].SVMResult) != 0) return -1;
-					//-- allocate SVMWeight (when Dotraining, this is called directly from SVMTrain)
-					mallocSVMLog(&core->CoreLog[d], core->CoreLog[d].SVMResult.SVcount, core->SampleLen);
-					//-- then, load SVs
-					if (LoadCoreImage_SVM(pDebugParms, l, n, pid, tid, (SVM_Parms*)core->CoreSpecs, core->CoreLog[d].SVMFinalW) != 0) return -1;
-				}
-				break;
-			}
-		}
-	}
-	return 0;
-
 }
 int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId) {
 
@@ -336,7 +262,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
 	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
 	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
-	SVM_Parms* SVMParms = nullptr;	
+	SVM_Parms* SVMParms = nullptr;
 
 	for (int l = 0; l < pEngineParms->LayersCount; l++) {
 		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
@@ -385,6 +311,77 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 		}
 	}
 	return 0;
+}
+//--
+int LoadCoreParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+	tCore* core;
+	int tid;
+
+	for (int l = 0; l < pEngineParms->LayersCount; l++) {
+		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
+			core = &pEngineParms->Core[l][n];
+			//-- first, get ThreadId for this core. Use Dataset=0 and TestId=0, as core parameters are the same for every dataset/Test
+			tid = getCoreThreadId(pDebugParms, pid, 0, 0, l, n);
+			//-- then,  load core
+			switch (core->CoreType) {
+			case ENGINE_NN:
+				if (LoadCoreParms_NN(pDebugParms, pid, tid, (NN_Parms*)core->CoreSpecs) != 0) return -1;
+				break;
+			case ENGINE_GA:
+				break;
+			case ENGINE_SOM:
+				if (LoadCoreParms_SOM(pDebugParms, pid, tid, (SOM_Parms*)core->CoreSpecs) != 0) return -1;
+				break;
+			case ENGINE_SVM:
+				if (LoadCoreParms_SVM(pDebugParms, pid, tid, (SVM_Parms*)core->CoreSpecs) != 0) return -1;
+				break;
+			}
+		}
+	}
+	return 0;
+
+}
+int LoadCoreImage(tDebugInfo* pDebugParms, int pid, int testid, int DSid, tEngineDef* pEngineParms, tDataShape* pDataParms, tEngineHandle* pSavedEngine) {
+	tCore* core;
+	int tid;
+	//-- 
+
+	for (int l = 0; l < pEngineParms->LayersCount; l++) {
+		for (int n = 0; n < pEngineParms->CoresCount[l]; n++) {
+			core = &pEngineParms->Core[l][n];
+			//-- first, get ThreadId for this core
+			tid = getCoreThreadId(pDebugParms, pid, testid, DSid, l, n);
+			//-- store threadid that will be needed by SetNetPid() as NetThreadId
+			pSavedEngine->ThreadId = tid;
+			//-- then,  load core
+			switch (core->CoreType) {
+			case ENGINE_NN:
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					if (LoadCoreImage_NN(pDebugParms, pid, tid, (NN_Parms*)core->CoreSpecs, core->CoreLog[d].NNFinalW) != 0) return -1;
+				}
+				break;
+			case ENGINE_GA:
+				break;
+			case ENGINE_SOM:
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					if (LoadCoreImage_SOM(pDebugParms, pid, tid, (SOM_Parms*)core->CoreSpecs, core->CoreLog[d].SOMFinalW) != 0) return -1;
+				}
+				break;
+			case ENGINE_SVM:
+				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
+					//-- first, load SVM results from CoreLogs_SVM. This is needed here to set SVcnt
+					if (LoadCoreLogs_SVM(pDebugParms, pid, tid, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d].SVMResult) != 0) return -1;
+					//-- allocate SVMWeight (when Dotraining, this is called directly from SVMTrain)
+					mallocSVMLog(&core->CoreLog[d], core->CoreLog[d].SVMResult.SVcount, core->SampleLen);
+					//-- then, load SVs
+					if (LoadCoreImage_SVM(pDebugParms, pid, tid, (SVM_Parms*)core->CoreSpecs, core->CoreLog[d].SVMFinalW) != 0) return -1;
+				}
+				break;
+			}
+		}
+	}
+	return 0;
+
 }
 
 //--
@@ -583,21 +580,22 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	//-- 5a. if using a saved engine, get EngineParms and DataShape here
 	if (ioParms->DoTraining == 0) {
 		if (getParam(ioParms, "SavedEngine.ProcessId", &ioParms->SavedEngine.ProcessId) < 0)	return -1;
-		if (getParam(ioParms, "SavedEngine.ThreadId", &ioParms->SavedEngine.ThreadId) < 0)	return -1;
-
+		if (getParam(ioParms, "SavedEngine.TestId", &ioParms->SavedEngine.TestId) < 0)			return -1;
+		if (getParam(ioParms, "SavedEngine.DatasetId", &ioParms->SavedEngine.DatasetId) < 0)	return -1;
 		ioParms->DataParms.ValidationShift = 0;
-		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->DataParms) != 0) return -1;
-		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms) != 0) return -1;
+		
+		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->DataParms) != 0) return -1;
+		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
 		//-- before loading cores, we need to set layout based on EngineType just loaded
 		if (setEngineLayout(ioParms) != 0) return -1;
 		setCoreInfo_Pre(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
-		//-- Core Parameters
-		if (LoadCoreParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
+		//-- Core Parameters.
+		if (LoadCoreParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
 		setCoreInfo_Post(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
 		//-- Core Logs
 		mallocCoreLogs(ioParms);
 		// Finally, Core Image
-		if (LoadCoreImage(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.ThreadId, &ioParms->EngineParms, &ioParms->DataParms) != 0) return -1;
+		if (LoadCoreImage(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, ioParms->SavedEngine.TestId, ioParms->SavedEngine.DatasetId, &ioParms->EngineParms, &ioParms->DataParms, &ioParms->SavedEngine) != 0) return -1;
 	} else {
 		//-- 5b
 		if (getParam(ioParms, "Forecaster.Engine", &ioParms->EngineParms.EngineType, enumlist) < 0)	return -1;
@@ -1252,7 +1250,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 	if (pTestId == 0) {
 		if (LogSave_Data(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid) != 0) return -1;
+		if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
 	}
 	if (fp.DoTraining == 1) {
 		if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
