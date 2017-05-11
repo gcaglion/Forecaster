@@ -296,7 +296,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, i
 	for (l = 0; l < pEngineParms->LayersCount; l++) {
 		for (c = 0; c < pEngineParms->CoresCount[l]; c++) {
 			for (d = 0; d < pDataParms->DatasetsCount; d++) {
-				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d)", pid, testid, l, c, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
+				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, CoreType, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d, %d)", pid, testid, l, c, pEngineParms->Core[l][c].CoreType, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
 				EXEC SQL EXECUTE IMMEDIATE : stmt;
 				if (sqlca.sqlcode != 0) {
 					LogWrite_C(pDebugParms, LOG_ERROR, "%s() Insert into EngineParms failed. SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
@@ -641,12 +641,12 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 
 }
 //--
-EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
+EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, tCoreLog* NNLogs) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
 	int i;
-	int vInsertCount = pInsertCount;
+	int vInsertCount = NNLogs->ActualEpochs;
 	//-- Common
 	int* vProcessId;
 	int* vThreadId;
@@ -679,7 +679,16 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inCLNN';
 
-	//-- 3. actual Insert statement depends on BP_ALGO
+	//-- 3. insert common NN logs into CoreLogs_NN
+	sprintf(&stmt[0], "insert into CoreLogs_NN(ProcessId, ThreadId, ActualEpochs) values(%d, %d, %d)", NNLogs->MSEOutput[0].ProcessId, NNLogs->MSEOutput[0].ThreadId, NNLogs->ActualEpochs);
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL EXECUTE IMMEDIATE : stmt;
+	if (sqlca.sqlcode != 0) {
+		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
+		return sqlca.sqlcode;
+	}
+
+	//-- 4. Insert BP?Algo/dependent logs into CoreLogs_NN_<XXX>
 	switch (BPAlgo) {
 	case BP_QING:
 		//-- 3.1. malloc() column arrays
@@ -694,7 +703,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		return 0;
 		break;
 	case BP_SCGD:
-		//-- 3.1. malloc() column arrays
+		//-- 4.1. malloc() column arrays
 		vProcessId = (int*)malloc(vInsertCount * sizeof(int));
 		vThreadId = (int*)malloc(vInsertCount * sizeof(int));
 		vEpoch = (int*)malloc(vInsertCount * sizeof(int));
@@ -710,25 +719,25 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		venorm = (double*)malloc(vInsertCount * sizeof(double));
 		vcomp = (double*)malloc(vInsertCount * sizeof(double));
 
-		//-- 3.2. Assign struct fields to column arrays
-		for (i = 0; i < pInsertCount; i++) {
-			vProcessId[i] = IntLogs[i].ProcessId;
-			vThreadId[i] = IntLogs[i].ThreadId;
-			vEpoch[i] = IntLogs[i].Epoch;
-			vBPid[i] = IntLogs[i].BPid;
-			vK[i] = IntLogs[i].K;
-			vdelta[i] = IntLogs[i].delta;
-			vmu[i] = IntLogs[i].mu;
-			valpha[i] = IntLogs[i].alpha;
-			vbeta[i] = IntLogs[i].beta;
-			vlambda[i] = IntLogs[i].lambda;
-			vlambdau[i] = IntLogs[i].lambdau;
-			vrnorm[i] = IntLogs[i].rnorm;
-			venorm[i] = IntLogs[i].enorm;
-			vcomp[i] = IntLogs[i].comp;
+		//-- 4.2. Assign struct fields to column arrays
+		for (i = 0; i < vInsertCount; i++) {
+			vProcessId[i] = NNLogs->IntP[i].ProcessId;
+			vThreadId[i] = NNLogs->IntP[i].ThreadId;
+			vEpoch[i] = NNLogs->IntP[i].Epoch;
+			vBPid[i] = NNLogs->IntP[i].BPid;
+			vK[i] = NNLogs->IntP[i].K;
+			vdelta[i] = NNLogs->IntP[i].delta;
+			vmu[i] = NNLogs->IntP[i].mu;
+			valpha[i] = NNLogs->IntP[i].alpha;
+			vbeta[i] = NNLogs->IntP[i].beta;
+			vlambda[i] = NNLogs->IntP[i].lambda;
+			vlambdau[i] = NNLogs->IntP[i].lambdau;
+			vrnorm[i] = NNLogs->IntP[i].rnorm;
+			venorm[i] = NNLogs->IntP[i].enorm;
+			vcomp[i] = NNLogs->IntP[i].comp;
 		}
 
-		//-- 3.3. Build Array Insert statement
+		//-- 4.3. Build Array Insert statement
 		sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Rnorm, Enorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14)");
 		EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 14;
 		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 1 DATA = :vProcessId;
@@ -752,7 +761,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		break;
 	}
 
-	//-- 4. Execute Array Insert statement
+	//-- 5. Execute Array Insert statement
 	EXEC SQL PREPARE DynIns FROM :stmt;
 	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inCLNN';
 	LogWrite_C(DebugParms, LOG_INFO, "Ora_InsertCoreLogs_NN() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
@@ -761,7 +770,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		return sqlca.sqlcode;
 	}
 
-	//-- 5. free()s
+	//-- 6. free()s
 	EXEC SQL DEALLOCATE DESCRIPTOR 'inCLNN';
 	free(vProcessId); free(vThreadId); free(vEpoch); free(vBPid); free(vK); free(vdelta); free(vmu); free(valpha); free(vbeta); free(vlambda); free(vlambdau); free(vrnorm); free(venorm); free(vcomp);
 
@@ -785,7 +794,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into CoreLogs_SVM (ProcessId, ThreadId, SVCount, ThresholdB, maxdiff, L1loss, WVnorm, LEVnorm, KEvCount) values(%d, %d, %d, %f, %f, %f, %f, %f, %d)", SVMResult->ProcessId, SVMResult->ThreadId, SVMResult->SVcount, SVMResult->ThresholdB, SVMResult->maxdiff, SVMResult->L1loss, SVMResult->WVnorm, SVMResult->LEVnorm, SVMResult->KEvCount);
+	sprintf(&stmt[0], "insert into CoreLogs_SVM (ProcessId, ThreadId, ActualEpochs, SVCount, ThresholdB, maxdiff, L1loss, WVnorm, LEVnorm, KEvCount) values(%d, %d, %d, %d, %f, %f, %f, %f, %f, %d)", SVMResult->ProcessId, SVMResult->ThreadId, SVMResult->Iterations, SVMResult->SVcount, SVMResult->ThresholdB, SVMResult->maxdiff, SVMResult->L1loss, SVMResult->WVnorm, SVMResult->LEVnorm, SVMResult->KEvCount);
 
 	//-- Executes Insert statements
 	EXEC SQL CONTEXT USE : vCtx;

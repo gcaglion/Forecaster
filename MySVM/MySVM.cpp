@@ -29,13 +29,14 @@ __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen) {
 	}
 }
 
-void 	SaveFinalV(SVM_Parms* SVMParms, tCoreLog* SVMLog, DWORD pid, DWORD tid, MODEL* model) {
+void 	SaveFinalV(SVM_Parms* SVMParms, tCoreLog* SVMLog, DWORD pid, DWORD tid, MODEL* model, int pIterationsCount) {
 	//-- replaces svm_common::write_model()
 	int sv, j;
 	SVECTOR* v;
 
 	SVMLog->SVMResult.ProcessId = pid;
 	SVMLog->SVMResult.ThreadId = tid;
+	SVMLog->SVMResult.Iterations = pIterationsCount;
 	SVMLog->SVMResult.SVcount = model->sv_num;
 	SVMLog->SVMResult.ThresholdB = model->b;
 	SVMLog->SVMResult.maxdiff = model->maxdiff;
@@ -260,7 +261,7 @@ __declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenM
 
 	//-- save Support Vectors in coreLog
 	mallocSVMLog(pSVMLogs, calcSVcnt(model), pSVMParms->InputCount);
-	SaveFinalV(pSVMParms, pSVMLogs, pid, tid, model);
+	SaveFinalV(pSVMParms, pSVMLogs, pid, tid, model, vIterationsCount);
 
 	//-- Save MSE Data: Iteration/MaxDiff -> epoch/MSE
 	pSVMLogs->ActualEpochs = vIterationsCount;

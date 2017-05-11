@@ -17,6 +17,7 @@ typedef struct {
 	int ProcessId; int ThreadId;  int TimeStep;
 	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
 } tNNWeight;
+
 //-- Internals Logging parameters
 typedef struct {
 	int ProcessId; int ThreadId; int TimeStep;
@@ -40,10 +41,12 @@ typedef struct {
 typedef struct {
 	DWORD ProcessId; DWORD  ThreadId; int TestId; int SVId; int VarId; double Weight;
 } tSVMWeight;
+
 //-- SVM training results
 typedef struct {
 	int ProcessId;
 	int ThreadId;
+	int Iterations;
 	int SVcount;
 	double ThresholdB;
 	double maxdiff;

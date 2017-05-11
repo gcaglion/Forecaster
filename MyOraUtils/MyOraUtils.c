@@ -197,200 +197,201 @@ static const short sqlcud0[] =
 1248,0,0,14,0,0,23,624,0,64,0,0,4,87,83,86,77,1,0,
 1267,0,0,0,0,0,91,630,0,64,0,0,4,87,83,86,77,1,0,
 1286,0,0,0,0,0,90,680,0,64,0,0,6,105,110,67,76,78,78,1,0,
-1307,0,0,0,0,0,93,733,0,64,0,0,6,105,110,67,76,78,78,1,0,
-1328,0,0,0,0,0,93,734,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
-1353,0,0,0,0,0,93,735,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
-1378,0,0,0,0,0,93,736,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
-1403,0,0,0,0,0,93,737,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
-1428,0,0,0,0,0,93,738,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
-1453,0,0,0,0,0,93,739,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1478,0,0,0,0,0,93,740,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1503,0,0,0,0,0,93,741,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1528,0,0,0,0,0,93,742,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1553,0,0,0,0,0,93,743,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1578,0,0,0,0,0,93,744,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1603,0,0,0,0,0,93,745,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1628,0,0,0,0,0,93,746,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1653,0,0,0,0,0,93,747,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
-1678,0,0,15,0,0,17,756,0,0,1,1,0,1,0,1,97,0,0,
-1697,0,0,15,0,0,23,757,0,64,0,0,6,105,110,67,76,78,78,1,0,
-1718,0,0,0,0,0,91,765,0,64,0,0,6,105,110,67,76,78,78,1,0,
-1739,0,0,16,0,0,24,792,0,0,1,1,0,1,0,1,97,0,0,
-1758,0,0,0,0,0,90,854,0,64,0,0,5,105,110,77,83,69,1,0,
-1778,0,0,0,0,0,93,855,0,64,0,0,5,105,110,77,83,69,1,0,
-1798,0,0,0,0,0,93,856,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
-1822,0,0,0,0,0,93,857,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
-1846,0,0,0,0,0,93,858,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
-1870,0,0,0,0,0,93,859,0,64,1,1,5,105,110,77,83,69,1,0,3329,4,0,0,
-1894,0,0,0,0,0,93,860,0,64,1,1,5,105,110,77,83,69,1,0,3329,4,0,0,
-1918,0,0,15,0,0,17,861,0,0,1,1,0,1,0,1,97,0,0,
-1937,0,0,15,0,0,23,862,0,64,0,0,5,105,110,77,83,69,1,0,
-1957,0,0,0,0,0,91,872,0,64,0,0,5,105,110,77,83,69,1,0,
-1977,0,0,0,0,0,90,956,0,64,0,0,5,105,110,82,117,110,1,0,
-1997,0,0,0,0,0,93,957,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2021,0,0,0,0,0,93,958,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2045,0,0,0,0,0,93,959,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2069,0,0,0,0,0,93,960,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2093,0,0,0,0,0,93,961,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2117,0,0,0,0,0,93,962,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2141,0,0,0,0,0,93,963,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2165,0,0,0,0,0,93,964,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2189,0,0,0,0,0,93,965,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2213,0,0,0,0,0,93,966,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2237,0,0,0,0,0,93,967,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2261,0,0,0,0,0,93,968,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2285,0,0,0,0,0,93,969,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
-2309,0,0,0,0,0,93,971,0,64,0,0,5,105,110,82,117,110,1,0,
-2329,0,0,0,0,0,93,972,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
-2353,0,0,0,0,0,93,973,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
-2377,0,0,0,0,0,93,974,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
-2401,0,0,0,0,0,93,975,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
-2425,0,0,0,0,0,93,976,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
-2449,0,0,0,0,0,93,977,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2473,0,0,0,0,0,93,978,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2497,0,0,0,0,0,93,979,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2521,0,0,0,0,0,93,980,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2545,0,0,0,0,0,93,981,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2569,0,0,0,0,0,93,982,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2593,0,0,0,0,0,93,983,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2617,0,0,0,0,0,93,984,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
-2641,0,0,15,0,0,17,986,0,0,1,1,0,1,0,1,97,0,0,
-2660,0,0,15,0,0,23,987,0,64,0,0,5,105,110,82,117,110,1,0,
-2680,0,0,17,0,0,24,1004,0,0,1,1,0,1,0,1,97,0,0,
-2699,0,0,0,0,0,91,1011,0,64,0,0,5,105,110,82,117,110,1,0,
-2719,0,0,18,0,0,24,1015,0,0,1,1,0,1,0,1,97,0,0,
+1307,0,0,15,0,0,24,685,0,0,1,1,0,1,0,1,97,0,0,
+1326,0,0,0,0,0,93,742,0,64,0,0,6,105,110,67,76,78,78,1,0,
+1347,0,0,0,0,0,93,743,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
+1372,0,0,0,0,0,93,744,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
+1397,0,0,0,0,0,93,745,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
+1422,0,0,0,0,0,93,746,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
+1447,0,0,0,0,0,93,747,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,3,0,0,
+1472,0,0,0,0,0,93,748,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1497,0,0,0,0,0,93,749,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1522,0,0,0,0,0,93,750,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1547,0,0,0,0,0,93,751,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1572,0,0,0,0,0,93,752,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1597,0,0,0,0,0,93,753,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1622,0,0,0,0,0,93,754,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1647,0,0,0,0,0,93,755,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1672,0,0,0,0,0,93,756,0,64,1,1,6,105,110,67,76,78,78,1,0,3329,4,0,0,
+1697,0,0,16,0,0,17,765,0,0,1,1,0,1,0,1,97,0,0,
+1716,0,0,16,0,0,23,766,0,64,0,0,6,105,110,67,76,78,78,1,0,
+1737,0,0,0,0,0,91,774,0,64,0,0,6,105,110,67,76,78,78,1,0,
+1758,0,0,17,0,0,24,801,0,0,1,1,0,1,0,1,97,0,0,
+1777,0,0,0,0,0,90,863,0,64,0,0,5,105,110,77,83,69,1,0,
+1797,0,0,0,0,0,93,864,0,64,0,0,5,105,110,77,83,69,1,0,
+1817,0,0,0,0,0,93,865,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
+1841,0,0,0,0,0,93,866,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
+1865,0,0,0,0,0,93,867,0,64,1,1,5,105,110,77,83,69,1,0,3329,3,0,0,
+1889,0,0,0,0,0,93,868,0,64,1,1,5,105,110,77,83,69,1,0,3329,4,0,0,
+1913,0,0,0,0,0,93,869,0,64,1,1,5,105,110,77,83,69,1,0,3329,4,0,0,
+1937,0,0,16,0,0,17,870,0,0,1,1,0,1,0,1,97,0,0,
+1956,0,0,16,0,0,23,871,0,64,0,0,5,105,110,77,83,69,1,0,
+1976,0,0,0,0,0,91,881,0,64,0,0,5,105,110,77,83,69,1,0,
+1996,0,0,0,0,0,90,965,0,64,0,0,5,105,110,82,117,110,1,0,
+2016,0,0,0,0,0,93,966,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2040,0,0,0,0,0,93,967,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2064,0,0,0,0,0,93,968,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2088,0,0,0,0,0,93,969,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2112,0,0,0,0,0,93,970,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2136,0,0,0,0,0,93,971,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2160,0,0,0,0,0,93,972,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2184,0,0,0,0,0,93,973,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2208,0,0,0,0,0,93,974,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2232,0,0,0,0,0,93,975,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2256,0,0,0,0,0,93,976,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2280,0,0,0,0,0,93,977,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2304,0,0,0,0,0,93,978,0,64,1,1,5,105,110,82,117,110,1,0,513,3,0,0,
+2328,0,0,0,0,0,93,980,0,64,0,0,5,105,110,82,117,110,1,0,
+2348,0,0,0,0,0,93,981,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
+2372,0,0,0,0,0,93,982,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
+2396,0,0,0,0,0,93,983,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
+2420,0,0,0,0,0,93,984,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
+2444,0,0,0,0,0,93,985,0,64,1,1,5,105,110,82,117,110,1,0,3329,3,0,0,
+2468,0,0,0,0,0,93,986,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2492,0,0,0,0,0,93,987,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2516,0,0,0,0,0,93,988,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2540,0,0,0,0,0,93,989,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2564,0,0,0,0,0,93,990,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2588,0,0,0,0,0,93,991,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2612,0,0,0,0,0,93,992,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2636,0,0,0,0,0,93,993,0,64,1,1,5,105,110,82,117,110,1,0,3329,4,0,0,
+2660,0,0,16,0,0,17,995,0,0,1,1,0,1,0,1,97,0,0,
+2679,0,0,16,0,0,23,996,0,64,0,0,5,105,110,82,117,110,1,0,
+2699,0,0,18,0,0,24,1013,0,0,1,1,0,1,0,1,97,0,0,
+2718,0,0,0,0,0,91,1020,0,64,0,0,5,105,110,82,117,110,1,0,
 2738,0,0,19,0,0,24,1024,0,0,1,1,0,1,0,1,97,0,0,
-2757,0,0,0,0,0,90,1105,0,64,0,0,6,105,110,73,78,84,78,1,0,
-2778,0,0,0,0,0,93,1131,0,64,0,0,6,105,110,73,78,84,78,1,0,
-2799,0,0,0,0,0,93,1132,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2824,0,0,0,0,0,93,1133,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2849,0,0,0,0,0,93,1134,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2874,0,0,0,0,0,93,1135,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2899,0,0,0,0,0,93,1136,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2924,0,0,0,0,0,93,1137,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
-2949,0,0,0,0,0,93,1138,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,4,0,0,
-2974,0,0,0,0,0,93,1139,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,4,0,0,
-2999,0,0,15,0,0,17,1140,0,0,1,1,0,1,0,1,97,0,0,
-3018,0,0,15,0,0,23,1141,0,64,0,0,6,105,110,73,78,84,78,1,0,
-3039,0,0,0,0,0,91,1160,0,64,0,0,6,105,110,73,78,84,78,1,0,
-3060,0,0,0,0,0,90,1217,0,64,0,0,6,105,110,73,78,84,87,1,0,
-3081,0,0,0,0,0,93,1246,0,64,0,0,6,105,110,73,78,84,87,1,0,
-3102,0,0,0,0,0,93,1247,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3127,0,0,0,0,0,93,1248,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3152,0,0,0,0,0,93,1249,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3177,0,0,0,0,0,93,1250,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3202,0,0,0,0,0,93,1251,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3227,0,0,0,0,0,93,1252,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3252,0,0,0,0,0,93,1253,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
-3277,0,0,0,0,0,93,1254,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,4,0,0,
-3302,0,0,15,0,0,17,1255,0,0,1,1,0,1,0,1,97,0,0,
-3321,0,0,15,0,0,23,1256,0,64,0,0,6,105,110,73,78,84,87,1,0,
-3342,0,0,0,0,0,91,1275,0,64,0,0,6,105,110,73,78,84,87,1,0,
-3363,0,0,0,0,0,90,1341,0,64,0,0,5,105,110,78,78,80,1,0,
-3383,0,0,0,0,0,93,1375,0,64,0,0,5,105,110,78,78,80,1,0,
-3403,0,0,0,0,0,93,1376,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3427,0,0,0,0,0,93,1377,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3451,0,0,0,0,0,93,1378,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3475,0,0,0,0,0,93,1379,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3499,0,0,0,0,0,93,1380,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3523,0,0,0,0,0,93,1381,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3547,0,0,0,0,0,93,1382,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3571,0,0,0,0,0,93,1383,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3595,0,0,0,0,0,93,1384,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3619,0,0,0,0,0,93,1385,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3643,0,0,0,0,0,93,1386,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3667,0,0,0,0,0,93,1387,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
-3691,0,0,0,0,0,93,1388,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3715,0,0,0,0,0,93,1389,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3739,0,0,0,0,0,93,1390,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
-3763,0,0,15,0,0,17,1391,0,0,1,1,0,1,0,1,97,0,0,
-3782,0,0,15,0,0,23,1392,0,64,0,0,5,105,110,78,78,80,1,0,
-3802,0,0,0,0,0,91,1417,0,64,0,0,5,105,110,78,78,80,1,0,
-3822,0,0,20,0,0,17,1444,0,0,1,1,0,1,0,1,97,0,0,
-3841,0,0,20,0,0,45,1446,0,0,0,0,0,1,0,
-3856,0,0,20,0,0,13,1447,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
-3891,0,0,20,0,0,15,1453,0,0,0,0,0,1,0,
-3906,0,0,21,0,0,17,1486,0,0,1,1,0,1,0,1,97,0,0,
-3925,0,0,21,0,0,45,1488,0,0,0,0,0,1,0,
-3940,0,0,21,0,0,13,1489,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,97,0,0,
-3971,0,0,21,0,0,15,1495,0,0,0,0,0,1,0,
-3986,0,0,22,0,0,17,1527,0,0,1,1,0,1,0,1,97,0,0,
-4005,0,0,22,0,0,45,1529,0,0,0,0,0,1,0,
-4020,0,0,22,0,0,13,1534,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
+2757,0,0,20,0,0,24,1033,0,0,1,1,0,1,0,1,97,0,0,
+2776,0,0,0,0,0,90,1114,0,64,0,0,6,105,110,73,78,84,78,1,0,
+2797,0,0,0,0,0,93,1140,0,64,0,0,6,105,110,73,78,84,78,1,0,
+2818,0,0,0,0,0,93,1141,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2843,0,0,0,0,0,93,1142,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2868,0,0,0,0,0,93,1143,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2893,0,0,0,0,0,93,1144,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2918,0,0,0,0,0,93,1145,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2943,0,0,0,0,0,93,1146,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,3,0,0,
+2968,0,0,0,0,0,93,1147,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,4,0,0,
+2993,0,0,0,0,0,93,1148,0,64,1,1,6,105,110,73,78,84,78,1,0,3329,4,0,0,
+3018,0,0,16,0,0,17,1149,0,0,1,1,0,1,0,1,97,0,0,
+3037,0,0,16,0,0,23,1150,0,64,0,0,6,105,110,73,78,84,78,1,0,
+3058,0,0,0,0,0,91,1169,0,64,0,0,6,105,110,73,78,84,78,1,0,
+3079,0,0,0,0,0,90,1226,0,64,0,0,6,105,110,73,78,84,87,1,0,
+3100,0,0,0,0,0,93,1255,0,64,0,0,6,105,110,73,78,84,87,1,0,
+3121,0,0,0,0,0,93,1256,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3146,0,0,0,0,0,93,1257,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3171,0,0,0,0,0,93,1258,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3196,0,0,0,0,0,93,1259,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3221,0,0,0,0,0,93,1260,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3246,0,0,0,0,0,93,1261,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3271,0,0,0,0,0,93,1262,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,3,0,0,
+3296,0,0,0,0,0,93,1263,0,64,1,1,6,105,110,73,78,84,87,1,0,3329,4,0,0,
+3321,0,0,16,0,0,17,1264,0,0,1,1,0,1,0,1,97,0,0,
+3340,0,0,16,0,0,23,1265,0,64,0,0,6,105,110,73,78,84,87,1,0,
+3361,0,0,0,0,0,91,1284,0,64,0,0,6,105,110,73,78,84,87,1,0,
+3382,0,0,0,0,0,90,1350,0,64,0,0,5,105,110,78,78,80,1,0,
+3402,0,0,0,0,0,93,1384,0,64,0,0,5,105,110,78,78,80,1,0,
+3422,0,0,0,0,0,93,1385,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3446,0,0,0,0,0,93,1386,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3470,0,0,0,0,0,93,1387,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3494,0,0,0,0,0,93,1388,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3518,0,0,0,0,0,93,1389,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3542,0,0,0,0,0,93,1390,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3566,0,0,0,0,0,93,1391,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3590,0,0,0,0,0,93,1392,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3614,0,0,0,0,0,93,1393,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3638,0,0,0,0,0,93,1394,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3662,0,0,0,0,0,93,1395,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3686,0,0,0,0,0,93,1396,0,64,1,1,5,105,110,78,78,80,1,0,3329,3,0,0,
+3710,0,0,0,0,0,93,1397,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3734,0,0,0,0,0,93,1398,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3758,0,0,0,0,0,93,1399,0,64,1,1,5,105,110,78,78,80,1,0,3329,4,0,0,
+3782,0,0,16,0,0,17,1400,0,0,1,1,0,1,0,1,97,0,0,
+3801,0,0,16,0,0,23,1401,0,64,0,0,5,105,110,78,78,80,1,0,
+3821,0,0,0,0,0,91,1426,0,64,0,0,5,105,110,78,78,80,1,0,
+3841,0,0,21,0,0,17,1453,0,0,1,1,0,1,0,1,97,0,0,
+3860,0,0,21,0,0,45,1455,0,0,0,0,0,1,0,
+3875,0,0,21,0,0,13,1456,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+3910,0,0,21,0,0,15,1462,0,0,0,0,0,1,0,
+3925,0,0,22,0,0,17,1495,0,0,1,1,0,1,0,1,97,0,0,
+3944,0,0,22,0,0,45,1497,0,0,0,0,0,1,0,
+3959,0,0,22,0,0,13,1498,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,97,0,0,
+3990,0,0,22,0,0,15,1504,0,0,0,0,0,1,0,
+4005,0,0,23,0,0,17,1536,0,0,1,1,0,1,0,1,97,0,0,
+4024,0,0,23,0,0,45,1538,0,0,0,0,0,1,0,
+4039,0,0,23,0,0,13,1543,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
 0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,2,4,0,0,2,4,0,0,
-4079,0,0,22,0,0,15,1547,0,0,0,0,0,1,0,
-4094,0,0,23,0,0,17,1568,0,0,1,1,0,1,0,1,97,0,0,
-4113,0,0,23,0,0,45,1570,0,0,0,0,0,1,0,
-4128,0,0,23,0,0,13,1575,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4098,0,0,23,0,0,15,1556,0,0,0,0,0,1,0,
+4113,0,0,24,0,0,17,1577,0,0,1,1,0,1,0,1,97,0,0,
+4132,0,0,24,0,0,45,1579,0,0,0,0,0,1,0,
+4147,0,0,24,0,0,13,1584,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
 2,3,0,0,2,4,0,0,
-4171,0,0,23,0,0,15,1587,0,0,0,0,0,1,0,
-4186,0,0,24,0,0,17,1608,0,0,1,1,0,1,0,1,97,0,0,
-4205,0,0,24,0,0,45,1610,0,0,0,0,0,1,0,
-4220,0,0,24,0,0,13,1615,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
+4190,0,0,24,0,0,15,1596,0,0,0,0,0,1,0,
+4205,0,0,25,0,0,17,1617,0,0,1,1,0,1,0,1,97,0,0,
+4224,0,0,25,0,0,45,1619,0,0,0,0,0,1,0,
+4239,0,0,25,0,0,13,1624,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
 2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
-4279,0,0,24,0,0,15,1627,0,0,0,0,0,1,0,
-4294,0,0,25,0,0,17,1649,0,0,1,1,0,1,0,1,97,0,0,
-4313,0,0,25,0,0,45,1651,0,0,0,0,0,1,0,
-4328,0,0,25,0,0,13,1652,0,0,1,0,0,1,0,2,3,0,0,
-4347,0,0,25,0,0,15,1657,0,0,0,0,0,1,0,
-4362,0,0,26,0,0,17,1681,0,0,1,1,0,1,0,1,97,0,0,
-4381,0,0,26,0,0,45,1683,0,0,0,0,0,1,0,
-4396,0,0,26,0,0,13,1685,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4427,0,0,26,0,0,15,1698,0,0,0,0,0,1,0,
-4442,0,0,27,0,0,17,1721,0,0,1,1,0,1,0,1,97,0,0,
-4461,0,0,27,0,0,45,1723,0,0,0,0,0,1,0,
-4476,0,0,27,0,0,13,1725,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4503,0,0,27,0,0,15,1738,0,0,0,0,0,1,0,
-4518,0,0,28,0,0,17,1761,0,0,1,1,0,1,0,1,97,0,0,
-4537,0,0,28,0,0,45,1763,0,0,0,0,0,1,0,
-4552,0,0,28,0,0,13,1765,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4579,0,0,28,0,0,15,1776,0,0,0,0,0,1,0,
-4594,0,0,28,0,0,17,1801,0,0,1,1,0,1,0,1,97,0,0,
-4613,0,0,28,0,0,45,1803,0,0,0,0,0,1,0,
-4628,0,0,28,0,0,13,1804,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4298,0,0,25,0,0,15,1636,0,0,0,0,0,1,0,
+4313,0,0,26,0,0,17,1658,0,0,1,1,0,1,0,1,97,0,0,
+4332,0,0,26,0,0,45,1660,0,0,0,0,0,1,0,
+4347,0,0,26,0,0,13,1661,0,0,1,0,0,1,0,2,3,0,0,
+4366,0,0,26,0,0,15,1666,0,0,0,0,0,1,0,
+4381,0,0,27,0,0,17,1690,0,0,1,1,0,1,0,1,97,0,0,
+4400,0,0,27,0,0,45,1692,0,0,0,0,0,1,0,
+4415,0,0,27,0,0,13,1694,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4446,0,0,27,0,0,15,1707,0,0,0,0,0,1,0,
+4461,0,0,28,0,0,17,1730,0,0,1,1,0,1,0,1,97,0,0,
+4480,0,0,28,0,0,45,1732,0,0,0,0,0,1,0,
+4495,0,0,28,0,0,13,1734,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4522,0,0,28,0,0,15,1747,0,0,0,0,0,1,0,
+4537,0,0,29,0,0,17,1770,0,0,1,1,0,1,0,1,97,0,0,
+4556,0,0,29,0,0,45,1772,0,0,0,0,0,1,0,
+4571,0,0,29,0,0,13,1774,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4598,0,0,29,0,0,15,1785,0,0,0,0,0,1,0,
+4613,0,0,29,0,0,17,1810,0,0,1,1,0,1,0,1,97,0,0,
+4632,0,0,29,0,0,45,1812,0,0,0,0,0,1,0,
+4647,0,0,29,0,0,13,1813,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,3,0,0,
-4671,0,0,28,0,0,15,1817,0,0,0,0,0,1,0,
-4686,0,0,29,0,0,17,1842,0,0,1,1,0,1,0,1,97,0,0,
-4705,0,0,29,0,0,45,1844,0,0,0,0,0,1,0,
-4720,0,0,29,0,0,13,1845,0,0,1,0,0,1,0,2,97,0,0,
-4739,0,0,29,0,0,15,1850,0,0,0,0,0,1,0,
-4754,0,0,30,0,0,17,1861,0,0,1,1,0,1,0,1,97,0,0,
-4773,0,0,30,0,0,45,1863,0,0,0,0,0,1,0,
-4788,0,0,30,0,0,13,1864,0,0,1,0,0,1,0,2,3,0,0,
-4807,0,0,30,0,0,15,1869,0,0,0,0,0,1,0,
-4822,0,0,31,0,0,17,1914,0,0,1,1,0,1,0,1,97,0,0,
-4841,0,0,31,0,0,45,1916,0,0,0,0,0,1,0,
-4856,0,0,31,0,0,13,1923,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
-4883,0,0,31,0,0,15,1933,0,0,0,0,0,1,0,
-4898,0,0,32,0,0,17,1946,0,0,1,1,0,1,0,1,97,0,0,
-4917,0,0,32,0,0,45,1948,0,0,0,0,0,1,0,
-4932,0,0,32,0,0,13,1953,0,0,1,0,0,1,0,2,97,0,0,
-4951,0,0,32,0,0,15,1959,0,0,0,0,0,1,0,
-4966,0,0,33,0,0,17,1971,0,0,1,1,0,1,0,1,97,0,0,
-4985,0,0,33,0,0,45,1973,0,0,0,0,0,1,0,
-5000,0,0,33,0,0,13,1979,0,0,1,0,0,1,0,2,97,0,0,
-5019,0,0,33,0,0,15,1986,0,0,0,0,0,1,0,
-5034,0,0,34,0,0,17,1998,0,0,1,1,0,1,0,1,97,0,0,
-5053,0,0,34,0,0,45,2000,0,0,0,0,0,1,0,
-5068,0,0,34,0,0,13,2001,0,0,1,0,0,1,0,2,3,0,0,
-5087,0,0,34,0,0,15,2009,0,0,0,0,0,1,0,
-5102,0,0,35,0,0,17,2037,0,0,1,1,0,1,0,1,97,0,0,
-5121,0,0,35,0,0,45,2039,0,0,0,0,0,1,0,
-5136,0,0,35,0,0,13,2041,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4690,0,0,29,0,0,15,1826,0,0,0,0,0,1,0,
+4705,0,0,30,0,0,17,1851,0,0,1,1,0,1,0,1,97,0,0,
+4724,0,0,30,0,0,45,1853,0,0,0,0,0,1,0,
+4739,0,0,30,0,0,13,1854,0,0,1,0,0,1,0,2,97,0,0,
+4758,0,0,30,0,0,15,1859,0,0,0,0,0,1,0,
+4773,0,0,31,0,0,17,1870,0,0,1,1,0,1,0,1,97,0,0,
+4792,0,0,31,0,0,45,1872,0,0,0,0,0,1,0,
+4807,0,0,31,0,0,13,1873,0,0,1,0,0,1,0,2,3,0,0,
+4826,0,0,31,0,0,15,1878,0,0,0,0,0,1,0,
+4841,0,0,32,0,0,17,1923,0,0,1,1,0,1,0,1,97,0,0,
+4860,0,0,32,0,0,45,1925,0,0,0,0,0,1,0,
+4875,0,0,32,0,0,13,1932,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
+4902,0,0,32,0,0,15,1942,0,0,0,0,0,1,0,
+4917,0,0,33,0,0,17,1955,0,0,1,1,0,1,0,1,97,0,0,
+4936,0,0,33,0,0,45,1957,0,0,0,0,0,1,0,
+4951,0,0,33,0,0,13,1962,0,0,1,0,0,1,0,2,97,0,0,
+4970,0,0,33,0,0,15,1968,0,0,0,0,0,1,0,
+4985,0,0,34,0,0,17,1980,0,0,1,1,0,1,0,1,97,0,0,
+5004,0,0,34,0,0,45,1982,0,0,0,0,0,1,0,
+5019,0,0,34,0,0,13,1988,0,0,1,0,0,1,0,2,97,0,0,
+5038,0,0,34,0,0,15,1995,0,0,0,0,0,1,0,
+5053,0,0,35,0,0,17,2007,0,0,1,1,0,1,0,1,97,0,0,
+5072,0,0,35,0,0,45,2009,0,0,0,0,0,1,0,
+5087,0,0,35,0,0,13,2010,0,0,1,0,0,1,0,2,3,0,0,
+5106,0,0,35,0,0,15,2018,0,0,0,0,0,1,0,
+5121,0,0,36,0,0,17,2046,0,0,1,1,0,1,0,1,97,0,0,
+5140,0,0,36,0,0,45,2048,0,0,0,0,0,1,0,
+5155,0,0,36,0,0,13,2050,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,
-5175,0,0,35,0,0,15,2054,0,0,0,0,0,1,0,
-5190,0,0,36,0,0,17,2079,0,0,1,1,0,1,0,1,97,0,0,
-5209,0,0,36,0,0,45,2081,0,0,0,0,0,1,0,
-5224,0,0,36,0,0,13,2083,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+5194,0,0,36,0,0,15,2063,0,0,0,0,0,1,0,
+5209,0,0,37,0,0,17,2088,0,0,1,1,0,1,0,1,97,0,0,
+5228,0,0,37,0,0,45,2090,0,0,0,0,0,1,0,
+5243,0,0,37,0,0,13,2092,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
-5275,0,0,36,0,0,15,2102,0,0,0,0,0,1,0,
-5290,0,0,37,52,0,1,2189,0,0,0,0,0,1,0,
-5305,0,0,38,0,0,24,2190,0,0,1,1,0,1,0,1,97,0,0,
-5324,0,0,39,0,0,29,2193,0,0,0,0,0,1,0,
-5339,0,0,0,0,0,58,2208,0,0,1,1,0,1,0,3,109,0,0,
-5358,0,0,0,0,0,60,2214,0,0,0,0,0,1,0,
-5373,0,0,40,0,0,30,2222,0,0,0,0,0,1,0,
-5388,0,0,0,0,0,59,2223,0,0,1,1,0,1,0,3,109,0,0,
+5294,0,0,37,0,0,15,2111,0,0,0,0,0,1,0,
+5309,0,0,38,52,0,1,2198,0,0,0,0,0,1,0,
+5324,0,0,39,0,0,24,2199,0,0,1,1,0,1,0,1,97,0,0,
+5343,0,0,40,0,0,29,2202,0,0,0,0,0,1,0,
+5358,0,0,0,0,0,58,2217,0,0,1,1,0,1,0,3,109,0,0,
+5377,0,0,0,0,0,60,2223,0,0,0,0,0,1,0,
+5392,0,0,41,0,0,30,2231,0,0,0,0,0,1,0,
+5407,0,0,0,0,0,59,2232,0,0,1,1,0,1,0,3,109,0,0,
 };
 
 
@@ -977,7 +978,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, i
 	for (l = 0; l < pEngineParms->LayersCount; l++) {
 		for (c = 0; c < pEngineParms->CoresCount[l]; c++) {
 			for (d = 0; d < pDataParms->DatasetsCount; d++) {
-				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d)", pid, testid, l, c, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
+				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, CoreType, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d, %d)", pid, testid, l, c, pEngineParms->Core[l][c].CoreType, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
 				/* EXEC SQL EXECUTE IMMEDIATE : stmt; */ 
 
 {
@@ -2991,13 +2992,13 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 
 }
 //--
-EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
+EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, tCoreLog* NNLogs) {
 	/* EXEC SQL BEGIN DECLARE SECTION; */ 
 
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
 	int i;
-	int vInsertCount = pInsertCount;
+	int vInsertCount = NNLogs->ActualEpochs;
 	//-- Common
 	int* vProcessId;
 	int* vThreadId;
@@ -3050,7 +3051,52 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 
 
 
-	//-- 3. actual Insert statement depends on BP_ALGO
+	//-- 3. insert common NN logs into CoreLogs_NN
+	sprintf(&stmt[0], "insert into CoreLogs_NN(ProcessId, ThreadId, ActualEpochs) values(%d, %d, %d)", NNLogs->MSEOutput[0].ProcessId, NNLogs->MSEOutput[0].ThreadId, NNLogs->ActualEpochs);
+	/* EXEC SQL CONTEXT USE : vCtx; */ 
+
+	/* EXEC SQL EXECUTE IMMEDIATE : stmt; */ 
+
+{
+ struct sqlexd sqlstm;
+ sqlstm.sqlvsn = 13;
+ sqlstm.arrsiz = 4;
+ sqlstm.sqladtp = &sqladt;
+ sqlstm.sqltdsp = &sqltds;
+ sqlstm.stmt = "";
+ sqlstm.iters = (unsigned int  )1;
+ sqlstm.offset = (unsigned int  )1307;
+ sqlstm.cud = sqlcud0;
+ sqlstm.sqlest = (unsigned char  *)&sqlca;
+ sqlstm.sqlety = (unsigned short)4352;
+ sqlstm.occurs = (unsigned int  )0;
+ sqlstm.sqhstv[0] = (         void  *)stmt;
+ sqlstm.sqhstl[0] = (unsigned int  )1000;
+ sqlstm.sqhsts[0] = (         int  )0;
+ sqlstm.sqindv[0] = (         void  *)0;
+ sqlstm.sqinds[0] = (         int  )0;
+ sqlstm.sqharm[0] = (unsigned int  )0;
+ sqlstm.sqadto[0] = (unsigned short )0;
+ sqlstm.sqtdso[0] = (unsigned short )0;
+ sqlstm.sqphsv = sqlstm.sqhstv;
+ sqlstm.sqphsl = sqlstm.sqhstl;
+ sqlstm.sqphss = sqlstm.sqhsts;
+ sqlstm.sqpind = sqlstm.sqindv;
+ sqlstm.sqpins = sqlstm.sqinds;
+ sqlstm.sqparm = sqlstm.sqharm;
+ sqlstm.sqparc = sqlstm.sqharc;
+ sqlstm.sqpadto = sqlstm.sqadto;
+ sqlstm.sqptdso = sqlstm.sqtdso;
+ sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+}
+
+
+	if (sqlca.sqlcode != 0) {
+		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
+		return sqlca.sqlcode;
+	}
+
+	//-- 4. Insert BP?Algo/dependent logs into CoreLogs_NN_<XXX>
 	switch (BPAlgo) {
 	case BP_QING:
 		//-- 3.1. malloc() column arrays
@@ -3065,7 +3111,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		return 0;
 		break;
 	case BP_SCGD:
-		//-- 3.1. malloc() column arrays
+		//-- 4.1. malloc() column arrays
 		vProcessId = (int*)malloc(vInsertCount * sizeof(int));
 		vThreadId = (int*)malloc(vInsertCount * sizeof(int));
 		vEpoch = (int*)malloc(vInsertCount * sizeof(int));
@@ -3081,25 +3127,25 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		venorm = (double*)malloc(vInsertCount * sizeof(double));
 		vcomp = (double*)malloc(vInsertCount * sizeof(double));
 
-		//-- 3.2. Assign struct fields to column arrays
-		for (i = 0; i < pInsertCount; i++) {
-			vProcessId[i] = IntLogs[i].ProcessId;
-			vThreadId[i] = IntLogs[i].ThreadId;
-			vEpoch[i] = IntLogs[i].Epoch;
-			vBPid[i] = IntLogs[i].BPid;
-			vK[i] = IntLogs[i].K;
-			vdelta[i] = IntLogs[i].delta;
-			vmu[i] = IntLogs[i].mu;
-			valpha[i] = IntLogs[i].alpha;
-			vbeta[i] = IntLogs[i].beta;
-			vlambda[i] = IntLogs[i].lambda;
-			vlambdau[i] = IntLogs[i].lambdau;
-			vrnorm[i] = IntLogs[i].rnorm;
-			venorm[i] = IntLogs[i].enorm;
-			vcomp[i] = IntLogs[i].comp;
+		//-- 4.2. Assign struct fields to column arrays
+		for (i = 0; i < vInsertCount; i++) {
+			vProcessId[i] = NNLogs->IntP[i].ProcessId;
+			vThreadId[i] = NNLogs->IntP[i].ThreadId;
+			vEpoch[i] = NNLogs->IntP[i].Epoch;
+			vBPid[i] = NNLogs->IntP[i].BPid;
+			vK[i] = NNLogs->IntP[i].K;
+			vdelta[i] = NNLogs->IntP[i].delta;
+			vmu[i] = NNLogs->IntP[i].mu;
+			valpha[i] = NNLogs->IntP[i].alpha;
+			vbeta[i] = NNLogs->IntP[i].beta;
+			vlambda[i] = NNLogs->IntP[i].lambda;
+			vlambdau[i] = NNLogs->IntP[i].lambdau;
+			vrnorm[i] = NNLogs->IntP[i].rnorm;
+			venorm[i] = NNLogs->IntP[i].enorm;
+			vcomp[i] = NNLogs->IntP[i].comp;
 		}
 
-		//-- 3.3. Build Array Insert statement
+		//-- 4.3. Build Array Insert statement
 		sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Rnorm, Enorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14)");
 		/* EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 14; */ 
 
@@ -3111,7 +3157,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )1307;
+  sqlstm.offset = (unsigned int  )1326;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3130,7 +3176,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1328;
+  sqlstm.offset = (unsigned int  )1347;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3166,7 +3212,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1353;
+  sqlstm.offset = (unsigned int  )1372;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3202,7 +3248,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1378;
+  sqlstm.offset = (unsigned int  )1397;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3238,7 +3284,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1403;
+  sqlstm.offset = (unsigned int  )1422;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3274,7 +3320,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1428;
+  sqlstm.offset = (unsigned int  )1447;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3310,7 +3356,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1453;
+  sqlstm.offset = (unsigned int  )1472;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3346,7 +3392,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1478;
+  sqlstm.offset = (unsigned int  )1497;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3382,7 +3428,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1503;
+  sqlstm.offset = (unsigned int  )1522;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3418,7 +3464,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1528;
+  sqlstm.offset = (unsigned int  )1547;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3454,7 +3500,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1553;
+  sqlstm.offset = (unsigned int  )1572;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3490,7 +3536,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1578;
+  sqlstm.offset = (unsigned int  )1597;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3526,7 +3572,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1603;
+  sqlstm.offset = (unsigned int  )1622;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3562,7 +3608,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1628;
+  sqlstm.offset = (unsigned int  )1647;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3598,7 +3644,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )vInsertCount;
-  sqlstm.offset = (unsigned int  )1653;
+  sqlstm.offset = (unsigned int  )1672;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -3631,7 +3677,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		break;
 	}
 
-	//-- 4. Execute Array Insert statement
+	//-- 5. Execute Array Insert statement
 	/* EXEC SQL PREPARE DynIns FROM :stmt; */ 
 
 {
@@ -3642,7 +3688,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1678;
+ sqlstm.offset = (unsigned int  )1697;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3678,7 +3724,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1697;
+ sqlstm.offset = (unsigned int  )1716;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3693,7 +3739,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
 		return sqlca.sqlcode;
 	}
 
-	//-- 5. free()s
+	//-- 6. free()s
 	/* EXEC SQL DEALLOCATE DESCRIPTOR 'inCLNN'; */ 
 
 {
@@ -3704,7 +3750,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, i
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1718;
+ sqlstm.offset = (unsigned int  )1737;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3737,7 +3783,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into CoreLogs_SVM (ProcessId, ThreadId, SVCount, ThresholdB, maxdiff, L1loss, WVnorm, LEVnorm, KEvCount) values(%d, %d, %d, %f, %f, %f, %f, %f, %d)", SVMResult->ProcessId, SVMResult->ThreadId, SVMResult->SVcount, SVMResult->ThresholdB, SVMResult->maxdiff, SVMResult->L1loss, SVMResult->WVnorm, SVMResult->LEVnorm, SVMResult->KEvCount);
+	sprintf(&stmt[0], "insert into CoreLogs_SVM (ProcessId, ThreadId, ActualEpochs, SVCount, ThresholdB, maxdiff, L1loss, WVnorm, LEVnorm, KEvCount) values(%d, %d, %d, %d, %f, %f, %f, %f, %f, %d)", SVMResult->ProcessId, SVMResult->ThreadId, SVMResult->Iterations, SVMResult->SVcount, SVMResult->ThresholdB, SVMResult->maxdiff, SVMResult->L1loss, SVMResult->WVnorm, SVMResult->LEVnorm, SVMResult->KEvCount);
 
 	//-- Executes Insert statements
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
@@ -3752,7 +3798,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1739;
+ sqlstm.offset = (unsigned int  )1758;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3852,7 +3898,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1758;
+ sqlstm.offset = (unsigned int  )1777;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3871,7 +3917,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1778;
+ sqlstm.offset = (unsigned int  )1797;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3890,7 +3936,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1798;
+ sqlstm.offset = (unsigned int  )1817;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3926,7 +3972,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1822;
+ sqlstm.offset = (unsigned int  )1841;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3962,7 +4008,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1846;
+ sqlstm.offset = (unsigned int  )1865;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -3998,7 +4044,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1870;
+ sqlstm.offset = (unsigned int  )1889;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4034,7 +4080,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1894;
+ sqlstm.offset = (unsigned int  )1913;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4070,7 +4116,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1918;
+ sqlstm.offset = (unsigned int  )1937;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4106,7 +4152,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1937;
+ sqlstm.offset = (unsigned int  )1956;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4134,7 +4180,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1957;
+ sqlstm.offset = (unsigned int  )1976;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4239,7 +4285,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )1977;
+ sqlstm.offset = (unsigned int  )1996;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4258,7 +4304,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )1997;
+ sqlstm.offset = (unsigned int  )2016;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4294,7 +4340,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2021;
+ sqlstm.offset = (unsigned int  )2040;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4330,7 +4376,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2045;
+ sqlstm.offset = (unsigned int  )2064;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4366,7 +4412,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2069;
+ sqlstm.offset = (unsigned int  )2088;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4402,7 +4448,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2093;
+ sqlstm.offset = (unsigned int  )2112;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4438,7 +4484,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2117;
+ sqlstm.offset = (unsigned int  )2136;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4474,7 +4520,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2141;
+ sqlstm.offset = (unsigned int  )2160;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4510,7 +4556,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2165;
+ sqlstm.offset = (unsigned int  )2184;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4546,7 +4592,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2189;
+ sqlstm.offset = (unsigned int  )2208;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4582,7 +4628,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2213;
+ sqlstm.offset = (unsigned int  )2232;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4618,7 +4664,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2237;
+ sqlstm.offset = (unsigned int  )2256;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4654,7 +4700,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2261;
+ sqlstm.offset = (unsigned int  )2280;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4690,7 +4736,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2285;
+ sqlstm.offset = (unsigned int  )2304;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4727,7 +4773,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2309;
+ sqlstm.offset = (unsigned int  )2328;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4746,7 +4792,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2329;
+ sqlstm.offset = (unsigned int  )2348;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4782,7 +4828,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2353;
+ sqlstm.offset = (unsigned int  )2372;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4818,7 +4864,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2377;
+ sqlstm.offset = (unsigned int  )2396;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4854,7 +4900,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2401;
+ sqlstm.offset = (unsigned int  )2420;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4890,7 +4936,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2425;
+ sqlstm.offset = (unsigned int  )2444;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4926,7 +4972,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2449;
+ sqlstm.offset = (unsigned int  )2468;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4962,7 +5008,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2473;
+ sqlstm.offset = (unsigned int  )2492;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -4998,7 +5044,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2497;
+ sqlstm.offset = (unsigned int  )2516;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5034,7 +5080,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2521;
+ sqlstm.offset = (unsigned int  )2540;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5070,7 +5116,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2545;
+ sqlstm.offset = (unsigned int  )2564;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5106,7 +5152,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2569;
+ sqlstm.offset = (unsigned int  )2588;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5142,7 +5188,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2593;
+ sqlstm.offset = (unsigned int  )2612;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5178,7 +5224,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2617;
+ sqlstm.offset = (unsigned int  )2636;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5215,7 +5261,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2641;
+ sqlstm.offset = (unsigned int  )2660;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5251,7 +5297,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2660;
+ sqlstm.offset = (unsigned int  )2679;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5286,7 +5332,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2680;
+ sqlstm.offset = (unsigned int  )2699;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5328,7 +5374,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2699;
+ sqlstm.offset = (unsigned int  )2718;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5350,7 +5396,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2719;
+ sqlstm.offset = (unsigned int  )2738;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5394,7 +5440,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2738;
+ sqlstm.offset = (unsigned int  )2757;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5513,7 +5559,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2757;
+ sqlstm.offset = (unsigned int  )2776;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5557,7 +5603,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2778;
+ sqlstm.offset = (unsigned int  )2797;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5576,7 +5622,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2799;
+ sqlstm.offset = (unsigned int  )2818;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5612,7 +5658,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2824;
+ sqlstm.offset = (unsigned int  )2843;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5648,7 +5694,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2849;
+ sqlstm.offset = (unsigned int  )2868;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5684,7 +5730,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2874;
+ sqlstm.offset = (unsigned int  )2893;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5720,7 +5766,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2899;
+ sqlstm.offset = (unsigned int  )2918;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5756,7 +5802,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2924;
+ sqlstm.offset = (unsigned int  )2943;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5792,7 +5838,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2949;
+ sqlstm.offset = (unsigned int  )2968;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5828,7 +5874,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )2974;
+ sqlstm.offset = (unsigned int  )2993;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5864,7 +5910,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )2999;
+ sqlstm.offset = (unsigned int  )3018;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5900,7 +5946,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3018;
+ sqlstm.offset = (unsigned int  )3037;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -5937,7 +5983,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3039;
+ sqlstm.offset = (unsigned int  )3058;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6015,7 +6061,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3060;
+ sqlstm.offset = (unsigned int  )3079;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6062,7 +6108,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3081;
+ sqlstm.offset = (unsigned int  )3100;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6081,7 +6127,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3102;
+ sqlstm.offset = (unsigned int  )3121;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6117,7 +6163,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3127;
+ sqlstm.offset = (unsigned int  )3146;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6153,7 +6199,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3152;
+ sqlstm.offset = (unsigned int  )3171;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6189,7 +6235,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3177;
+ sqlstm.offset = (unsigned int  )3196;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6225,7 +6271,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3202;
+ sqlstm.offset = (unsigned int  )3221;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6261,7 +6307,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3227;
+ sqlstm.offset = (unsigned int  )3246;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6297,7 +6343,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3252;
+ sqlstm.offset = (unsigned int  )3271;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6333,7 +6379,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3277;
+ sqlstm.offset = (unsigned int  )3296;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6369,7 +6415,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3302;
+ sqlstm.offset = (unsigned int  )3321;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6405,7 +6451,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3321;
+ sqlstm.offset = (unsigned int  )3340;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6442,7 +6488,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3342;
+ sqlstm.offset = (unsigned int  )3361;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6529,7 +6575,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3363;
+ sqlstm.offset = (unsigned int  )3382;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6581,7 +6627,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3383;
+ sqlstm.offset = (unsigned int  )3402;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6600,7 +6646,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3403;
+ sqlstm.offset = (unsigned int  )3422;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6636,7 +6682,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3427;
+ sqlstm.offset = (unsigned int  )3446;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6672,7 +6718,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3451;
+ sqlstm.offset = (unsigned int  )3470;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6708,7 +6754,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3475;
+ sqlstm.offset = (unsigned int  )3494;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6744,7 +6790,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3499;
+ sqlstm.offset = (unsigned int  )3518;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6780,7 +6826,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3523;
+ sqlstm.offset = (unsigned int  )3542;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6816,7 +6862,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3547;
+ sqlstm.offset = (unsigned int  )3566;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6852,7 +6898,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3571;
+ sqlstm.offset = (unsigned int  )3590;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6888,7 +6934,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3595;
+ sqlstm.offset = (unsigned int  )3614;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6924,7 +6970,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3619;
+ sqlstm.offset = (unsigned int  )3638;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6960,7 +7006,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3643;
+ sqlstm.offset = (unsigned int  )3662;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -6996,7 +7042,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3667;
+ sqlstm.offset = (unsigned int  )3686;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7032,7 +7078,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3691;
+ sqlstm.offset = (unsigned int  )3710;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7068,7 +7114,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3715;
+ sqlstm.offset = (unsigned int  )3734;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7104,7 +7150,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3739;
+ sqlstm.offset = (unsigned int  )3758;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7140,7 +7186,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3763;
+ sqlstm.offset = (unsigned int  )3782;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7176,7 +7222,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )vInsertCount;
- sqlstm.offset = (unsigned int  )3782;
+ sqlstm.offset = (unsigned int  )3801;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7219,7 +7265,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3802;
+ sqlstm.offset = (unsigned int  )3821;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7267,7 +7313,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3822;
+ sqlstm.offset = (unsigned int  )3841;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7305,7 +7351,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3841;
+ sqlstm.offset = (unsigned int  )3860;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7326,7 +7372,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3856;
+ sqlstm.offset = (unsigned int  )3875;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7402,7 +7448,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3891;
+ sqlstm.offset = (unsigned int  )3910;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7456,7 +7502,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3906;
+ sqlstm.offset = (unsigned int  )3925;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7494,7 +7540,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3925;
+ sqlstm.offset = (unsigned int  )3944;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7515,7 +7561,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3940;
+ sqlstm.offset = (unsigned int  )3959;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7583,7 +7629,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3971;
+ sqlstm.offset = (unsigned int  )3990;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7636,7 +7682,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3986;
+ sqlstm.offset = (unsigned int  )4005;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7674,7 +7720,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4005;
+ sqlstm.offset = (unsigned int  )4024;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7699,7 +7745,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4020;
+ sqlstm.offset = (unsigned int  )4039;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7830,7 +7876,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4079;
+ sqlstm.offset = (unsigned int  )4098;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7872,7 +7918,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4094;
+ sqlstm.offset = (unsigned int  )4113;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7910,7 +7956,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4113;
+ sqlstm.offset = (unsigned int  )4132;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -7935,7 +7981,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4128;
+ sqlstm.offset = (unsigned int  )4147;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8033,7 +8079,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4171;
+ sqlstm.offset = (unsigned int  )4190;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8075,7 +8121,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4186;
+ sqlstm.offset = (unsigned int  )4205;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8113,7 +8159,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4205;
+ sqlstm.offset = (unsigned int  )4224;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8138,7 +8184,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4220;
+ sqlstm.offset = (unsigned int  )4239;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8268,7 +8314,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4279;
+ sqlstm.offset = (unsigned int  )4298;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8311,7 +8357,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4294;
+ sqlstm.offset = (unsigned int  )4313;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8349,7 +8395,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4313;
+ sqlstm.offset = (unsigned int  )4332;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8370,7 +8416,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4328;
+ sqlstm.offset = (unsigned int  )4347;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8413,7 +8459,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4347;
+ sqlstm.offset = (unsigned int  )4366;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8458,7 +8504,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4362;
+ sqlstm.offset = (unsigned int  )4381;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8496,7 +8542,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4381;
+ sqlstm.offset = (unsigned int  )4400;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8518,7 +8564,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4396;
+  sqlstm.offset = (unsigned int  )4415;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8593,7 +8639,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4427;
+ sqlstm.offset = (unsigned int  )4446;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8637,7 +8683,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4442;
+ sqlstm.offset = (unsigned int  )4461;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8675,7 +8721,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4461;
+ sqlstm.offset = (unsigned int  )4480;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8697,7 +8743,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4476;
+  sqlstm.offset = (unsigned int  )4495;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8764,7 +8810,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4503;
+ sqlstm.offset = (unsigned int  )4522;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8808,7 +8854,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4518;
+ sqlstm.offset = (unsigned int  )4537;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8846,7 +8892,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4537;
+ sqlstm.offset = (unsigned int  )4556;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -8868,7 +8914,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4552;
+  sqlstm.offset = (unsigned int  )4571;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -8933,7 +8979,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4579;
+ sqlstm.offset = (unsigned int  )4598;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8979,7 +9025,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4594;
+ sqlstm.offset = (unsigned int  )4613;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9017,7 +9063,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4613;
+ sqlstm.offset = (unsigned int  )4632;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9038,7 +9084,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4628;
+ sqlstm.offset = (unsigned int  )4647;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9137,7 +9183,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4671;
+ sqlstm.offset = (unsigned int  )4690;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9183,7 +9229,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4686;
+ sqlstm.offset = (unsigned int  )4705;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9221,7 +9267,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4705;
+ sqlstm.offset = (unsigned int  )4724;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9242,7 +9288,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4720;
+ sqlstm.offset = (unsigned int  )4739;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9285,7 +9331,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4739;
+ sqlstm.offset = (unsigned int  )4758;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9314,7 +9360,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4754;
+ sqlstm.offset = (unsigned int  )4773;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9352,7 +9398,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4773;
+ sqlstm.offset = (unsigned int  )4792;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9373,7 +9419,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4788;
+ sqlstm.offset = (unsigned int  )4807;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9416,7 +9462,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4807;
+ sqlstm.offset = (unsigned int  )4826;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9482,7 +9528,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4822;
+ sqlstm.offset = (unsigned int  )4841;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9520,7 +9566,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4841;
+ sqlstm.offset = (unsigned int  )4860;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9547,7 +9593,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )4856;
+  sqlstm.offset = (unsigned int  )4875;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -9611,7 +9657,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4883;
+ sqlstm.offset = (unsigned int  )4902;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9645,7 +9691,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4898;
+ sqlstm.offset = (unsigned int  )4917;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9683,7 +9729,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4917;
+ sqlstm.offset = (unsigned int  )4936;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9708,7 +9754,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4932;
+ sqlstm.offset = (unsigned int  )4951;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9752,7 +9798,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4951;
+ sqlstm.offset = (unsigned int  )4970;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9785,7 +9831,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4966;
+ sqlstm.offset = (unsigned int  )4985;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9823,7 +9869,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )4985;
+ sqlstm.offset = (unsigned int  )5004;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9849,7 +9895,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5000;
+  sqlstm.offset = (unsigned int  )5019;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -9894,7 +9940,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5019;
+ sqlstm.offset = (unsigned int  )5038;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9927,7 +9973,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5034;
+ sqlstm.offset = (unsigned int  )5053;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9965,7 +10011,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5053;
+ sqlstm.offset = (unsigned int  )5072;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -9986,7 +10032,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5068;
+ sqlstm.offset = (unsigned int  )5087;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10032,7 +10078,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5087;
+ sqlstm.offset = (unsigned int  )5106;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10081,7 +10127,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5102;
+ sqlstm.offset = (unsigned int  )5121;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10119,7 +10165,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5121;
+ sqlstm.offset = (unsigned int  )5140;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10141,7 +10187,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5136;
+  sqlstm.offset = (unsigned int  )5155;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -10232,7 +10278,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, c
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5175;
+ sqlstm.offset = (unsigned int  )5194;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10278,7 +10324,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5190;
+ sqlstm.offset = (unsigned int  )5209;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10316,7 +10362,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5209;
+ sqlstm.offset = (unsigned int  )5228;
  sqlstm.selerr = (unsigned short)1;
  sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
@@ -10338,7 +10384,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5224;
+  sqlstm.offset = (unsigned int  )5243;
   sqlstm.selerr = (unsigned short)1;
   sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
@@ -10459,7 +10505,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5275;
+ sqlstm.offset = (unsigned int  )5294;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10567,7 +10613,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "alter SESSION SET NLS_DATE_FORMAT = 'YYYYMMDDHH24MI'";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5290;
+ sqlstm.offset = (unsigned int  )5309;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10586,7 +10632,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5305;
+ sqlstm.offset = (unsigned int  )5324;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10623,7 +10669,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugInfo, sql_context pCtx, char* p
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5324;
+  sqlstm.offset = (unsigned int  )5343;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10658,7 +10704,7 @@ EXPORT void __stdcall OraAllocateCtx(sql_context pCtx[MAX_CONTEXTS]) {
   sqlstm.sqltdsp = &sqltds;
   sqlstm.stmt = "";
   sqlstm.iters = (unsigned int  )1;
-  sqlstm.offset = (unsigned int  )5339;
+  sqlstm.offset = (unsigned int  )5358;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10699,7 +10745,7 @@ EXPORT void __stdcall OraEnableThreads() {
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5358;
+ sqlstm.offset = (unsigned int  )5377;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10727,7 +10773,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5373;
+ sqlstm.offset = (unsigned int  )5392;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10746,7 +10792,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
  sqlstm.sqltdsp = &sqltds;
  sqlstm.stmt = "";
  sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )5388;
+ sqlstm.offset = (unsigned int  )5407;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;

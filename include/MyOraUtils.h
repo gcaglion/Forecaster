@@ -39,7 +39,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
 EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight);
 //--
-EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* pDebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs);
+EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, tCoreLog* NNLogs);
 EXPORT int __stdcall Ora_InsertCoreLogs_SOM(tDebugInfo* pDebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs);
 EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* SVMResult);
 //--

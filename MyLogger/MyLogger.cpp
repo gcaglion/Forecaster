@@ -249,7 +249,7 @@ int Txt_InsertCoreImage_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tSVMRe
 	return 0;
 }
 //--
-int Txt_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
+int Txt_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, tCoreLog* NNLogs) {
 	return 0;
 }
 int Txt_InsertCoreLogs_SOM(tDebugInfo* DebugParms, int BPAlgo, int pInsertCount, tLogInt* IntLogs) {
@@ -429,10 +429,10 @@ __declspec(dllexport) int __stdcall InsertCoreImage_SVM(tDebugInfo* pDebugParms,
 //--
 __declspec(dllexport) int __stdcall InsertCoreLogs_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreLogs_NN(pDebugParms, NNParms->BP_Algo, NNLogs->IntCnt, NNLogs->IntP);
+		return Ora_InsertCoreLogs_NN(pDebugParms, NNParms->BP_Algo, NNLogs);
 	}
 	else {
-		return Txt_InsertCoreLogs_NN(pDebugParms, NNParms->BP_Algo, NNLogs->IntCnt, NNLogs->IntP);
+		return Txt_InsertCoreLogs_NN(pDebugParms, NNParms->BP_Algo, NNLogs);
 	}
 }
 __declspec(dllexport) int __stdcall InsertCoreLogs_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tCoreLog* SOMLogs) {
