@@ -380,7 +380,7 @@ double Qing_CalcD10W(NN_Parms* NN, NN_MxData* Mx){
 	double ret;
 
 	//-- build ux
-	VbyV2M(NN->NodesCount[0], Mx->NN.F[0][t0], NN->NodesCount[0], Mx->NN.F[0][t0], Mx->NN.ux);
+	VbyV2M(NN->NodesCount[0], Mx->NN.F[0][t0], NN->NodesCount[0], Mx->NN.F[0][t0], false, Mx->NN.ux);
 	
 	//-- Invert ux (???)
 	//MInv(NN->NodesCount[0], Mx->NN.ux, Mx->NN.ux_inv);
@@ -429,7 +429,7 @@ void Calc_dJdW(NN_Parms* NN, NN_MxData* Mx, bool doFF, bool doCalcH){
 			VbyV2V(NN->NodesCount[l], Mx->NN.edF[l][t0], Mx->NN.dF[l][t0], Mx->NN.edF[l][t0]);							// edF(l) = edF(l)   * F'(l)
 		}
 		//-- common
-		VbyV2M(NN->NodesCount[l], Mx->NN.edF[l][t0], NN->NodesCount[l-1], Mx->NN.F[l-1][t0], Mx->NN.dJdW[l-1][t0]);		// dJdW(l) = edF(l) * F(l-1)
+		VbyV2M(NN->NodesCount[l], Mx->NN.edF[l][t0], NN->NodesCount[l-1], Mx->NN.F[l-1][t0], false, Mx->NN.dJdW[l-1][t0]);		// dJdW(l) = edF(l) * F(l-1)
 	}
 
 	//if (doCalcH) Calc_H(NN, Mx);
