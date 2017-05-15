@@ -585,6 +585,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		ioParms->DataParms.ValidationShift = 0;
 		
 		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->DataParms) != 0) return -1;
+		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
 		//-- before loading cores, we need to set layout based on EngineType just loaded
 		if (setEngineLayout(ioParms) != 0) return -1;
@@ -608,6 +609,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		if (getParam(ioParms, "DataParms.ValidationShift", &ioParms->DataParms.ValidationShift) < 0)					return -1;
 		if (getParam(ioParms, "DataParms.DataTransformation", &ioParms->DataParms.DataTransformation, enumlist) < 0)	return -1;
 		if (getParam(ioParms, "DataParms.WiggleRoom", &ioParms->DataParms.wiggleRoom) < 0)								return -1;
+		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 
 		//-- Engine-specific parameters
 		setCoreInfo_Pre(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
@@ -767,7 +769,6 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		//-- Core Logs
 		mallocCoreLogs(ioParms);
 	}
-	ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 
 	return 0;
 }

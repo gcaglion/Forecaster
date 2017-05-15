@@ -855,6 +855,7 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 			k++;
 		}
 	}
+	Mx->BPCount = 0; Mx->SCGD_progK = 0;
 
 	//-- Qing stuff
 	Mx->NN.adzev[0][0] = 0;
@@ -862,7 +863,6 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 	Mx->NN.Q_ro[0] = 0; Mx->NN.Q_ro[1] = 0;
 	Mx->NN.Q_sigma[0] = 0; Mx->NN.Q_sigma[1] = 0;
 
-	Mx->BPCount = 0; Mx->SCGD_progK = 0;
 }
 
 void Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
