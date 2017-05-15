@@ -32,7 +32,7 @@ EXPORT void __stdcall VbyS(int Vlen, double* iV, double s, double* oV);
 EXPORT void __stdcall VdivS(int Vlen, double* iV, double s, double* oV);
 EXPORT double __stdcall VbyV(int Vlen, double* V1, double* V2);
 EXPORT void __stdcall VbyV2V(int Vlen, double* iV1, double* iV2, double* oV);
-EXPORT void __stdcall VbyV2M(int Vylen, double* vY, int Vxlen, double* vX, double** oM);
+EXPORT void __stdcall VbyV2M(int Vylen, double* vY, int Vxlen, double* vX, bool transpose, double** oM);
 EXPORT void __stdcall VminusV(int Vlen, double* V1, double* V2, double* oV);
 EXPORT void __stdcall VAbsDiff(int Vlen, double* V1, double* V2, double* oV);
 EXPORT void __stdcall VbyVbyV(int Vlen, double* A, double* B, double* C, double* oV);

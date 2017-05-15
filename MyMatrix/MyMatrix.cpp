@@ -105,10 +105,16 @@ EXPORT void __stdcall VCopy(int Vlen, double** V1, double** V2){
 	for (int i = 0; i < Vlen; i++)	(*V2[i]) = (*V1[i]);
 }
 
-EXPORT void __stdcall VbyV2M(int Vylen, double* vY, int Vxlen, double* vX, double** oM){
+EXPORT void __stdcall VbyV2M(int Vylen, double* vY, int Vxlen, double* vX, bool transpose, double** oM){
 	// This builds a 2x2 matrix by multiplying values in 2 vectors
 	for (int y = 0; y < Vylen; y++){
-		for (int x = 0; x < Vxlen; x++) oM[y][x] = vX[x] * vY[y];
+		for (int x = 0; x < Vxlen; x++) {
+			if (transpose) {
+				oM[x][y] = vX[x] * vY[y];
+			} else {
+				oM[y][x] = vX[x] * vY[y];
+			}
+		}
 	}
 }
 
