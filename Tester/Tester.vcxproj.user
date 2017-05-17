@@ -3,7 +3,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME1)
 PATH=$(ORACLE_HOME1)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_ExtLibs\fft\VisualStudio\$(Platform)\$(Configuration)
-$(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
+$(LocalDebuggerEnvironment)
+PATH=$(SolutionDir)..\AAA_ExtLibs\fft\VisualStudio\$(Platform)\$(Configuration)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>
     </LocalDebuggerCommandArguments>
@@ -18,7 +19,7 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME2)
-PATH=$(ORACLE_HOME2)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_Ext\fft\VisualStudio\$(Platform)\$(Configuration);$(SolutionDir)..\AAA_Ext\vcomp120d\$(Platform)\$(Configuration)</LocalDebuggerEnvironment>
+PATH=$(ORACLE_HOME2)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_ExtLibs\fft\VisualStudio\$(Platform)\$(Configuration);$(SolutionDir)..\AAA_ExtLibs\vcomp120d\$(Platform)\$(Configuration)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>
     </LocalDebuggerCommandArguments>
