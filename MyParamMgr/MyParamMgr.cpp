@@ -407,9 +407,9 @@ EXPORT int cParamsSource::Process(int section) {
 
 	//-- 4.1. set TSFs
 	int useTSF;
-	if (getParam("DataParms->UseTSFeatures", &useTSF) < 0) return -1;
+	if (getParam("DataParms.UseTSFeatures", &useTSF) < 0) return -1;
 	if (useTSF > 0) {
-		Engine->TSFcnt = getParam("DataParms->TSFeatures", &Engine->TSFid, enumlist); if (Engine->TSFcnt < 0) return -1;
+		Engine->TSFcnt = getParam("DataParms.TSFeatures", &Engine->TSFid, enumlist); if (Engine->TSFcnt < 0) return -1;
 	} else {
 		Engine->TSFcnt = 0;
 	}
