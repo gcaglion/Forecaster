@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 	//--
 	gotoxy(0, fp->Engine->TotalCoresCount*fp->DataParms->DatasetsCount + i + 4);
 	printf("Elapsed Time: %s\n", elapsedTimeS);
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 
 	return 0;
 }

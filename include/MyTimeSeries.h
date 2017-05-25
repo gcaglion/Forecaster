@@ -48,7 +48,7 @@ public:
 } ;
 
 
-EXPORT int __stdcall FXDataCompact(char* INfilename, int INtimeframe, char* OUTfilename, int OUTtimeframe);
+EXPORT int FXDataCompact(char* INfilename, int INtimeframe, char* OUTfilename, int OUTtimeframe);
 
 //-- Timeseries Statistical Features
 EXPORT double TSMean(int VLen, double* V);

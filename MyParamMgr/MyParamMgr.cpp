@@ -128,7 +128,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, int* oPa
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		system("pause");
+		printf("Press any key to continue...\n"); getchar();;
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -141,7 +141,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, int* oPa
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 	return -1;
 }
 int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, double* oParamValue){
@@ -165,7 +165,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, double* 
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 	return -1;
 }
 int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValue){
@@ -176,7 +176,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oP
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		system("pause");
+		printf("Press any key to continue...\n"); getchar();;
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %[^\n]", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -188,7 +188,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oP
 		}
 	}
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 	fclose(ParamFile);
 	return -1;
 }
@@ -322,7 +322,7 @@ EXPORT int cParamsSource::getParam(char* paramName, int** oparamVal, bool isenum
 //-- command-line parameters processing
 int cParamsSource::CLFail(int p){
 	printf("Command Line Fail on parameter %d !\nExiting...\n", p);
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 	return -1;
 }
 int	cParamsSource::CLProcess(int argc, char* argv[]){

@@ -1339,7 +1339,7 @@ int main() {
 	delete myNN;
 
 	printf("\n");
-	system("pause");
+	printf("Press any key to continue...\n"); getchar();;
 	return 0;
 }
 */

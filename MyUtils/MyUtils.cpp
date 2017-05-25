@@ -216,7 +216,7 @@ EXPORT int			__stdcall DumpArrayD(int ArrLen, double* Arr, char* fname){
 	FILE* fDump = fopen(fname, "w");
 	if (fDump == NULL){
 		printf("Could not open Source Data File. Exiting...\n");
-		system("pause");
+		printf("Press any key to continue...\n"); getchar();;
 		return -1;
 	}
 	for (int i = 0; i < ArrLen; i++){
