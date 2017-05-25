@@ -9,7 +9,6 @@
 #include <DataShape.h>
 #include <FileData.h>
 #include <FXData.h>
-#include <MyDataAbstraction.h>
 #include <TSF.h>
 
 //-- History/Validation datasets
