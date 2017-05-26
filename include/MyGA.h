@@ -7,8 +7,8 @@ public:
 	int InputCount;
 	int OutputCount;
 	char BestChrPath[MAX_PATH];
-	int MaxGenerations;
-	int ActualGenerations;
+	int MaxEpochs;
+	int ActualEpochs;
 	int BestGen;
 	int BestCid;
 	double BestFitness;

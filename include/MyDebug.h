@@ -21,7 +21,7 @@ typedef struct sDebugInfo {
 	char FullfName[MAX_PATH];
 	FILE* fHandle;
 	int  fIsOpen;
-	void* DBCtx;
+	//void* DBCtx;
 	int ThreadSafeLogging;
 	int SaveMSE;
 	int SaveRun;

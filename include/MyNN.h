@@ -71,7 +71,7 @@ public:
 	int nodesCntTotal;
 	int weightsCntTotal;
 	int useContext;
-	int maxEpochs;
+	int MaxEpochs;
 	double TargetMSE;
 	double LearningRate;
 	double LearningMomentum;
@@ -156,7 +156,7 @@ private:
 	void BP();
 
 public: 
-	cNN();
+	EXPORT cNN();
 	cNN(int ppid, int ptid);
 	~cNN();
 };

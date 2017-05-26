@@ -208,13 +208,13 @@
 	int  cNN::setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt) {
 		//-- (pre)
 		if (load) {
-			if (LoadCoreParms_NN(DebugParms, pid, tid, &InputCount, &OutputCount, &useContext, &maxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
+			if (LoadCoreParms_NN(DebugParms, pid, tid, &InputCount, &OutputCount, &useContext, &MaxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
 		}
 		//-- (post)
-		TimeStepsCount = maxEpochs*((BPAlgo == BP_SCGD) ? iSampleCnt : 1);
+		TimeStepsCount = MaxEpochs*((BPAlgo == BP_SCGD) ? iSampleCnt : 1);
 		SampleLen = InputCount;
 		TargetLen = OutputCount;
-		MSECount = maxEpochs;
+		MSECount = MaxEpochs;
 		return 0;
 	}
 	int  cNN::LoadImage(tDebugInfo* DebugParms, int pid, int tid) {
@@ -372,7 +372,7 @@
 		double MSE_V = 0, TSE_V = 0;
 		double prevMSE_T;
 		int epoch;
-		for (epoch = 0; epoch < ((BPAlgo==BP_SCGD)?1:maxEpochs); epoch++) {
+		for (epoch = 0; epoch < ((BPAlgo==BP_SCGD)?1:MaxEpochs); epoch++) {
 			initdW();
 			TSE_T = 0;
 			for (int s = 0; s < sampleCnt; s++) {
@@ -409,7 +409,7 @@
 		double MSE_V=0, TSE_V = 0;
 		double prevMSE_T;
 		int epoch;
-		for (epoch = 0; epoch < maxEpochs; epoch++) {
+		for (epoch = 0; epoch < MaxEpochs; epoch++) {
 			TSE_T = 0;
 			for (int s = 0; s < sampleCnt; s++) {
 				//-- 1. present sample to L0 neurons, and target to u[]
@@ -684,7 +684,7 @@
 	}
 	void cNN::BP_scgd() {
 		int k;
-		int maxk = maxEpochs;
+		int maxk = MaxEpochs;
 
 		double sigma, delta, mu, alpha, beta = 0, b1, b2;
 		double lambda, lambdau;
@@ -902,7 +902,7 @@
 		pid = ppid;
 		tid = ptid;
 	}
-	cNN::cNN() {
+	EXPORT cNN::cNN() {
 		levelRatioS = new char[256];
 	}
 	cNN::~cNN(){
@@ -1289,7 +1289,7 @@ int main() {
 	myNN->BPAlgo = BP_STD;
 	myNN->ActivationFunction = NN_ACTIVATION_TANH;
 	myNN->useContext = 0;
-	myNN->maxEpochs = 3000;
+	myNN->MaxEpochs = 3000;
 	myNN->LearningRate = 0.01;
 	myNN->LearningMomentum = 0.8;
 	myNN->TargetMSE = 0.0001;
@@ -1301,10 +1301,10 @@ int main() {
 	myNN->ScreenMutex = CreateMutex(NULL, FALSE, NULL);
 	myNN->ScreenPos = 3;
 	//--
-	int TimeStepsCount = myNN->maxEpochs * ((myNN->BPAlgo == BP_SCGD) ? sampleCnt : 1);
+	int TimeStepsCount = myNN->MaxEpochs * ((myNN->BPAlgo == BP_SCGD) ? sampleCnt : 1);
 	myNN->coreLog = new tCoreLog();
 	myNN->mallocNNLog(TimeStepsCount);
-	myNN->coreLog->MSEOutput = MallocArray<tLogMSE>(myNN->maxEpochs);
+	myNN->coreLog->MSEOutput = MallocArray<tLogMSE>(myNN->MaxEpochs);
 	myNN->coreLog->RunOutput = MallocArray<tLogRUN>(runCnt);
 	//--
 //===================================================================================================
@@ -1334,7 +1334,7 @@ int main() {
 	FreeArray(hlen, ts_trs);
 	FreeArray(sampleCnt, sampleLen, Sample);
 	FreeArray(sampleCnt, targetLen, Target);
-	FreeArray(myNN->maxEpochs, myNN->coreLog->MSEOutput);
+	FreeArray(myNN->MaxEpochs, myNN->coreLog->MSEOutput);
 	FreeArray(runCnt, myNN->coreLog->RunOutput);
 	delete myNN;
 

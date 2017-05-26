@@ -22,7 +22,7 @@ public:
 	int OutputCount;
 
 	void* core;			// pointer to cNN | cSVM | ...
-	cCoreLog** coreLog;	// 
+	cCoreLog** coreLog;	// pointer to cCoreLog[datasetscount] ??
 
 	virtual void init();
 	EXPORT virtual int  train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** SampleT, double** TargetT, int useValidation, double** SampleV, double** TargetV);
@@ -30,9 +30,10 @@ public:
 	EXPORT virtual int  setParms(tDebugInfo* DebugParms, int pid, int tid);
 	virtual int  LoadImage(tDebugInfo* DebugParms, int pid, int tid);
 	virtual void mallocLogs(int dscnt);
-	virtual void getScaleRange(double* oScaleMin, double* oScaleMax);	// used only by CORE_NN
+	EXPORT virtual void getScaleRange(double* oScaleMin, double* oScaleMax);	// used only by CORE_NN
 
-	EXPORT cCore(int cType, int inputCnt, int outputCnt);
+	//-- constructors / destructors
+	EXPORT cCore(int cType, int dscnt, int inputCnt, int outputCnt);
 	EXPORT cCore();
 	EXPORT ~cCore();
 };

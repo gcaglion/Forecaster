@@ -36,7 +36,7 @@ public:
 	int WNN_DecompLevel;
 	char* WNN_WaveletType;
 
-	EXPORT void setLayout();
+	EXPORT void setLayout(int DatasetsCount, int DataSampleLen, int DataTargetLen);
 	EXPORT void mallocCoresLogs(int dscnt);
 	EXPORT int  LoadCoresParms(tDebugInfo* pDebugParms, int pid);
 	EXPORT int  LoadCoresImage(tDebugInfo* pDebugParms, int pid);
@@ -46,6 +46,7 @@ public:
 	EXPORT int SaveImage(tDebugInfo* DebugParms, int pid, int dscnt, int testid);
 
 	EXPORT cEngine(int DataSampleLen, int DataTargetLen);
+	EXPORT cEngine();
 	~cEngine();
 
 private:

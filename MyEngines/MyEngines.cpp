@@ -2,7 +2,9 @@
 
 #include <MyEngines.h>
 
-EXPORT void cEngine::setLayout() {
+EXPORT void cEngine::setLayout(int DatasetsCount, int DataSampleLen, int DataTargetLen) {
+	InputCount = DataSampleLen;
+	OutputCount = DataTargetLen;
 
 	//-- 1. set LayersCount, CoresCount, Core[]
 	switch (EngineType) {
@@ -16,7 +18,7 @@ EXPORT void cEngine::setLayout() {
 		for (int l = 0; l<LayersCount; l++) {
 			Core[l] = MallocArray<cCore*>(CoresCount[l]);
 			for (int c = 0; c<CoresCount[l]; c++) {
-				Core[l][c] = new cCore(CORE_NN, (l>0)?(CoresCount[0]*OutputCount+TSFcnt):InputCount, OutputCount);	
+				Core[l][c] = new cCore(CORE_NN, DatasetsCount, (l>0)?(CoresCount[0]*OutputCount+TSFcnt):InputCount, OutputCount);
 			}
 		}
 		break;
@@ -28,11 +30,11 @@ EXPORT void cEngine::setLayout() {
 
 		Core = MallocArray<cCore**>(LayersCount);
 		Core[0] = MallocArray<cCore*>(CoresCount[0]);
-		Core[0] = MallocArray<cCore*>(CoresCount[1]);
+		Core[1] = MallocArray<cCore*>(CoresCount[1]);
 
-		Core[0][0] = new cCore(CORE_SVM, InputCount, OutputCount);
-		Core[0][1] = new cCore(CORE_NN, InputCount, OutputCount);
-		Core[1][0] = new cCore(CORE_NN, (2*OutputCount+TSFcnt), OutputCount);
+		Core[0][0] = new cCore(CORE_SVM, DatasetsCount, InputCount, OutputCount);
+		Core[0][1] = new cCore(CORE_NN, DatasetsCount, InputCount, OutputCount);
+		Core[1][0] = new cCore(CORE_NN, DatasetsCount, (2*OutputCount+TSFcnt), OutputCount);
 
 		break;
 	default:
@@ -40,8 +42,9 @@ EXPORT void cEngine::setLayout() {
 		CoresCount = MallocArray<int>(LayersCount);
 		CoresCount[0] = 1;
 		Core = MallocArray<cCore**>(LayersCount);
+		Core[0] = MallocArray<cCore*>(CoresCount[0]);
 
-		Core[0][0] = new cCore(EngineType, InputCount, OutputCount);
+		Core[0][0] = new cCore(EngineType, DatasetsCount, InputCount, OutputCount);
 		break;
 	}
 
@@ -73,6 +76,9 @@ EXPORT void cEngine::setLayout() {
 	*/
 }
 
+EXPORT cEngine::cEngine(){
+	TSFid = MallocArray<int>(MAX_TSFCOUNT);
+}
 EXPORT cEngine::cEngine(int DataSampleLen, int DataTargetLen) {
 	InputCount = DataSampleLen;
 	OutputCount = DataTargetLen;
