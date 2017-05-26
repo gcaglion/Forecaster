@@ -214,7 +214,7 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	FILE* fData = fopen(pDataFile->FileName, "r");
 	if (fData == NULL) {
 		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
-		system("pause");
+		printf("Press any key..."); getchar();;
 		return -1;
 	}
 
@@ -234,7 +234,7 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	for (l = 0; l < (pHistoryLen + pFutureLen); l++) {
 		if (fgets(vLine, MaxLineSize, fData) == NULL) {
 			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
-			system("pause");
+			printf("Press any key..."); getchar();;
 			return -1;
 		}
 		//-- Read first column (datetime)

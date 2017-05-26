@@ -116,7 +116,7 @@ int main(int argc, char** argv) {
 	//--
 	gotoxy(0, fParms.EngineParms.TotalCoresCount*fParms.DataParms.DatasetsCount + i + 4);
 	printf("Elapsed Time: %s\n", elapsedTimeS);
-	system("pause");
+	printf("Press any key..."); getchar();;
 
 	return 0;
 }

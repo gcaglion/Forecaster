@@ -129,7 +129,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		system("pause");
+		printf("Press any key..."); getchar();;
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -142,7 +142,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key..."); getchar();;
 	return -1;
 }
 __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pParamName, double* oParamValue) {
@@ -166,7 +166,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key..."); getchar();;
 	return -1;
 }
 __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValue) {
@@ -177,7 +177,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		system("pause");
+		printf("Press any key..."); getchar();;
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %[^\n]", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -189,7 +189,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 		}
 	}
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	system("pause");
+	printf("Press any key..."); getchar();;
 	fclose(ParamFile);
 	return -1;
 }
@@ -305,7 +305,7 @@ static char CLparamVal[1000][100];		// 1000 parameters max. Parameter name must 
 //-- command-line parameters processing
 int CLFail(int p) {
 	printf("Command Line Fail on parameter %d !\nExiting...\n", p);
-	system("pause");
+	printf("Press any key..."); getchar();;
 	return -1;
 }
 __declspec(dllexport) int __stdcall	CLProcess(int argc, char* argv[], tForecastParms* iniParms) {

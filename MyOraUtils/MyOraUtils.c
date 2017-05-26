@@ -521,7 +521,7 @@ void  __stdcall LogWrite_C(tDebugInfo* DebugParms, int LogType, char* msg, int a
 	memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
 	if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg);
 	if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) fprintf(DebugParms->fHandle, submsg);
-	if (LogType == LOG_ERROR) system("pause");
+	if (LogType == LOG_ERROR) printf("Press any key..."); getchar();;
 	va_end(arguments);
 }
 //--
@@ -648,7 +648,7 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 		LogWrite_C(DebugInfo, LOG_ERROR, "%s Error %d connecting to ORACLE as user: %s\n", 3, timestamp_C(), sqlca.sqlcode, DBConnInfo->DBUser);
 		LogWrite_C(DebugInfo, LOG_ERROR, "PATH=%s\n", 1, vPath);
 		LogWrite_C(DebugInfo, LOG_ERROR, "ORACLE_HOME=%s\n", 1, vOH);
-		system("pause");
+		printf("Press any key..."); getchar();;
 	}
 	return(sqlca.sqlcode);
 }
@@ -7969,7 +7969,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); system("pause");
+		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); printf("Press any key..."); getchar();;
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL FETCH cLEPSOM INTO vInputCount, vOutputCount, vMaxEpochs, vTDFunction, vBaseTD, vLRFunction, vBaseLR; */ 
@@ -8172,7 +8172,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); system("pause");
+		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); printf("Press any key..."); getchar();;
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL FETCH cLEPSVM INTO vInputCount, vMaxEpochs, vC, vEpsilon, vIterToShrink, vKernelType, vPolyDegree, vRBFGamma, vCoefLin, vCoefConst, vKernelCacheSize; */ 

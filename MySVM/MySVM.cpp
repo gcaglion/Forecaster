@@ -201,7 +201,7 @@ double SVMPredict(char* sample, int ktype, long max_words_doc, MODEL* model, svm
 	double pred;
 
 	if (parse_document(sample, words, &doc_label, &queryid, &slackid, &costfactor, &wnum, max_words_doc, &comment) < 0) {
-		system("pause");
+		printf("Press any key..."); getchar();;
 		return -1;
 	}
 	doc = create_example(-1, 0, 0, 0.0, create_svector(words, comment, 1.0));

@@ -629,7 +629,7 @@ int main(int argc, char* argv[]) {
 		printf("\n");
 	}
 
-	system("pause");
+	printf("Press any key..."); getchar();;
 
 	return 0;
 }
