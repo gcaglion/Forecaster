@@ -21,7 +21,7 @@ public:
 	int InputCount;
 	int OutputCount;
 
-	void* core;			// pointer to cNN | cSVM | ...
+	//void* core;			// pointer to cNN | cSVM | ...
 	cCoreLog** coreLog;	// pointer to cCoreLog[datasetscount] ??
 
 	virtual void init();

@@ -107,29 +107,30 @@ void freeTS(cParamsSource* fp, cTimeSerie***** ret){
 
 //--
 void Train_XXX(tTrainParams* tp) {
-	cCore*		core = tp->EngineParms->Core[tp->LayerId][tp->CoreId];
+/*	cCore*		core = tp->EngineParms->Core[tp->LayerId][tp->CoreId];
 	cCoreLog*	coreLog = tp->EngineParms->Core[tp->LayerId][tp->CoreId]->coreLog[tp->DatasetId];
 
 	tp->TrainSuccess = core->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 	tp->ActualEpochs = coreLog->ActualEpochs;
-/*
+*/
 	switch (tp->EngineParms->Core[tp->LayerId][tp->CoreId]->CoreType) {
-	case ENGINE_NN:
+	case CORE_NN:
+		(cNN*)(tp->EngineParms->Core[tp->LayerId][tp->CoreId])->
 		NNParms = (NN_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
 		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
-	case ENGINE_GA:
+	case CORE_GA:
 		GAParms = (GA_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
 		//-- tp->TrainSuccess= Train_GA(...);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
-	case ENGINE_SOM:
+	case CORE_SOM:
 		SOMParms = (SOM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
 		//-- tp->TrainSuccess= Train_SOM(...);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
-	case ENGINE_SVM:
+	case CORE_SVM:
 		SVMParms = (SVM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
 		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
@@ -453,6 +454,8 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 	for (d = 0; d < dscnt; d++) {
 
 		fp->Engine->Core[0][0]->getScaleRange(&scaleMin, &scaleMax);
+		//-- merge hd and fd into wd
+		VExtend(fp->DataParms->HistoryLen, hd[d], fp->DataParms->PredictionLen, fd[d], wd[d]);
 		//-- transform/scale wd
 		dataTransform(fp->DataParms->DataTransformation, wlen, wd[d], pHistoryBaseVal[d], &wd_min[d], wd_tr[d]);
 		DataScale(wlen, wd_tr[d], scaleMin, scaleMax, wd_trs[d], &wd_scaleM[d], &wd_scaleP[d]);

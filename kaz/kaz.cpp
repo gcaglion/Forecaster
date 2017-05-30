@@ -8,7 +8,60 @@
 #include <DBConnection.h>
 #include <MyDataAbstraction.h>
 
+
+class Shape {
+	double Area;
+public:
+	virtual double calcArea();
+
+};
+double Shape::calcArea() {
+	return 0;
+}
+
+class Circle : public Shape {
+	double calcArea();
+};
+
+double Circle::calcArea() {
+	return 5;
+}
+
+class Box : public Shape {
+	double calcArea();
+};
+
+double Box::calcArea() {
+	return 5;
+}
+
+class Puzzle {
+	double puzzleArea;
+public:
+	int pieces;
+	Shape** piece;
+	void calcArea();
+
+	Puzzle(int n);
+};
+
+Puzzle::Puzzle(int n) {
+	pieces = n;
+	piece = (Shape**)malloc(pieces*sizeof(Shape*));
+	for(int p=0; p<pieces; p++) piece[p] = new Shape();
+	puzzleArea = 0;
+}
+
+void Puzzle::calcArea() {
+	for (int p = 0; p<pieces; p++) puzzleArea += piece[p]->calcArea();
+}
+
+
 int main() {
+
+	Puzzle* p = new Puzzle(4);
+	p->calcArea();
+
 
 	tDebugInfo DebugParms;
 	DebugParms.DebugLevel = 2;

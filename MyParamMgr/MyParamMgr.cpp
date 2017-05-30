@@ -498,13 +498,14 @@ EXPORT int cParamsSource::Process(int section) {
 			cNN*  NNInfo = nullptr;
 			cGA*  GAInfo = nullptr;
 			cSOM* SOMInfo = nullptr;
-			cSVM* SVMInfo = nullptr;
+			cSVM* SVMInfo = nullptr;			
 			int l;
 
 			switch (Engine->EngineType) {
 
 			case ENGINE_NN:
-				NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
+				Engine->Core[0][0] = new cNN(); 
+				//NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
 				if (getParam("NNInfo.UseContext", &NNInfo->useContext) < 0)								return -1;
 				if (getParam("NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 				if (getParam("NNInfo.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
