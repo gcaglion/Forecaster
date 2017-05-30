@@ -215,9 +215,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MyUtils.h" />
+    <ClInclude Include="..\include\MyUtils2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\MyUtilsT.cpp" />
+    <ClCompile Include="MyUtils2.c" />
     <ClCompile Include="MyUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

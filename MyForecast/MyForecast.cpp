@@ -508,23 +508,23 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 
 		}
 
-		if (fp->DoTraining) Train_Layer(fp->DebugParms, fp->Engine, fp->DataParms, pid, pTestId, l, tp, Sample, Target);
-		Run_Layer(fp->DebugParms, fp->Engine, fp->DataParms, fp->DoTraining, l, pid, tp, rp, Sample, Target);
-		SetNetPidTid(fp->Engine, l, dscnt, fp->DoTraining, fp->SavedEngine);
+		if (fp->ClientParms->DoTraining) Train_Layer(fp->DebugParms, fp->Engine, fp->DataParms, pid, pTestId, l, tp, Sample, Target);
+		Run_Layer(fp->DebugParms, fp->Engine, fp->DataParms, fp->ClientParms->DoTraining, l, pid, tp, rp, Sample, Target);
+		SetNetPidTid(fp->Engine, l, dscnt, fp->ClientParms->DoTraining, fp->SavedEngine);
 	}
 
 	CalcForecastFromEngineOutput(fp->Engine, fp->DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
 
 	if (pTestId == 0) {
-		if (SaveDataParms(fp->DebugParms, fp->DataParms, pid) != 0) return -1;
-		if (fp->Engine->Save(fp->DebugParms, pid, pTestId, fp->DataParms->DatasetsCount) != 0) return -1;
+		if (SaveDataParms(fp->DebugParms, fp->ResultsDB, fp->DataParms, pid) != 0) return -1;
+		if (fp->Engine->Save(fp->DebugParms, fp->ResultsDB, pid, pTestId, fp->DataParms->DatasetsCount) != 0) return -1;
 	}
-	if (fp->DoTraining == 1) {
-		if (fp->Engine->SaveMSELogs(fp->DebugParms, pid, fp->DataParms->DatasetsCount) != 0) return -1;
+	if (fp->ClientParms->DoTraining == 1) {
+		if (fp->Engine->SaveMSELogs(fp->DebugParms, fp->ResultsDB, pid, fp->DataParms->DatasetsCount) != 0) return -1;
 		if (fp->Engine->SaveImage(fp->DebugParms, pid, fp->DataParms->DatasetsCount, pTestId) != 0) return -1;
 	}
-	if (fp->Engine->SaveRunLogs(fp->DebugParms, pid, fp->DataParms->DatasetsCount, hlen) != 0) return -1;
-	LogCommit(fp->DebugParms);
+	if (fp->Engine->SaveRunLogs(fp->DebugParms, fp->ResultsDB, pid, fp->DataParms->DatasetsCount, hlen) != 0) return -1;
+	LogCommit(fp->DebugParms, fp->ResultsDB);
 
 	//-- free(s) 
 	FreeArray(dscnt, wlen, wd);

@@ -1,10 +1,10 @@
 #include <MyCoreLogs.h>
 
-EXPORT int cCoreLog::SaveMSE(tDebugInfo* DebugParms) {
-	return(InsertMSELog(DebugParms, &ActualEpochs, MSEOutput));
+EXPORT int cCoreLog::SaveMSE(tDebugInfo* DebugParms, tDBConnection* DBConn) {
+	return(InsertMSELog(DebugParms, DBConn, &ActualEpochs, MSEOutput));
 }
-EXPORT int cCoreLog::SaveRun(tDebugInfo* DebugParms, int hlen) {
-	return(InsertRunLog(DebugParms, &ActualEpochs, hlen, RunOutput));
+EXPORT int cCoreLog::SaveRun(tDebugInfo* DebugParms, tDBConnection* DBConn, int hlen) {
+	return(InsertRunLog(DebugParms, DBConn, &ActualEpochs, hlen, RunOutput));
 }
 EXPORT int cCoreLog::SaveImage(tDebugInfo* DebugParms) { return 0; }
 

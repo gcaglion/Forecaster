@@ -128,7 +128,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, int* oPa
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		printf("Press any key to continue...\n"); getchar();;
+		{printf("Press any key to continue...\n"); getchar();};
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -141,7 +141,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, int* oPa
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 	return -1;
 }
 int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, double* oParamValue){
@@ -165,7 +165,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, double* 
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 	return -1;
 }
 int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValue){
@@ -176,7 +176,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oP
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		printf("Press any key to continue...\n"); getchar();;
+		{printf("Press any key to continue...\n"); getchar();};
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %[^\n]", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -188,7 +188,7 @@ int	cParamsSource::ReadParamFromFile(char* pFileName, char* pParamName, char* oP
 		}
 	}
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 	fclose(ParamFile);
 	return -1;
 }
@@ -322,7 +322,7 @@ EXPORT int cParamsSource::getParam(char* paramName, int** oparamVal, bool isenum
 //-- command-line parameters processing
 int cParamsSource::CLFail(int p){
 	printf("Command Line Fail on parameter %d !\nExiting...\n", p);
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 	return -1;
 }
 int	cParamsSource::CLProcess(int argc, char* argv[]){
@@ -352,10 +352,19 @@ int	cParamsSource::CLProcess(int argc, char* argv[]){
 	return 0;
 }
 
-//-- main processing
-EXPORT int cParamsSource::Process(int section) {
+//-- Tester (client) section processing
+EXPORT int cParamsSource::Process_ClientParms() {
+	ClientParms = new tClientParms();
+	if (getParam("Client.SimulationLength", &ClientParms->SimulationLength)   <0)	return -1;
+	if (getParam("Client.SimulationStart",  ClientParms->SimulationStart) <0)	return -1;
+	return 0;
+}
+//-- DebugParms section processing
+EXPORT int cParamsSource::Process_DebugParms() {
 	//-- 1. get Debug Parameters (needs to be before LoadXXXParms)
 	DebugParms = new tDebugInfo();
+	FXDB = new tDBConnection();
+	ResultsDB = new tDBConnection();
 	if (getParam("Forecaster.DebugLevel", &DebugParms->DebugLevel) < 0)					return -1;
 	if (getParam("Forecaster.DebugFileName", DebugParms->fName) < 0)					return -1;
 	if (getParam("Forecaster.DebugFilePath", DebugParms->fPath) < 0)					return -1;
@@ -363,257 +372,296 @@ EXPORT int cParamsSource::Process(int section) {
 	if (getParam("Results.SaveMSE", &DebugParms->SaveMSE) < 0)							return -1;
 	if (getParam("Results.SaveRUN", &DebugParms->SaveRun) < 0)							return -1;
 	if (getParam("Results.SaveInternals", &DebugParms->SaveInternals) < 0)				return -1;
-	if (getParam("Results.Destination", &DebugParms->DebugDest, enumlist) < 0)			return -1;
-	if (getParam("Results.DBUser", DebugParms->DebugDB->DBUser) < 0)					return -1;
-	if (getParam("Results.DBPassword", DebugParms->DebugDB->DBPassword) < 0)			return -1;
-	if (getParam("Results.DBConnString", DebugParms->DebugDB->DBConnString) < 0)		return -1;
-	DebugParms->DebugDB->DBCtx = NULL;
+	//	if (getParam("Results.Destination", &DebugParms->DebugDest, enumlist) < 0)			return -1;
+	if (getParam("Results.DBUser", ResultsDB->DBUser) < 0)					return -1;
+	if (getParam("Results.DBPassword", ResultsDB->DBPassword) < 0)			return -1;
+	if (getParam("Results.DBConnString", ResultsDB->DBConnString) < 0)		return -1;
+	ResultsDB->DBCtx = NULL;
 
+	return 0;
+}
+//-- DataParms section processing
+EXPORT int cParamsSource::Process_DataSourceParms() {
 	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
 	DataParms = new tDataShape();
-	FXDBInfo = new tFXData();
+	FXDataInfo = new tFXData();
+	FXDB = new tDBConnection();
 	DataSourceFileInfo = new tFileData();
 	if (getParam("DataSource.SourceType", &DataParms->DataSourceType, enumlist) < 0)		return -1;
 	if (DataParms->DataSourceType == SOURCE_DATA_FROM_FXDB) {
-		if (getParam("DataSource.DBConn.DBUser", FXDBInfo->FXDB->DBUser) < 0)				return -1;
-		if (getParam("DataSource.DBConn.DBPassword", FXDBInfo->FXDB->DBPassword) < 0)		return -1;
-		if (getParam("DataSource.DBConn.DBConnString", FXDBInfo->FXDB->DBConnString) < 0)	return -1;
-		FXDBInfo->FXDB->DBCtx = NULL;
-		if (getParam("DataSource.Symbol", FXDBInfo->Symbol) < 0)							return -1;
-		if (getParam("DataSource.TimeFrame", FXDBInfo->TimeFrame) < 0)						return -1;
-		if (getParam("DataSource.IsFilled", &FXDBInfo->IsFilled) < 0)						return -1;
+		if (getParam("DataSource.DBConn.DBUser", FXDB->DBUser) < 0)				return -1;
+		if (getParam("DataSource.DBConn.DBPassword", FXDB->DBPassword) < 0)		return -1;
+		if (getParam("DataSource.DBConn.DBConnString", FXDB->DBConnString) < 0)	return -1;
+		FXDB->DBCtx = NULL;
+		if (getParam("DataSource.Symbol", FXDataInfo->Symbol) < 0)							return -1;
+		if (getParam("DataSource.TimeFrame", FXDataInfo->TimeFrame) < 0)						return -1;
+		if (getParam("DataSource.IsFilled", &FXDataInfo->IsFilled) < 0)						return -1;
 		//-- bardatatypes, DataParms->DatasetsCount...
-		DataParms->DatasetsCount = getParam("DataSource.BarDataTypes", &FXDBInfo->BarDataType, enumlist); if (DataParms->DatasetsCount < 0) return -1;
-		FXDBInfo->BarDataTypeCount = DataParms->DatasetsCount;
+		DataParms->DatasetsCount = getParam("DataSource.BarDataTypes", &FXDataInfo->BarDataType, enumlist); if (DataParms->DatasetsCount < 0) return -1;
+		FXDataInfo->BarDataTypeCount = DataParms->DatasetsCount;
 		strcpy(DataSourceFileInfo->FileName, "");
-		DataParms->DataSource = &FXDBInfo;
+		DataParms->DataSource = &FXDataInfo;
 	} else {
 		if (getParam("DataSource.FileName", DataSourceFileInfo->FileName) < 0)	return -1;
 		DataParms->DatasetsCount = getParam("DataSource.FileDatasets", &DataSourceFileInfo->FileDataSet);
-		strcpy(FXDBInfo->Symbol, "");
-		strcpy(FXDBInfo->TimeFrame, "");
-		FXDBInfo->IsFilled = 0;
-		FXDBInfo->BarDataTypeCount = 0;
+		strcpy(FXDataInfo->Symbol, "");
+		strcpy(FXDataInfo->TimeFrame, "");
+		FXDataInfo->IsFilled = 0;
+		FXDataInfo->BarDataTypeCount = 0;
 		DataSourceFileInfo->FileDataSetsCount = DataParms->DatasetsCount;
 		DataParms->DataSource = &DataSourceFileInfo;
 	}
+	return 0;
+}
+//-- Data Shape processing
+EXPORT int cParamsSource::Process_DataShapeParms() {
+	if (getParam("DataParms.HistoryLen", &DataParms->HistoryLen) < 0)							return -1;
+	if (getParam("DataParms.SampleLen", &DataParms->SampleLen) < 0)								return -1;
+	if (getParam("DataParms.PredictionLen", &DataParms->PredictionLen) < 0)						return -1;
+	if (getParam("DataParms.ValidationShift", &DataParms->ValidationShift) < 0)					return -1;
+	if (getParam("DataParms.DataTransformation", &DataParms->DataTransformation, enumlist) < 0)	return -1;
+	if (getParam("DataParms.WiggleRoom", &DataParms->wiggleRoom) < 0)							return -1;
+	DataParms->SampleCount = DataParms->HistoryLen - DataParms->SampleLen;
 
-	//-- 3. DoTraining and HaveFutureData
-	if (getParam("Forecaster.DoTraining", &DoTraining) < 0)			return -1;
-	if (getParam("Forecaster.HaveFutureData", &HaveFutureData) < 0)	return -1;
+	return 0;
+}
+//-- main processing
+EXPORT int cParamsSource::Process(int section) {
 
-	//-- 4. set Engine properties
-	Engine = new cEngine();
-
-	//-- 4.1. set TSFs
-	int useTSF;
-	if (getParam("DataParms.UseTSFeatures", &useTSF) < 0) return -1;
-	if (useTSF > 0) {
-		Engine->TSFcnt = getParam("DataParms.TSFeatures", &Engine->TSFid, enumlist); if (Engine->TSFcnt < 0) return -1;
+	if (section==FPCLI) {
+		//-- we only need the following:
+		//-- Client.*
+		Process_ClientParms();
+		//-- DebugParms.*
+		Process_DebugParms();
+		//-- DataSourceParms.*
+		Process_DataSourceParms();
+		//-- DataShapeParms
+		Process_DataShapeParms();
 	} else {
-		Engine->TSFcnt = 0;
-	}
+		//-- 1. Client Parameters
+		Process_ClientParms();
+		//-- 2. Debug Parameters
+		Process_DebugParms();
+		//-- 3. Data Source Parameters
+		Process_DataSourceParms();
 
-	//-- 5a. if using a saved engine, get Engine and DataShape here
-	SavedEngine = new tEngineHandle();
-	if (DoTraining == 0) {
-		if (getParam("SavedEngine.ProcessId", &SavedEngine->ProcessId) < 0)	return -1;
-		if (getParam("SavedEngine.TestId", &SavedEngine->TestId) < 0)			return -1;
-		if (getParam("SavedEngine.DatasetId", &SavedEngine->DatasetId) < 0)	return -1;
-		DataParms->ValidationShift = 0;
+		//-- 3. DoTraining and HaveFutureData
+		if (getParam("Forecaster.DoTraining", &ClientParms->DoTraining) < 0)			return -1;
+		if (getParam("Forecaster.HaveFutureData", &ClientParms->HaveFutureData) < 0)	return -1;
 
-		if (LoadDataParms(DebugParms, SavedEngine->ProcessId, &DataParms->HistoryLen, &DataParms->SampleLen, &DataParms->PredictionLen, &DataParms->SampleCount, &DataParms->DataTransformation, &DataParms->wiggleRoom) != 0)	return -1;
-		if (LoadEngineParms(DebugParms, SavedEngine->ProcessId, &Engine->EngineType, &Engine->LayersCount, &Engine->WNN_DecompLevel, &Engine->WNN_WaveletType) != 0) return -1;
-		//-- before loading cores, we need to set layout based on EngineType just loaded
-		Engine->setLayout(DataParms->DatasetsCount, DataParms->SampleLen, DataParms->PredictionLen);
-		//-- Cores Parameters.
-		if (Engine->LoadCoresParms(DebugParms, SavedEngine->ProcessId) != 0) return -1;
-		//-- Core Logs
-		Engine->mallocCoresLogs(DataParms->DatasetsCount);
-		// Finally, Core Images
-		if (Engine->LoadCoresImage(DebugParms, SavedEngine->ProcessId) != 0) return -1;
-	} else {
-		//-- 5b
-		//-- Data Shape parameters 		
-		if (getParam("DataParms.HistoryLen", &DataParms->HistoryLen) < 0)							return -1;
-		if (getParam("DataParms.SampleLen", &DataParms->SampleLen) < 0)								return -1;
-		if (getParam("DataParms.PredictionLen", &DataParms->PredictionLen) < 0)						return -1;
-		if (getParam("DataParms.ValidationShift", &DataParms->ValidationShift) < 0)					return -1;
-		if (getParam("DataParms.DataTransformation", &DataParms->DataTransformation, enumlist) < 0)	return -1;
-		if (getParam("DataParms.WiggleRoom", &DataParms->wiggleRoom) < 0)							return -1;
-		DataParms->SampleCount = DataParms->HistoryLen - DataParms->SampleLen;
+		//-- 4. set Engine properties
+		Engine = new cEngine();
+		SavedEngine = new tEngineHandle();
 
-		//-- Engine parameters
-		if (getParam("Forecaster.Engine", &Engine->EngineType, enumlist) < 0)	return -1;
-		Engine->setLayout(DataParms->DatasetsCount, DataParms->SampleLen, DataParms->PredictionLen);
-
-		//-- Engine-specific parameters
-		cNN*  NNInfo = nullptr;
-		cGA*  GAInfo = nullptr;
-		cSOM* SOMInfo = nullptr;
-		cSVM* SVMInfo = nullptr;
-		int l;
-
-		switch (Engine->EngineType) {
-
-		case ENGINE_NN:
-			NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
-			if (getParam("NNInfo.UseContext", &NNInfo->useContext) < 0)								return -1;
-			if (getParam("NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
-			if (getParam("NNInfo.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
-			if (getParam("NNInfo.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
-			if (getParam("NNInfo.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)					return -1;
-			if (getParam("NNInfo.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[0][0]->MSECount = NNInfo->MaxEpochs;
-			if (getParam("NNInfo.LearningRate", &NNInfo->LearningRate) < 0)							return -1;
-			if (getParam("NNInfo.LearningMomentum", &NNInfo->LearningMomentum) < 0)					return -1;
-			if (getParam("NNInfo.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
-			if (getParam("NNInfo.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
-			if (getParam("NNInfo.mu", &NNInfo->mu) < 0)												return -1;
-			if (getParam("NNInfo.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
-			break;
-
-		case ENGINE_GA:
-			GAInfo = new cGA(); Engine->Core[0][0]->core = GAInfo;
-			if (getParam("GAInfo.SlidingFactor", &GAInfo->SlidingFactor) < 0)								return -1;
-			if (getParam("GAInfo.Levels", &GAInfo->Levels) < 0)												return -1;
-			if (getParam("GAInfo.PopulationSize", &GAInfo->PopulationSize) < 0)								return -1;
-			if (getParam("GAInfo.MaxGenerations", &GAInfo->MaxEpochs) < 0)									return -1;	Engine->Core[0][0]->MSECount = GAInfo->MaxEpochs;
-			if (getParam("GAInfo.TargetFitness", &GAInfo->TargetFitness) < 0)								return -1;
-			if (getParam("GAInfo.FitnessSkewingFactor", &GAInfo->FitnessSkewingFactor) < 0)					return -1;
-			if (getParam("GAInfo.FitnessThreshold", &GAInfo->FitnessThreshold) < 0)							return -1;
-			if (getParam("GAInfo.CrossOverProbability", &GAInfo->CrossOverProbability) < 0)					return -1;
-			if (getParam("GAInfo.MutationProbability", &GAInfo->MutationProbability) < 0)					return -1;
-			if (getParam("GAInfo.CrossSelfRate", &GAInfo->CrossSelfRate) < 0)								return -1;
-			if (getParam("GAInfo.RouletteMaxTries", &GAInfo->RouletteMaxTries) < 0)							return -1;
-			if (getParam("GAInfo.ADF_Tree_FixedValues_Ratio", &GAInfo->ADF_Tree_FixedValues_Ratio) < 0)		return -1;
-			if (getParam("GAInfo.ADF_Tree_DataPoints_Ratio", &GAInfo->ADF_Tree_DataPoints_Ratio) < 0)		return -1;
-			if (getParam("GAInfo.ADF_Leaf_FixedValues_Ratio", &GAInfo->ADF_Leaf_FixedValues_Ratio) < 0)		return -1;
-			if (getParam("GAInfo.MaxReRuns", &GAInfo->MaxReRuns) < 0)										return -1;
-			if (getParam("GAInfo.BestChrPath", GAInfo->BestChrPath) < 0)									return -1;
-			break;
-		
-		case ENGINE_SOM:
-			SOMInfo = new cSOM(); Engine->Core[0][0]->core = SOMInfo;
-			if (getParam("SOMInfo.OutputCount", &SOMInfo->OutputCount) < 0)			return -1;
-			if (getParam("SOMInfo.OutputWidth", &SOMInfo->OutputWidth) < 0)			return -1;
-			if (getParam("SOMInfo.MaxEpochs", &SOMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SOMInfo->MaxEpochs;
-			if (getParam("SOMInfo.TDFunction", &SOMInfo->TDFunction, enumlist) < 0)	return -1;
-			if (getParam("SOMInfo.BaseLR", &SOMInfo->BaseLR) < 0)					return -1;
-			if (getParam("SOMInfo.LRFunction", &SOMInfo->LRFunction, enumlist) < 0)	return -1;
-			break;
-
-		case ENGINE_SVM:
-			SVMInfo = new cSVM(); Engine->Core[0][0]->core = SVMInfo;
-			if (getParam("SVMInfo.DebugLevel", &SVMInfo->DebugLevel) < 0)			return -1;
-			if (getParam("SVMInfo.C", &SVMInfo->C) < 0)								return -1;
-			if (getParam("SVMInfo.IterToShrink", &SVMInfo->svmIterToShrink) < 0)	return -1;
-			if (getParam("SVMInfo.MaxEpochs", &SVMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SVMInfo->MaxEpochs;
-			if (getParam("SVMInfo.epsilon", &SVMInfo->epsilon) < 0)					return -1;
-			if (getParam("SVMInfo.KernelType", &SVMInfo->KernelType, enumlist) < 0)	return -1;
-			if (getParam("SVMInfo.PolyDegree", &SVMInfo->PolyDegree) < 0)			return -1;
-			if (getParam("SVMInfo.RBFGamma", &SVMInfo->RBFGamma) < 0)				return -1;
-			if (getParam("SVMInfo.CoefLin", &SVMInfo->CoefLin) < 0)					return -1;
-			if (getParam("SVMInfo.CoefConst", &SVMInfo->CoefConst) < 0)				return -1;
-			if (getParam("SVMInfo.KernelCacheSize", &SVMInfo->KernelCacheSize) < 0)	return -1;
-			if (getParam("SVMInfo.CustomKernel", SVMInfo->CustomKernel) < 0)		return -1;
-			//--
-			if (getParam("SVMInfo.SlackNorm", &SVMInfo->SlackNorm, enumlist) < 0)				return -1;
-			if (getParam("SVMInfo.RescalingMethod", &SVMInfo->RescalingMethod, enumlist) < 0)	return -1;
-			if (getParam("SVMInfo.LossFunction", &SVMInfo->LossFunction, enumlist) < 0)		return -1;
-			if (getParam("SVMInfo.LearningAlgo", &SVMInfo->LearningAlgo, enumlist) < 0)		return -1;
-			if (getParam("SVMInfo.NewConstrEtrain", &SVMInfo->NewConstrEtrain) < 0)			return -1;
-			if (getParam("SVMINfo.CCacheSize", &SVMInfo->CCacheSize) < 0)						return -1;
-			if (getParam("SVMInfo.BatchSize", &SVMInfo->BatchSize) < 0)						return -1;
-			if (getParam("SVMInfo.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)					return -1;
-			break;
-		case ENGINE_WNN:
-			l = 0;
-			for (int c = 0; c < Engine->CoresCount[l]; c++) {
-				NNInfo = new cNN(); Engine->Core[l][c]->core = NNInfo;
-				if (getParam("WNNInfo.L0.UseContext", &NNInfo->useContext) <0)								return -1;
-				if (getParam("WNNInfo.L0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
-				if (getParam("WNNInfo.L0.BP_Algo", &NNInfo->BPAlgo, enumlist) <0)							return -1;
-				if (getParam("WNNInfo.L0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
-				if (getParam("WNNInfo.L0.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
-				if (getParam("WNNInfo.L0.MaxEpochs", &NNInfo->MaxEpochs) <0)								return -1;	Engine->Core[l][c]->MSECount = NNInfo->MaxEpochs;
-				if (getParam("WNNInfo.L0.LearningRate", &NNInfo->LearningRate) <0)							return -1;
-				if (getParam("WNNInfo.L0.LearningMomentum", &NNInfo->LearningMomentum) <0)					return -1;
-				if (getParam("WNNInfo.L0.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
-				if (getParam("WNNInfo.L0.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
-				if (getParam("WNNInfo.L0.mu", &NNInfo->mu) <0)												return -1;
-				if (getParam("WNNInfo.L0.LevelRatios", &NNInfo->levelRatioS[0]) <0)							return -1;
-			}
-			l = 1;
-			NNInfo = new cNN(); Engine->Core[l][0]->core = NNInfo;
-			if (getParam("WNNInfo.L1.UseContext", &NNInfo->useContext) <0)								return -1;
-			if (getParam("WNNInfo.L1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
-			if (getParam("WNNInfo.L1.BP_Algo", &NNInfo->BPAlgo, enumlist) <0)							return -1;
-			if (getParam("WNNInfo.L1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
-			if (getParam("WNNInfo.L1.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
-			if (getParam("WNNInfo.L1.MaxEpochs", &NNInfo->MaxEpochs) <0)								return -1;	Engine->Core[1][0]->MSECount = NNInfo->MaxEpochs;
-			if (getParam("WNNInfo.L1.LearningRate", &NNInfo->LearningRate) <0)							return -1;
-			if (getParam("WNNInfo.L1.LearningMomentum", &NNInfo->LearningMomentum) <0)					return -1;
-			if (getParam("WNNInfo.L1.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
-			if (getParam("WNNInfo.L1.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
-			if (getParam("WNNInfo.L1.mu", &NNInfo->mu) <0)												return -1;
-			if (getParam("WNNInfo.L1.LevelRatios", &NNInfo->levelRatioS[0]) <0)							return -1;
-			break;
-		case ENGINE_XIE:
-			SVMInfo = new cSVM(); Engine->Core[0][0]->core = SVMInfo;
-			if (getParam("XIEInfo.SVM.DebugLevel", &SVMInfo->DebugLevel) < 0)			return -1;
-			if (getParam("XIEInfo.SVM.C", &SVMInfo->C) < 0)								return -1;
-			if (getParam("XIEInfo.SVM.IterToShrink", &SVMInfo->svmIterToShrink) < 0)	return -1;
-			if (getParam("XIEInfo.SVM.MaxEpochs", &SVMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SVMInfo->MaxEpochs;
-			if (getParam("XIEInfo.SVM.epsilon", &SVMInfo->epsilon) < 0)					return -1;
-			if (getParam("XIEInfo.SVM.KernelType", &SVMInfo->KernelType, enumlist) < 0)	return -1;
-			if (getParam("XIEInfo.SVM.PolyDegree", &SVMInfo->PolyDegree) < 0)			return -1;
-			if (getParam("XIEInfo.SVM.RBFGamma", &SVMInfo->RBFGamma) < 0)				return -1;
-			if (getParam("XIEInfo.SVM.CoefLin", &SVMInfo->CoefLin) < 0)					return -1;
-			if (getParam("XIEInfo.SVM.CoefConst", &SVMInfo->CoefConst) < 0)				return -1;
-			if (getParam("XIEInfo.SVM.KernelCacheSize", &SVMInfo->KernelCacheSize) < 0)	return -1;
-			if (getParam("XIEInfo.SVM.CustomKernel", SVMInfo->CustomKernel) < 0)		return -1;
-			//--
-			if (getParam("XIEInfo.SVM.SlackNorm", &SVMInfo->SlackNorm, enumlist) < 0)				return -1;
-			if (getParam("XIEInfo.SVM.RescalingMethod", &SVMInfo->RescalingMethod, enumlist) < 0)	return -1;
-			if (getParam("XIEInfo.SVM.LossFunction", &SVMInfo->LossFunction, enumlist) < 0)		return -1;
-			if (getParam("XIEInfo.SVM.LearningAlgo", &SVMInfo->LearningAlgo, enumlist) < 0)		return -1;
-			if (getParam("XIEInfo.SVM.NewConstrEtrain", &SVMInfo->NewConstrEtrain) < 0)			return -1;
-			if (getParam("XIEInfo.SVM.CCacheSize", &SVMInfo->CCacheSize) < 0)						return -1;
-			if (getParam("XIEInfo.SVM.BatchSize", &SVMInfo->BatchSize) < 0)						return -1;
-			if (getParam("XIEInfo.SVM.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)					return -1;
-
-			NNInfo = new cNN(); Engine->Core[0][1]->core = NNInfo;
-			if (getParam("XIEInfo.NN0.UseContext", &NNInfo->useContext) < 0)							return -1;
-			if (getParam("XIEInfo.NN0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
-			if (getParam("XIEInfo.NN0.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
-			if (getParam("XIEInfo.NN0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
-			if (getParam("XIEInfo.NN0.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
-			if (getParam("XIEInfo.NN0.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[0][1]->MSECount = NNInfo->MaxEpochs;
-			if (getParam("XIEInfo.NN0.LearningRate", &NNInfo->LearningRate) < 0)						return -1;
-			if (getParam("XIEInfo.NN0.LearningMomentum", &NNInfo->LearningMomentum) < 0)				return -1;
-			if (getParam("XIEInfo.NN0.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
-			if (getParam("XIEInfo.NN0.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
-			if (getParam("XIEInfo.NN0.mu", &NNInfo->mu) < 0)											return -1;
-			if (getParam("XIEInfo.NN0.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
-
-			NNInfo = new cNN(); Engine->Core[1][0]->core = NNInfo;
-			if (getParam("XIEInfo.NN1.UseContext", &NNInfo->useContext) < 0)							return -1;
-			if (getParam("XIEInfo.NN1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
-			if (getParam("XIEInfo.NN1.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
-			if (getParam("XIEInfo.NN1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
-			if (getParam("XIEInfo.NN1.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
-			if (getParam("XIEInfo.NN1.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[1][0]->MSECount = NNInfo->MaxEpochs;
-			if (getParam("XIEInfo.NN1.LearningRate", &NNInfo->LearningRate) < 0)						return -1;
-			if (getParam("XIEInfo.NN1.LearningMomentum", &NNInfo->LearningMomentum) < 0)				return -1;
-			if (getParam("XIEInfo.NN1.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
-			if (getParam("XIEInfo.NN1.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
-			if (getParam("XIEInfo.NN1.mu", &NNInfo->mu) < 0)											return -1;
-			if (getParam("XIEInfo.NN1.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
-
-			break;
+		//-- 4.1. set TSFs
+		int useTSF;
+		if (getParam("DataParms.UseTSFeatures", &useTSF) < 0) return -1;
+		if (useTSF > 0) {
+			Engine->TSFcnt = getParam("DataParms.TSFeatures", &Engine->TSFid, enumlist); if (Engine->TSFcnt < 0) return -1;
+		} else {
+			Engine->TSFcnt = 0;
 		}
-		//-- Core Logs
-		Engine->mallocCoresLogs(DataParms->DatasetsCount);
+
+		//-- 5. Data Parameters
+		if (ClientParms->DoTraining == 0) {
+			if (getParam("SavedEngine.ProcessId", &SavedEngine->ProcessId) < 0)	return -1;
+			if (getParam("SavedEngine.TestId", &SavedEngine->TestId) < 0)		return -1;
+			if (getParam("SavedEngine.DatasetId", &SavedEngine->DatasetId) < 0)	return -1;
+
+			if (LoadDataParms(DebugParms, ResultsDB, SavedEngine->ProcessId, &DataParms->HistoryLen, &DataParms->SampleLen, &DataParms->PredictionLen, &DataParms->SampleCount, &DataParms->DataTransformation, &DataParms->wiggleRoom) != 0)	return -1;
+			DataParms->ValidationShift = 0;
+		} else {
+			Process_DataShapeParms();
+		}
+
+		//-- 6a. if using a saved engine, get Engine and DataShape here
+		if (ClientParms->DoTraining == 0) {
+
+			if (LoadEngineParms(DebugParms, ResultsDB, SavedEngine->ProcessId, &Engine->EngineType, &Engine->LayersCount, &Engine->WNN_DecompLevel, &Engine->WNN_WaveletType) != 0) return -1;
+			//-- before loading cores, we need to set layout based on EngineType just loaded
+			Engine->setLayout(DataParms->DatasetsCount, DataParms->SampleLen, DataParms->PredictionLen);
+			//-- Cores Parameters.
+			if (Engine->LoadCoresParms(DebugParms, ResultsDB, SavedEngine->ProcessId) != 0) return -1;
+			//-- Core Logs
+			Engine->mallocCoresLogs(DataParms->DatasetsCount);
+			// Finally, Core Images
+			if (Engine->LoadCoresImage(DebugParms, ResultsDB, SavedEngine->ProcessId) != 0) return -1;
+		} else {
+			//-- 6b
+
+			//-- Engine parameters
+			if (getParam("Forecaster.Engine", &Engine->EngineType, enumlist) < 0)	return -1;
+			Engine->setLayout(DataParms->DatasetsCount, DataParms->SampleLen, DataParms->PredictionLen);
+
+			//-- Engine-specific parameters
+			cNN*  NNInfo = nullptr;
+			cGA*  GAInfo = nullptr;
+			cSOM* SOMInfo = nullptr;
+			cSVM* SVMInfo = nullptr;
+			int l;
+
+			switch (Engine->EngineType) {
+
+			case ENGINE_NN:
+				NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
+				if (getParam("NNInfo.UseContext", &NNInfo->useContext) < 0)								return -1;
+				if (getParam("NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
+				if (getParam("NNInfo.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
+				if (getParam("NNInfo.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
+				if (getParam("NNInfo.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)					return -1;
+				if (getParam("NNInfo.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[0][0]->MSECount = NNInfo->MaxEpochs;
+				if (getParam("NNInfo.LearningRate", &NNInfo->LearningRate) < 0)							return -1;
+				if (getParam("NNInfo.LearningMomentum", &NNInfo->LearningMomentum) < 0)					return -1;
+				if (getParam("NNInfo.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
+				if (getParam("NNInfo.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
+				if (getParam("NNInfo.mu", &NNInfo->mu) < 0)												return -1;
+				if (getParam("NNInfo.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
+				break;
+
+			case ENGINE_GA:
+				GAInfo = new cGA(); Engine->Core[0][0]->core = GAInfo;
+				if (getParam("GAInfo.SlidingFactor", &GAInfo->SlidingFactor) < 0)								return -1;
+				if (getParam("GAInfo.Levels", &GAInfo->Levels) < 0)												return -1;
+				if (getParam("GAInfo.PopulationSize", &GAInfo->PopulationSize) < 0)								return -1;
+				if (getParam("GAInfo.MaxGenerations", &GAInfo->MaxEpochs) < 0)									return -1;	Engine->Core[0][0]->MSECount = GAInfo->MaxEpochs;
+				if (getParam("GAInfo.TargetFitness", &GAInfo->TargetFitness) < 0)								return -1;
+				if (getParam("GAInfo.FitnessSkewingFactor", &GAInfo->FitnessSkewingFactor) < 0)					return -1;
+				if (getParam("GAInfo.FitnessThreshold", &GAInfo->FitnessThreshold) < 0)							return -1;
+				if (getParam("GAInfo.CrossOverProbability", &GAInfo->CrossOverProbability) < 0)					return -1;
+				if (getParam("GAInfo.MutationProbability", &GAInfo->MutationProbability) < 0)					return -1;
+				if (getParam("GAInfo.CrossSelfRate", &GAInfo->CrossSelfRate) < 0)								return -1;
+				if (getParam("GAInfo.RouletteMaxTries", &GAInfo->RouletteMaxTries) < 0)							return -1;
+				if (getParam("GAInfo.ADF_Tree_FixedValues_Ratio", &GAInfo->ADF_Tree_FixedValues_Ratio) < 0)		return -1;
+				if (getParam("GAInfo.ADF_Tree_DataPoints_Ratio", &GAInfo->ADF_Tree_DataPoints_Ratio) < 0)		return -1;
+				if (getParam("GAInfo.ADF_Leaf_FixedValues_Ratio", &GAInfo->ADF_Leaf_FixedValues_Ratio) < 0)		return -1;
+				if (getParam("GAInfo.MaxReRuns", &GAInfo->MaxReRuns) < 0)										return -1;
+				if (getParam("GAInfo.BestChrPath", GAInfo->BestChrPath) < 0)									return -1;
+				break;
+
+			case ENGINE_SOM:
+				SOMInfo = new cSOM(); Engine->Core[0][0]->core = SOMInfo;
+				if (getParam("SOMInfo.OutputCount", &SOMInfo->OutputCount) < 0)			return -1;
+				if (getParam("SOMInfo.OutputWidth", &SOMInfo->OutputWidth) < 0)			return -1;
+				if (getParam("SOMInfo.MaxEpochs", &SOMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SOMInfo->MaxEpochs;
+				if (getParam("SOMInfo.TDFunction", &SOMInfo->TDFunction, enumlist) < 0)	return -1;
+				if (getParam("SOMInfo.BaseLR", &SOMInfo->BaseLR) < 0)					return -1;
+				if (getParam("SOMInfo.LRFunction", &SOMInfo->LRFunction, enumlist) < 0)	return -1;
+				break;
+
+			case ENGINE_SVM:
+				SVMInfo = new cSVM(); Engine->Core[0][0]->core = SVMInfo;
+				if (getParam("SVMInfo.DebugLevel", &SVMInfo->DebugLevel) < 0)			return -1;
+				if (getParam("SVMInfo.C", &SVMInfo->C) < 0)								return -1;
+				if (getParam("SVMInfo.IterToShrink", &SVMInfo->svmIterToShrink) < 0)	return -1;
+				if (getParam("SVMInfo.MaxEpochs", &SVMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SVMInfo->MaxEpochs;
+				if (getParam("SVMInfo.epsilon", &SVMInfo->epsilon) < 0)					return -1;
+				if (getParam("SVMInfo.KernelType", &SVMInfo->KernelType, enumlist) < 0)	return -1;
+				if (getParam("SVMInfo.PolyDegree", &SVMInfo->PolyDegree) < 0)			return -1;
+				if (getParam("SVMInfo.RBFGamma", &SVMInfo->RBFGamma) < 0)				return -1;
+				if (getParam("SVMInfo.CoefLin", &SVMInfo->CoefLin) < 0)					return -1;
+				if (getParam("SVMInfo.CoefConst", &SVMInfo->CoefConst) < 0)				return -1;
+				if (getParam("SVMInfo.KernelCacheSize", &SVMInfo->KernelCacheSize) < 0)	return -1;
+				if (getParam("SVMInfo.CustomKernel", SVMInfo->CustomKernel) < 0)		return -1;
+				//--
+				if (getParam("SVMInfo.SlackNorm", &SVMInfo->SlackNorm, enumlist) < 0)				return -1;
+				if (getParam("SVMInfo.RescalingMethod", &SVMInfo->RescalingMethod, enumlist) < 0)	return -1;
+				if (getParam("SVMInfo.LossFunction", &SVMInfo->LossFunction, enumlist) < 0)		return -1;
+				if (getParam("SVMInfo.LearningAlgo", &SVMInfo->LearningAlgo, enumlist) < 0)		return -1;
+				if (getParam("SVMInfo.NewConstrEtrain", &SVMInfo->NewConstrEtrain) < 0)			return -1;
+				if (getParam("SVMINfo.CCacheSize", &SVMInfo->CCacheSize) < 0)						return -1;
+				if (getParam("SVMInfo.BatchSize", &SVMInfo->BatchSize) < 0)						return -1;
+				if (getParam("SVMInfo.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)					return -1;
+				break;
+			case ENGINE_WNN:
+				l = 0;
+				for (int c = 0; c < Engine->CoresCount[l]; c++) {
+					NNInfo = new cNN(); Engine->Core[l][c]->core = NNInfo;
+					if (getParam("WNNInfo.L0.UseContext", &NNInfo->useContext) <0)								return -1;
+					if (getParam("WNNInfo.L0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
+					if (getParam("WNNInfo.L0.BP_Algo", &NNInfo->BPAlgo, enumlist) <0)							return -1;
+					if (getParam("WNNInfo.L0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
+					if (getParam("WNNInfo.L0.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
+					if (getParam("WNNInfo.L0.MaxEpochs", &NNInfo->MaxEpochs) <0)								return -1;	Engine->Core[l][c]->MSECount = NNInfo->MaxEpochs;
+					if (getParam("WNNInfo.L0.LearningRate", &NNInfo->LearningRate) <0)							return -1;
+					if (getParam("WNNInfo.L0.LearningMomentum", &NNInfo->LearningMomentum) <0)					return -1;
+					if (getParam("WNNInfo.L0.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
+					if (getParam("WNNInfo.L0.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
+					if (getParam("WNNInfo.L0.mu", &NNInfo->mu) <0)												return -1;
+					if (getParam("WNNInfo.L0.LevelRatios", &NNInfo->levelRatioS[0]) <0)							return -1;
+				}
+				l = 1;
+				NNInfo = new cNN(); Engine->Core[l][0]->core = NNInfo;
+				if (getParam("WNNInfo.L1.UseContext", &NNInfo->useContext) <0)								return -1;
+				if (getParam("WNNInfo.L1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
+				if (getParam("WNNInfo.L1.BP_Algo", &NNInfo->BPAlgo, enumlist) <0)							return -1;
+				if (getParam("WNNInfo.L1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
+				if (getParam("WNNInfo.L1.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
+				if (getParam("WNNInfo.L1.MaxEpochs", &NNInfo->MaxEpochs) <0)								return -1;	Engine->Core[1][0]->MSECount = NNInfo->MaxEpochs;
+				if (getParam("WNNInfo.L1.LearningRate", &NNInfo->LearningRate) <0)							return -1;
+				if (getParam("WNNInfo.L1.LearningMomentum", &NNInfo->LearningMomentum) <0)					return -1;
+				if (getParam("WNNInfo.L1.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
+				if (getParam("WNNInfo.L1.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
+				if (getParam("WNNInfo.L1.mu", &NNInfo->mu) <0)												return -1;
+				if (getParam("WNNInfo.L1.LevelRatios", &NNInfo->levelRatioS[0]) <0)							return -1;
+				break;
+			case ENGINE_XIE:
+				SVMInfo = new cSVM(); Engine->Core[0][0]->core = SVMInfo;
+				if (getParam("XIEInfo.SVM.DebugLevel", &SVMInfo->DebugLevel) < 0)			return -1;
+				if (getParam("XIEInfo.SVM.C", &SVMInfo->C) < 0)								return -1;
+				if (getParam("XIEInfo.SVM.IterToShrink", &SVMInfo->svmIterToShrink) < 0)	return -1;
+				if (getParam("XIEInfo.SVM.MaxEpochs", &SVMInfo->MaxEpochs) < 0)				return -1;	Engine->Core[0][0]->MSECount = SVMInfo->MaxEpochs;
+				if (getParam("XIEInfo.SVM.epsilon", &SVMInfo->epsilon) < 0)					return -1;
+				if (getParam("XIEInfo.SVM.KernelType", &SVMInfo->KernelType, enumlist) < 0)	return -1;
+				if (getParam("XIEInfo.SVM.PolyDegree", &SVMInfo->PolyDegree) < 0)			return -1;
+				if (getParam("XIEInfo.SVM.RBFGamma", &SVMInfo->RBFGamma) < 0)				return -1;
+				if (getParam("XIEInfo.SVM.CoefLin", &SVMInfo->CoefLin) < 0)					return -1;
+				if (getParam("XIEInfo.SVM.CoefConst", &SVMInfo->CoefConst) < 0)				return -1;
+				if (getParam("XIEInfo.SVM.KernelCacheSize", &SVMInfo->KernelCacheSize) < 0)	return -1;
+				if (getParam("XIEInfo.SVM.CustomKernel", SVMInfo->CustomKernel) < 0)		return -1;
+				//--
+				if (getParam("XIEInfo.SVM.SlackNorm", &SVMInfo->SlackNorm, enumlist) < 0)				return -1;
+				if (getParam("XIEInfo.SVM.RescalingMethod", &SVMInfo->RescalingMethod, enumlist) < 0)	return -1;
+				if (getParam("XIEInfo.SVM.LossFunction", &SVMInfo->LossFunction, enumlist) < 0)		return -1;
+				if (getParam("XIEInfo.SVM.LearningAlgo", &SVMInfo->LearningAlgo, enumlist) < 0)		return -1;
+				if (getParam("XIEInfo.SVM.NewConstrEtrain", &SVMInfo->NewConstrEtrain) < 0)			return -1;
+				if (getParam("XIEInfo.SVM.CCacheSize", &SVMInfo->CCacheSize) < 0)						return -1;
+				if (getParam("XIEInfo.SVM.BatchSize", &SVMInfo->BatchSize) < 0)						return -1;
+				if (getParam("XIEInfo.SVM.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)					return -1;
+
+				NNInfo = new cNN(); Engine->Core[0][1]->core = NNInfo;
+				if (getParam("XIEInfo.NN0.UseContext", &NNInfo->useContext) < 0)							return -1;
+				if (getParam("XIEInfo.NN0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
+				if (getParam("XIEInfo.NN0.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
+				if (getParam("XIEInfo.NN0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
+				if (getParam("XIEInfo.NN0.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
+				if (getParam("XIEInfo.NN0.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[0][1]->MSECount = NNInfo->MaxEpochs;
+				if (getParam("XIEInfo.NN0.LearningRate", &NNInfo->LearningRate) < 0)						return -1;
+				if (getParam("XIEInfo.NN0.LearningMomentum", &NNInfo->LearningMomentum) < 0)				return -1;
+				if (getParam("XIEInfo.NN0.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
+				if (getParam("XIEInfo.NN0.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
+				if (getParam("XIEInfo.NN0.mu", &NNInfo->mu) < 0)											return -1;
+				if (getParam("XIEInfo.NN0.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
+
+				NNInfo = new cNN(); Engine->Core[1][0]->core = NNInfo;
+				if (getParam("XIEInfo.NN1.UseContext", &NNInfo->useContext) < 0)							return -1;
+				if (getParam("XIEInfo.NN1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
+				if (getParam("XIEInfo.NN1.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;
+				if (getParam("XIEInfo.NN1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
+				if (getParam("XIEInfo.NN1.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
+				if (getParam("XIEInfo.NN1.MaxEpochs", &NNInfo->MaxEpochs) < 0)								return -1;	Engine->Core[1][0]->MSECount = NNInfo->MaxEpochs;
+				if (getParam("XIEInfo.NN1.LearningRate", &NNInfo->LearningRate) < 0)						return -1;
+				if (getParam("XIEInfo.NN1.LearningMomentum", &NNInfo->LearningMomentum) < 0)				return -1;
+				if (getParam("XIEInfo.NN1.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
+				if (getParam("XIEInfo.NN1.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
+				if (getParam("XIEInfo.NN1.mu", &NNInfo->mu) < 0)											return -1;
+				if (getParam("XIEInfo.NN1.LevelRatios", &NNInfo->levelRatioS[0]) < 0)						return -1;
+
+				break;
+			}
+			//-- Core Logs
+			Engine->mallocCoresLogs(DataParms->DatasetsCount);
+		}
 	}
 	return 0;
 }

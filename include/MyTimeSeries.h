@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ExportDef.h>
 #include <stdio.h>
 #include <Windows.h>
 #include <math.h>
@@ -10,6 +9,7 @@
 #include <FileData.h>
 #include <FXData.h>
 #include <TSF.h>
+#include <ExportDef.h>
 
 //-- History/Validation datasets
 #define HD 0

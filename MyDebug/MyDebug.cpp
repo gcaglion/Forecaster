@@ -57,7 +57,7 @@ EXPORT void LogWrite(tDebugInfo* DebugParms, int LogType, char* msg, int argcoun
 	memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
 	if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg);
 	if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) fprintf(DebugParms->fHandle, submsg);
-	if (LogType == LOG_ERROR) printf("Press any key to continue...\n"); getchar();;
+	if (LogType == LOG_ERROR) {printf("Press any key to continue...\n"); getchar();};
 
 	va_end(arguments);
 

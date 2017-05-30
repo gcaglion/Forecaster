@@ -12,21 +12,20 @@
 
 // Database retrieval properties
 typedef struct sFXData {
-	tDBConnection* FXDB;
+	//tDBConnection* FXDB;
 	char Symbol[12];
 	char TimeFrame[4];
 	int IsFilled;
 	int BarDataTypeCount;
-	//int BarDataType[MAXBARDATATYPES];
 	int* BarDataType;
 #ifdef __cplusplus
 	sFXData() {
-		FXDB = new tDBConnection();
+		//FXDB = new tDBConnection();
 		BarDataType = MallocArray<int>(MAXBARDATATYPES);
 	}
 
 	~sFXData() {
-		delete(FXDB);
+		//delete(FXDB);
 		free(BarDataType);
 	}
 #endif

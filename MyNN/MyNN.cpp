@@ -205,10 +205,10 @@
 
 		return 0;
 	}
-	int  cNN::setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt) {
+	int  cNN::setParms(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid, bool load, int iSampleCnt) {
 		//-- (pre)
 		if (load) {
-			if (LoadCoreParms_NN(DebugParms, pid, tid, &InputCount, &OutputCount, &useContext, &MaxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
+			if (LoadCoreParms_NN(DebugParms, DBConn, pid, tid, &InputCount, &OutputCount, &useContext, &MaxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
 		}
 		//-- (post)
 		TimeStepsCount = MaxEpochs*((BPAlgo == BP_SCGD) ? iSampleCnt : 1);
@@ -217,8 +217,8 @@
 		MSECount = MaxEpochs;
 		return 0;
 	}
-	int  cNN::LoadImage(tDebugInfo* DebugParms, int pid, int tid) {
-		if (LoadCoreImage_NN(DebugParms, pid, tid, NNLog[dsid]->FinalW) <0) return -1;
+	int  cNN::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid) {
+		if (LoadCoreImage_NN(DebugParms, DBConn, pid, tid, NNLog[dsid]->FinalW) <0) return -1;
 		return 0;
 	}
 	void cNN::mallocLogs(int dscnt) {
@@ -1339,7 +1339,7 @@ int main() {
 	delete myNN;
 
 	printf("\n");
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 	return 0;
 }
 */
@@ -1371,6 +1371,6 @@ cNNLog::~cNNLog() {
 	//-- IntP
 	free(IntP);
 }
-int cNNLog::SaveImage(tDebugInfo* pDebugParms) {
-	return( InsertCoreImage_NN(pDebugParms, ProcessId, ThreadId, levelsCnt, nodesCnt, weightsCntTotal, FinalW) );
+int cNNLog::SaveImage(tDebugInfo* pDebugParms, tDBConnection* pDBConn) {
+	return( InsertCoreImage_NN(pDebugParms, pDBConn, ProcessId, ThreadId, levelsCnt, nodesCnt, weightsCntTotal, FinalW) );
 }

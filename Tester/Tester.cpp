@@ -43,23 +43,23 @@ int main(int argc, char** argv) {
 	int pid = GetCurrentProcessId();
 
 	//-- 1. Load Training_Start[]
-	TrainingStart = (char**)malloc(fp->SimulationLength * sizeof(char*)); for (i = 0; i < fp->SimulationLength; i++) TrainingStart[i] = (char*)malloc(12 + 1);
-	if (GetDates(fp->DebugParms, fp->FXDBInfo, fp->SimulationStart, fp->SimulationLength, TrainingStart) != 0) return -1;
+	TrainingStart = (char**)malloc(fp->ClientParms->SimulationLength * sizeof(char*)); for (i = 0; i < fp->ClientParms->SimulationLength; i++) TrainingStart[i] = (char*)malloc(12 + 1);
+	if (GetDates(fp->DebugParms, fp->FXDB, fp->FXDataInfo, fp->ClientParms->SimulationStart, fp->ClientParms->SimulationLength, TrainingStart) != 0) return -1;
 
 	//-- 2. Save Tester Log (elapsedTime is 0)
-	if (SaveTesterParms(fp->DebugParms, pid, fp->SimulationLength, fp->SimulationStart, elapsedTime, fp->DoTraining, fp->HaveFutureData) != 0) return -1;
+	if (SaveTesterParms(fp->DebugParms, fp->ResultsDB, pid, fp->ClientParms->SimulationLength, fp->ClientParms->SimulationStart, elapsedTime, fp->ClientParms->DoTraining, fp->ClientParms->HaveFutureData) != 0) return -1;
 
 	//-- 3. Prepare, Train, Run for each Training_Start
-	for (i = 0; i < fp->SimulationLength; i++) {
+	for (i = 0; i < fp->ClientParms->SimulationLength; i++) {
 
 		//-- 3.1. Get raw data.
-		if (LoadData(fp->DebugParms, fp->FXDBInfo, fp->DataParms->HistoryLen, fp->DataParms->PredictionLen, TrainingStart[i], fp->DataParms->ValidationShift, fp->DataParms->DatasetsCount, HistoryData, HistoryBarW, ValidationData, FutureData, FutureBarW, WholeData, WholeBarW, BaseValH, BaseValV, BaseBW) != 0) return -1;
+		if (LoadData(fp->DebugParms, fp->FXDB, fp->FXDataInfo, fp->DataParms->HistoryLen, fp->DataParms->PredictionLen, TrainingStart[i], fp->DataParms->ValidationShift, fp->DataParms->DatasetsCount, HistoryData, HistoryBarW, ValidationData, FutureData, FutureBarW, WholeData, WholeBarW, BaseValH, BaseValV, BaseBW) != 0) return -1;
 
 		//-- 3.2 Do the Training, and get the Forecast
 		system("cls");
 		printf("\nProcessId=%d ; TestId=%d, TrainingStart=%s ; Start Time: %s\n", pid, i, TrainingStart[i], timestamp());
 
-		if (getForecast(argc, argv, fp->DebugParms->DebugDB->DBCtx, i, HistoryData, BaseValH, HistoryBarW, ValidationData, BaseValV, fp->HaveFutureData, FutureData, FutureBarW, ForecastData) != 0) return -1;
+		if (getForecast(argc, argv, fp->ResultsDB->DBCtx, i, HistoryData, BaseValH, HistoryBarW, ValidationData, BaseValV, fp->ClientParms->HaveFutureData, FutureData, FutureBarW, ForecastData) != 0) return -1;
 
 	}
 
@@ -69,15 +69,17 @@ int main(int argc, char** argv) {
 	ms2ts(elapsedTime, elapsedTimeS);
 
 	//-- update elapsed time in test record, then commit
-	if (UpdateTesterDuration(fp->DebugParms, pid, elapsedTime) != 0) return -1;
-	LogCommit(fp->DebugParms);
+	if (UpdateTesterDuration(fp->DebugParms, fp->ResultsDB, pid, elapsedTime) != 0) return -1;
+	LogCommit(fp->DebugParms, fp->ResultsDB);
 
 
 
 	//-- free(s)
 	delete(fp);
 
-	free(BaseValH); free(BaseValV); free(BaseBW);
+	free(BaseValH);
+	free(BaseValV);
+	free(BaseBW);
 	for (i = 0; i < fp->DataParms->DatasetsCount; i++) {
 		free(HistoryData[i]);
 		free(HistoryBarW[i]);
@@ -96,13 +98,13 @@ int main(int argc, char** argv) {
 	free(WholeBarW);
 	free(ForecastData);
 	free(ValidationData);
-	for (i = 0; i < fp->SimulationLength; i++) free(TrainingStart[i]);
+	for (i = 0; i < fp->ClientParms->SimulationLength; i++) free(TrainingStart[i]);
 	free(TrainingStart);
 
 	//--
 	gotoxy(0, fp->Engine->TotalCoresCount*fp->DataParms->DatasetsCount + i + 4);
 	printf("Elapsed Time: %s\n", elapsedTimeS);
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 
 	return 0;
 }

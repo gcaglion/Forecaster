@@ -38,11 +38,11 @@ public:
 
 	EXPORT void setLayout(int DatasetsCount, int DataSampleLen, int DataTargetLen);
 	EXPORT void mallocCoresLogs(int dscnt);
-	EXPORT int  LoadCoresParms(tDebugInfo* pDebugParms, int pid);
-	EXPORT int  LoadCoresImage(tDebugInfo* pDebugParms, int pid);
-	EXPORT int  Save(tDebugInfo* DebugParms, int pid, int testid, int dscnt);
-	EXPORT int  SaveMSELogs(tDebugInfo* DebugParms, int pid, int dscnt);
-	EXPORT int  SaveRunLogs(tDebugInfo* DebugParms, int pid, int dscnt, int pHistoryLen);
+	EXPORT int  LoadCoresParms(tDebugInfo* pDebugParms, tDBConnection* pDBConn, int pid);
+	EXPORT int  LoadCoresImage(tDebugInfo* pDebugParms, tDBConnection* pDBConn, int pid);
+	EXPORT int  Save(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int testid, int dscnt);
+	EXPORT int  SaveMSELogs(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int dscnt);
+	EXPORT int  SaveRunLogs(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int dscnt, int pHistoryLen);
 	EXPORT int SaveImage(tDebugInfo* DebugParms, int pid, int dscnt, int testid);
 
 	EXPORT cEngine(int DataSampleLen, int DataTargetLen);

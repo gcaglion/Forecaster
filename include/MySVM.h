@@ -71,7 +71,7 @@ public:
 	void train(int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
 	void run(int DatasetId, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T);
 	int  setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt);
-	EXPORT int  LoadImage(tDebugInfo* DebugParms, int pid, int tid);
+	EXPORT int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConnection, int pid, int tid);
 	EXPORT void mallocLogs(int dscnt);
 	//virtual void getScaleRange(double* oScaleMin, double* oScaleMax);
 

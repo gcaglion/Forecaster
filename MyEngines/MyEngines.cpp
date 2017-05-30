@@ -99,19 +99,19 @@ cEngine::~cEngine() {
 	free(Core);
 }
 
-EXPORT int cEngine::LoadCoresParms(tDebugInfo* pDebugParms, int pid) {
+EXPORT int cEngine::LoadCoresParms(tDebugInfo* pDebugParms, tDBConnection* pDBConn, int pid) {
 
 	for (int l = 0; l <LayersCount; l++) {
 		for (int n = 0; n<CoresCount[l]; n++) {
 			//-- first, get ThreadId for this core. Use Dataset=0 and TestId=0, as core parameters are the same for every dataset/Test
-			Core[l][n]->coreLog[l][n].ThreadId = GetCoreThreadId(pDebugParms, pid, 0, 0, l, n); if (Core[l][n]->coreLog[l][n].ThreadId<0) return -1;
+			Core[l][n]->coreLog[l][n].ThreadId = GetCoreThreadId(pDebugParms, pDBConn, pid, 0, 0, l, n); if (Core[l][n]->coreLog[l][n].ThreadId<0) return -1;
 			//-- then,  load core parameters
 			if (Core[l][n]->setParms(pDebugParms, pid, Core[l][n]->coreLog[l][n].ThreadId) <0) return -1;
 		}
 	}
 	return 0;
 }
-EXPORT int cEngine::LoadCoresImage(tDebugInfo* pDebugParms, int pid) {
+EXPORT int cEngine::LoadCoresImage(tDebugInfo* pDebugParms, tDBConnection* pDBConn, int pid) {
 
 	for (int l = 0; l < LayersCount; l++) {
 		for (int n = 0; n < CoresCount[l]; n++) {
@@ -121,36 +121,36 @@ EXPORT int cEngine::LoadCoresImage(tDebugInfo* pDebugParms, int pid) {
 
 	return 0;
 }
-EXPORT int cEngine::Save(tDebugInfo* DebugParms, int pid, int testid, int dscnt) {
+EXPORT int cEngine::Save(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int testid, int dscnt) {
 
 	//-- first, EngineParms
-	if (InsertEngineParms(DebugParms, pid, EngineType, LayersCount, WNN_DecompLevel, WNN_WaveletType) <0) return -1;
+	if (InsertEngineParms(DebugParms, pDBConn, pid, EngineType, LayersCount, WNN_DecompLevel, WNN_WaveletType) <0) return -1;
 
 	//-- then, EngineThreads
 	for (int l = 0; l<LayersCount; l++) {
 		for (int c = 0; c<CoresCount[l]; c++) {
 			for (int d = 0; d<dscnt; d++) {
-				if (InsertEngineThreads(DebugParms, pid, testid, l, c, Core[l][c]->CoreType, d, Core[l][c]->coreLog[d]->ThreadId) <0) return -1;
+				if (InsertEngineThreads(DebugParms, pDBConn, pid, testid, l, c, Core[l][c]->CoreType, d, Core[l][c]->coreLog[d]->ThreadId) <0) return -1;
 			}
 		}
 	}
 	return 0;
 }
-EXPORT int cEngine::SaveMSELogs(tDebugInfo* DebugParms, int pid, int dscnt){
+EXPORT int cEngine::SaveMSELogs(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int dscnt){
 	for (int l = 0; l<LayersCount; l++) {
 		for (int c = 0; c<CoresCount[l]; c++) {
 			for (int d = 0; d<dscnt; d++) {
-				return( Core[l][c]->coreLog[d]->SaveMSE(DebugParms) );
+				return( Core[l][c]->coreLog[d]->SaveMSE(DebugParms, pDBConn) );
 			}
 		}
 	}
 	return 0;
 }
-EXPORT int cEngine::SaveRunLogs(tDebugInfo* DebugParms, int pid, int dscnt, int pHistoryLen){
+EXPORT int cEngine::SaveRunLogs(tDebugInfo* DebugParms, tDBConnection* pDBConn, int pid, int dscnt, int pHistoryLen){
 	for (int l = 0; l<LayersCount; l++) {
 		for (int c = 0; c<CoresCount[l]; c++) {
 			for (int d = 0; d<dscnt; d++) {
-				return( Core[l][c]->coreLog[d]->SaveRun(DebugParms, pHistoryLen) );
+				return( Core[l][c]->coreLog[d]->SaveRun(DebugParms, pDBConn, pHistoryLen) );
 			}
 		}
 	}

@@ -16,7 +16,7 @@ void cSVM::run(int DatasetId, double*** savedW, int sampleCnt, int sampleLen, in
 int  cSVM::setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt) {
 	return 0;
 }
-EXPORT int  cSVM::LoadImage(tDebugInfo* DebugParms, int pid, int tid) {
+EXPORT int  cSVM::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConnection, int pid, int tid) {
 	return 0;
 }
 EXPORT void cSVM::mallocLogs(int dscnt) {}

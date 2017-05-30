@@ -1,7 +1,6 @@
 #pragma once
 #include <MyDebug.h>
 #include <MyDataAbstraction.h>
-#include <Windows.h>
 #include <math.h>
 #include <MyUtils.h>
 #include <MyMatrix.h>
@@ -53,7 +52,7 @@ public:
 	cNNLog(int pLevelsCnt, int* pNodesCnt, int pTimeSteps, int pWeightsCntTotal);
 
 	//-- virtual functions, common to all cores
-	int SaveImage(tDebugInfo* pDebugParms);
+	int cNNLog::SaveImage(tDebugInfo* pDebugParms, tDBConnection* pDBConn);
 
 private:
 	~cNNLog();
@@ -96,8 +95,8 @@ public:
 	void init();
 	int train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
 	int run(tDebugInfo* pDebugParms, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T);
-	int  setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt);
-	int  LoadImage(tDebugInfo* DebugParms, int pid, int tid);
+	int  cNN::setParms(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid, bool load, int iSampleCnt);
+	int  cNN::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
 	void mallocLogs(int dscnt);
 	virtual void getScaleRange(double* oScaleMin, double* oScaleMax);
 	//--

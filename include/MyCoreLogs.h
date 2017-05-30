@@ -14,8 +14,8 @@ public:
 	int			RunCount;
 	tLogRUN*	RunOutput;		// [pos]
 
-	EXPORT int SaveMSE(tDebugInfo* DebugParms);
-	EXPORT int SaveRun(tDebugInfo* DebugParms, int hlen);
+	EXPORT int SaveMSE(tDebugInfo* DebugParms, tDBConnection* DBConn);
+	EXPORT int SaveRun(tDebugInfo* DebugParms, tDBConnection* DBConn, int hlen);
 	EXPORT virtual int SaveImage(tDebugInfo* DebugParms);
 
 	EXPORT cCoreLog();

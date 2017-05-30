@@ -623,7 +623,7 @@ int main(int argc, char* argv[]) {
 		printf("\n");
 	}
 
-	printf("Press any key to continue...\n"); getchar();;
+	{printf("Press any key to continue...\n"); getchar();};
 
 	return 0;
 }

@@ -11,10 +11,7 @@
 #include <FileData.h>
 #include <FXData.h>
 #include <MyTimeSeries.h>
-
-#define SOURCE_DATA_FROM_FXDB 0
-#define SOURCE_DATA_FROM_FILE 1
-#define SOURCE_DATA_FROM_MT   2
+#include <Client.h>
 
 #define MAXPARAMDESCLEN 20	// Max length for comma-separated lists of descriptions
 #define ARRAY_PARAMETER_MAX_LEN	100
@@ -35,9 +32,12 @@
 
 class cParamsSource {
 public:
+	tClientParms* ClientParms;
 	tDebugInfo* DebugParms;
+	tDBConnection* ResultsDB;
 	tDataShape* DataParms;
-	tFXData* FXDBInfo;
+	tDBConnection* FXDB;
+	tFXData* FXDataInfo;
 	tFileData* DataSourceFileInfo;
 	cEngine* Engine;
 	tEngineHandle* SavedEngine;
@@ -46,13 +46,11 @@ public:
 	EXPORT cParamsSource(int argc, char* argv[]);
 	EXPORT ~cParamsSource();
 
-	//-- client-side parameters
-	int SimulationLength;
-	char SimulationStart[12 + 1];
-	int DoTraining;
-	int HaveFutureData;
-
 	EXPORT int Process(int section);
+	EXPORT int Process_DebugParms();
+	EXPORT int Process_DataSourceParms();
+	EXPORT int Process_DataShapeParms();
+	EXPORT int Process_ClientParms();
 
 	//-- single value (int, double, char*, enum)
 	EXPORT int getParam(char* paramName, int* oparamVal);

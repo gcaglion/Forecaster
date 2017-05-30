@@ -28,7 +28,7 @@ public:
 	EXPORT virtual int  train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** SampleT, double** TargetT, int useValidation, double** SampleV, double** TargetV);
 	EXPORT virtual int  run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T);
 	EXPORT virtual int  setParms(tDebugInfo* DebugParms, int pid, int tid);
-	virtual int  LoadImage(tDebugInfo* DebugParms, int pid, int tid);
+	virtual int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
 	virtual void mallocLogs(int dscnt);
 	EXPORT virtual void getScaleRange(double* oScaleMin, double* oScaleMax);	// used only by CORE_NN
 

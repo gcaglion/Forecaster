@@ -73,7 +73,7 @@ EXPORT int Txt_LoadData(tDebugInfo* DebugParms, tFileData* pDataFile, int pHisto
 	FILE* fData = fopen(pDataFile->FileName, "r");
 	if (fData == NULL) {
 		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
-		printf("Press any key to continue...\n"); getchar();;
+		{printf("Press any key to continue...\n"); getchar();};
 		return -1;
 	}
 
@@ -93,7 +93,7 @@ EXPORT int Txt_LoadData(tDebugInfo* DebugParms, tFileData* pDataFile, int pHisto
 	for (l = 0; l < (pHistoryLen + pFutureLen); l++) {
 		if (fgets(vLine, MaxLineSize, fData) == NULL) {
 			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
-			printf("Press any key to continue...\n"); getchar();;
+			{printf("Press any key to continue...\n"); getchar();};
 			return -1;
 		}
 		//-- Read first column (datetime)
