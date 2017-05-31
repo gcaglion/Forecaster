@@ -10,18 +10,23 @@ int cSVM::calcSVcnt(MODEL* model) {
 }
 
 
-EXPORT void cSVM::init() {}
-void cSVM::train(int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v) {}
-void cSVM::run(int DatasetId, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T) {}
-int  cSVM::setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt) {
+void cSVM::init() {}
+int cSVM::train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v) {
 	return 0;
 }
-EXPORT int  cSVM::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConnection, int pid, int tid) {
+int  cSVM::run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T, void* img) {
 	return 0;
 }
-EXPORT void cSVM::mallocLogs(int dscnt) {}
+int  cSVM::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConnection, int pid, int tid) {
+	return 0;
+}
+void cSVM::mallocLogs(int dscnt) {}
+void cSVM::getScaleRange(double* oScaleMin, double* oScaleMax) {
+	(*oScaleMin) = -1;
+	(*oScaleMax) = 1;
+}
 
-EXPORT cSVM::cSVM(){}
+cSVM::cSVM(){}
 cSVM::~cSVM(){}
 
 //-- cSVMLog stuff

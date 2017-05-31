@@ -1,7 +1,7 @@
 #include <vld.h>
 #include <MyNN.h>
 
-	void cNN::setTopology(int InputCount, int OutputCount) {
+	void cNN::setTopology() {
 		char** DescList = MallocArray<char>(NN_MAXLEVELS, 256);
 
 		//-- 1. Put the comma-separated string values into an array of strings. Max desc length=10
@@ -15,9 +15,9 @@
 		levelsCnt = (Levcnt + 2);
 
 		// set NodesCount, NodesCountTotal
-		nodesCnt[0] = InputCount;
-		nodesCnt[levelsCnt - 1] = OutputCount;
-		nodesCntTotal = InputCount + OutputCount;
+		nodesCnt[0] = SampleLen;
+		nodesCnt[levelsCnt - 1] = TargetLen;
+		nodesCntTotal = SampleLen + TargetLen;
 		//-- calc nodescount[], totalnodescount
 		for (int nl = 0; nl<(levelsCnt - 2); nl++) {
 			nodesCnt[nl + 1] = (int)floor(nodesCnt[nl] * levelRatio[nl]);
@@ -130,6 +130,12 @@
 	}
 	int cNN::train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** SampleT, double** TargetT, int useValidation, double** SampleV, double** TargetV) {
 		dsid = DatasetId;
+
+		//-- first, we need to set net topology, and init F,W
+		setTopology();
+		init();
+
+		//-- then, run the proper training protocol
 		switch (TrainingProtocol) {
 		case TP_STOCHASTIC:
 			train_Stochastic(sampleCnt, sampleLen, targetLen, SampleT, TargetT, useValidation, SampleV, TargetV);
@@ -141,10 +147,13 @@
 			//train_Online(sampleCnt, sampleLen, targetLen, SampleT, TargetT, useValidation, SampleV, TargetV);
 			break;
 		}
+
+		//-- finally, save weights
 		SaveFinalW();
+
 		return 0;
 	}
-	int cNN::run(tDebugInfo* pDebugParms, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T) {
+	int cNN::run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T, void* img) {
 		//dsid = DatasetId;
 
 		int i, s, l, j;
@@ -155,6 +164,7 @@
 		double* tmpSample = (double*)malloc(sampleLen * sizeof(double));
 
 		//-- 1. Load W*** from NNParms->NNFinalW[Level][FromN][ToN] 
+		double*** savedW = (double***)img;
 		for (l = 0; l<(levelsCnt-1); l++) {
 			for (j = 0; j < nodesCnt[l]; j++) {
 				for (i = 0; i < nodesCnt[l+1]; i++) {
@@ -205,19 +215,17 @@
 
 		return 0;
 	}
-	int  cNN::setParms(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid, bool load, int iSampleCnt) {
+/*	int  cNN::setParms(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid, bool load, int iSampleCnt) {
 		//-- (pre)
 		if (load) {
-			if (LoadCoreParms_NN(DebugParms, DBConn, pid, tid, &InputCount, &OutputCount, &useContext, &MaxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
+			if (LoadCoreParms_NN(DebugParms, DBConn, pid, tid, &SampleLen, &TargetLen, &useContext, &MaxEpochs, &BPAlgo, &ActivationFunction, &levelRatioS, &LearningRate, &LearningMomentum, &HCPbeta, &TargetMSE) <0) return -1;
 		}
 		//-- (post)
 		TimeStepsCount = MaxEpochs*((BPAlgo == BP_SCGD) ? iSampleCnt : 1);
-		SampleLen = InputCount;
-		TargetLen = OutputCount;
 		MSECount = MaxEpochs;
 		return 0;
 	}
-	int  cNN::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid) {
+*/	int  cNN::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid) {
 		if (LoadCoreImage_NN(DebugParms, DBConn, pid, tid, NNLog[dsid]->FinalW) <0) return -1;
 		return 0;
 	}

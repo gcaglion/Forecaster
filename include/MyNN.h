@@ -4,6 +4,7 @@
 #include <math.h>
 #include <MyUtils.h>
 #include <MyMatrix.h>
+
 #include <MyCores.h>
 
 #define NN_MAXLEVELS 8
@@ -87,16 +88,15 @@ public:
 	int		ScreenPos;
 	HANDLE	ScreenMutex;
 	//--
-	void setTopology(int InputCount, int OutputCount);
+	void setTopology();
 	//--
 	cNNLog** NNLog;	// [Dataset]
 
 	//-- virtual functions, common to all cores
 	void init();
-	int train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
-	int run(tDebugInfo* pDebugParms, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T);
-	int  cNN::setParms(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid, bool load, int iSampleCnt);
-	int  cNN::LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
+	int  train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
+	int  run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T, void* img);
+	int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
 	void mallocLogs(int dscnt);
 	virtual void getScaleRange(double* oScaleMin, double* oScaleMax);
 	//--

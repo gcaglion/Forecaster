@@ -1,79 +1,72 @@
 #include <vld.h>
 
 #include <MyEngines.h>
+#include <MyNN.h>
+#include <MyGA.h>
+#include <MySOM.h>
+#include <MySVM.h>
 
 EXPORT void cEngine::setLayout(int DatasetsCount, int DataSampleLen, int DataTargetLen) {
+	int l, c;
+	
 	InputCount = DataSampleLen;
 	OutputCount = DataTargetLen;
 
-	//-- 1. set LayersCount, CoresCount, Core[]
-	switch (EngineType) {
-	case ENGINE_WNN:
+	if (EngineType==ENGINE_WNN) {
+		//-- LayersCount, CoresCount[]
 		LayersCount = 2;
 		CoresCount = MallocArray<int>(LayersCount);
 		CoresCount[0] = WNN_DecompLevel+1;
 		CoresCount[1] = 1;
 
-		Core = MallocArray<cCore**>(LayersCount);
-		for (int l = 0; l<LayersCount; l++) {
-			Core[l] = MallocArray<cCore*>(CoresCount[l]);
-			for (int c = 0; c<CoresCount[l]; c++) {
-				Core[l][c] = new cCore(CORE_NN, DatasetsCount, (l>0)?(CoresCount[0]*OutputCount+TSFcnt):InputCount, OutputCount);
-			}
-		}
-		break;
-	case ENGINE_XIE:
+		//-- CoreType[][]
+		CoreType = MallocArray<int>(LayersCount, ArrayMax(LayersCount, CoresCount));
+		for (c = 0; c<CoresCount[0]; c++) CoreType[0][c] = CORE_NN;
+		CoreType[1][0] = CORE_NN;
+	}
+	else if (EngineType = ENGINE_XIE) {
+		//-- LayersCount, CoresCount[]
 		LayersCount = 2;
 		CoresCount = MallocArray<int>(LayersCount);
 		CoresCount[0] = 2;
 		CoresCount[1] = 1;
 
-		Core = MallocArray<cCore**>(LayersCount);
-		Core[0] = MallocArray<cCore*>(CoresCount[0]);
-		Core[1] = MallocArray<cCore*>(CoresCount[1]);
-
-		Core[0][0] = new cCore(CORE_SVM, DatasetsCount, InputCount, OutputCount);
-		Core[0][1] = new cCore(CORE_NN, DatasetsCount, InputCount, OutputCount);
-		Core[1][0] = new cCore(CORE_NN, DatasetsCount, (2*OutputCount+TSFcnt), OutputCount);
-
-		break;
-	default:
+		//-- CoreType[][]
+		CoreType = MallocArray<int>(LayersCount, ArrayMax(LayersCount, CoresCount));
+		CoreType[0][0] = CORE_SVM;
+		CoreType[0][1] = CORE_NN;
+		CoreType[1][0] = CORE_NN;
+	}
+	else {
+		//-- LayersCount, CoresCount[]
 		LayersCount = 1;
 		CoresCount = MallocArray<int>(LayersCount);
 		CoresCount[0] = 1;
-		Core = MallocArray<cCore**>(LayersCount);
-		Core[0] = MallocArray<cCore*>(CoresCount[0]);
 
-		Core[0][0] = new cCore(EngineType, DatasetsCount, InputCount, OutputCount);
-		break;
+		//-- CoreType[][]
+		CoreType = MallocArray<int>(LayersCount, ArrayMax(LayersCount, CoresCount));
+		CoreType[0][0] = EngineType;
 	}
 
-	//-- 2. set TotalCoresCount, and RunCount for every core
-	TotalCoresCount = 0;
-	for (int l = 0; l < LayersCount; l++) {
-		for (int c = 0; c < CoresCount[l]; c++) {
-			Core[l][c]->RunCount = InputCount+OutputCount;
-			TotalCoresCount++;
+	for (l = 0; l<LayersCount; l++) {
+		for (c = 0; c<CoresCount[l]; c++) {
+			switch (CoreType[l][c]) {
+			case CORE_NN:
+				Core[l][c] = new cNN();
+				break;
+			case CORE_GA:
+				Core[l][c] = new cGA();
+				break;
+			case CORE_SOM:
+				Core[l][c] = new cSOM();
+				break;
+			case CORE_SVM:
+				Core[l][c] = new cSVM();
+				break;
+			}
 		}
 	}
-/*
-	//-- 3. set InputCount/OutputCount for each core. This depends on ENGINE_TYPE, not CORE_TYPE (see ENGINE_WNN)
-	switch (EngineType) {
-	case ENGINE_WNN:
-		break;
-	case ENGINE_XIE:
-		Core[0][0]->InputCount = InputCount;
-		Core[0][0]->OutputCount = OutputCount;
-		Core[0][1]->InputCount = InputCount;
-		Core[0][1]->OutputCount = OutputCount;
-		Core[1][0]->InputCount = Core[0][0]->OutputCount+Core[0][1]->OutputCount+TSFcnt;
-		break;
-	default:
-		Core[0][0]->InputCount  = InputCount;
-		Core[0][0]->OutputCount = OutputCount;
-		break;
-	}
-	*/
+
 }
 
 EXPORT cEngine::cEngine(){
@@ -104,7 +97,8 @@ EXPORT int cEngine::LoadCoresParms(tDebugInfo* pDebugParms, tDBConnection* pDBCo
 	for (int l = 0; l <LayersCount; l++) {
 		for (int n = 0; n<CoresCount[l]; n++) {
 			//-- first, get ThreadId for this core. Use Dataset=0 and TestId=0, as core parameters are the same for every dataset/Test
-			Core[l][n]->coreLog[l][n].ThreadId = GetCoreThreadId(pDebugParms, pDBConn, pid, 0, 0, l, n); if (Core[l][n]->coreLog[l][n].ThreadId<0) return -1;
+			Core[l][n]
+			Core[l][n]->coreLog[0]->ThreadId = GetCoreThreadId(pDebugParms, pDBConn, pid, 0, 0, l, n); if (Core[l][n]->coreLog[l][n].ThreadId<0) return -1;
 			//-- then,  load core parameters
 			if (Core[l][n]->setParms(pDebugParms, pid, Core[l][n]->coreLog[l][n].ThreadId) <0) return -1;
 		}

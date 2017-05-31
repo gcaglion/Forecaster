@@ -494,7 +494,7 @@ EXPORT int cParamsSource::Process(int section) {
 			if (getParam("Forecaster.Engine", &Engine->EngineType, enumlist) < 0)	return -1;
 			Engine->setLayout(DataParms->DatasetsCount, DataParms->SampleLen, DataParms->PredictionLen);
 
-			//-- Engine-specific parameters
+			//-- Core-specific parameters
 			cNN*  NNInfo = nullptr;
 			cGA*  GAInfo = nullptr;
 			cSOM* SOMInfo = nullptr;
@@ -504,8 +504,8 @@ EXPORT int cParamsSource::Process(int section) {
 			switch (Engine->EngineType) {
 
 			case ENGINE_NN:
-				Engine->Core[0][0] = new cNN(); 
-				//NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
+				//Engine->Core[0][0] = new cNN(); 
+				NNInfo = new cNN(); Engine->Core[0][0]->core = NNInfo;
 				if (getParam("NNInfo.UseContext", &NNInfo->useContext) < 0)								return -1;
 				if (getParam("NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 				if (getParam("NNInfo.BP_Algo", &NNInfo->BPAlgo, enumlist) < 0)							return -1;

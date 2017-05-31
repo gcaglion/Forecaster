@@ -23,7 +23,7 @@ private:
 };
 
 //-- SOM engine specific parameters
-class cSOM {
+class cSOM: public cCore {
 public:
 	int InputCount;
 	int OutputCount;	// Should be something like 21 (-10÷+10, plus 0)
@@ -39,5 +39,13 @@ public:
 
 	cSOMLog**   SOMLog;	//-- [DatasetId] NN-specific log (FinalW, IntP)
 
+	//-- virtual functions, common to all cores
+	void init();
+	int  train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
+	int  run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T, void* img);
+	int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
+	void mallocLogs(int dscnt);
+	virtual void getScaleRange(double* oScaleMin, double* oScaleMax);
+	//--
 };
 

@@ -29,7 +29,8 @@ public:
 	int OutputCount;	// Engine-wide
 	int LayersCount;
 	int* CoresCount;
-	cCore*** Core;	// [LayerId][CoreId]
+	int** CoreType;	// [LayerId][CoreId]
+	void*** Core;	// [LayerId][CoreId][pointer to cNN/cSVM/...]
 	int TotalCoresCount;
 	int TSFcnt;
 	int* TSFid;

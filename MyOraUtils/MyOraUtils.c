@@ -295,7 +295,7 @@ EXPORT int  OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInfo){
 	char* password = DBConnInfo->DBPassword;
 	char* dbstring = DBConnInfo->DBConnString;
 	sql_context vCtx = NULL;
-	int kaz;
+	//int kaz;
 	/* EXEC SQL END DECLARE SECTION; */ 
 
 

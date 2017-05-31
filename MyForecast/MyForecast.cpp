@@ -107,38 +107,33 @@ void freeTS(cParamsSource* fp, cTimeSerie***** ret){
 
 //--
 void Train_XXX(tTrainParams* tp) {
-/*	cCore*		core = tp->EngineParms->Core[tp->LayerId][tp->CoreId];
-	cCoreLog*	coreLog = tp->EngineParms->Core[tp->LayerId][tp->CoreId]->coreLog[tp->DatasetId];
-
-	tp->TrainSuccess = core->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
-	tp->ActualEpochs = coreLog->ActualEpochs;
-*/
+	cNN*  NN  = nullptr;
+	cGA*  GA  = nullptr;
+	cSOM* SOM = nullptr;
+	cSVM* SVM = nullptr;
+	
 	switch (tp->EngineParms->Core[tp->LayerId][tp->CoreId]->CoreType) {
 	case CORE_NN:
-		(cNN*)(tp->EngineParms->Core[tp->LayerId][tp->CoreId])->
-		NNParms = (NN_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
-		tp->ActualEpochs = coreLog->ActualEpochs;
+		NN = (cNN*)tp->EngineParms->Core[tp->LayerId][tp->CoreId];
+		tp->TrainSuccess = NN->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		break;
 	case CORE_GA:
-		GAParms = (GA_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		//-- tp->TrainSuccess= Train_GA(...);
-		tp->ActualEpochs = coreLog->ActualEpochs;
+		GA = (cGA*)tp->EngineParms->Core[tp->LayerId][tp->CoreId];
+		//tp->TrainSuccess = GA->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		break;
 	case CORE_SOM:
-		SOMParms = (SOM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		//-- tp->TrainSuccess= Train_SOM(...);
-		tp->ActualEpochs = coreLog->ActualEpochs;
+		SOM = (cSOM*)tp->EngineParms->Core[tp->LayerId][tp->CoreId];
+		//tp->TrainSuccess = SOM->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		break;
 	case CORE_SVM:
-		SVMParms = (SVM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
-		tp->ActualEpochs = coreLog->ActualEpochs;
+		SVM = (cSVM*)tp->EngineParms->Core[tp->LayerId][tp->CoreId];
+		tp->TrainSuccess = SVM->train(tp->DebugParms, tp->DatasetId, tp->SampleCount, tp->SampleLen, tp->TargetLen, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		break;
 	}
+	tp->ActualEpochs = coreLog->ActualEpochs;
 	//-- update EngineParms->MSECount
-	tp->EngineParms->Core[tp->LayerId][tp->CoreId].MSECount = tp->ActualEpochs;
-*/
+	tp->EngineParms->Core[tp->LayerId][tp->CoreId]->MSECount = tp->ActualEpochs;
+
 }
 void Run_XXX(tRunParams* rp) {
 	cCore*		core = rp->EngineParms->Core[rp->LayerId][rp->CoreId];

@@ -67,13 +67,13 @@ public:
 	cSVMLog**   SVMLog;	//-- [DatasetId] SVM-specific log (FinalW, IntP)
 
 	//-- virtual functions, common to all cores
-	EXPORT void init();
-	void train(int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
-	void run(int DatasetId, double*** savedW, int sampleCnt, int sampleLen, int targetLen, double** S, double** T);
-	int  setParms(tDebugInfo* DebugParms, int pid, int tid, bool load, int iSampleCnt);
-	EXPORT int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConnection, int pid, int tid);
-	EXPORT void mallocLogs(int dscnt);
-	//virtual void getScaleRange(double* oScaleMin, double* oScaleMax);
+	void init();
+	int  train(tDebugInfo* pDebugParms, int DatasetId, int sampleCnt, int sampleLen, int targetLen, double** S_t, double** T_t, int useValidation, double** S_v, double** T_v);
+	int  run(tDebugInfo* pDebugParms, int sampleCnt, int sampleLen, int targetLen, double** S, double** T, void* img);
+	int  LoadImage(tDebugInfo* DebugParms, tDBConnection* DBConn, int pid, int tid);
+	void mallocLogs(int dscnt);
+	void getScaleRange(double* oScaleMin, double* oScaleMax);
+	//--
 
 	//-- SVM-specific functions
 	int calcSVcnt(MODEL* model);
