@@ -7,6 +7,7 @@
 //#include <MyLog.h>
 #include <MyNN.h>	// temporary, to allow saveinternalsdata
 #include <MySOM.h>
+#include <MySVM.h>
 
 typedef void * sql_context;
 #define MAX_CONTEXTS 6

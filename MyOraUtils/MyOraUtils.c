@@ -135,8 +135,8 @@ typedef struct { unsigned short len; unsigned char arr[1]; } varchar;
 /* cud (compilation unit data) array */
 static const short sqlcud0[] =
 {13,4138,178,8,0,
-5,0,0,0,0,0,58,147,0,0,1,1,0,1,0,3,109,0,0,
-24,0,0,0,0,0,27,149,0,0,4,4,0,1,0,1,97,0,0,1,97,0,0,1,97,0,0,1,10,0,0,
+5,0,0,0,0,0,58,148,0,0,1,1,0,1,0,3,109,0,0,
+24,0,0,0,0,0,27,150,0,0,4,4,0,1,0,1,97,0,0,1,97,0,0,1,97,0,0,1,10,0,0,
 55,0,0,2,0,0,30,171,0,0,0,0,0,1,0,
 70,0,0,3,0,0,29,179,0,0,0,0,0,1,0,
 85,0,0,4,0,0,24,204,0,0,1,1,0,1,0,1,97,0,0,
@@ -521,7 +521,7 @@ void  __stdcall LogWrite_C(tDebugInfo* DebugParms, int LogType, char* msg, int a
 	memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
 	if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg);
 	if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) fprintf(DebugParms->fHandle, submsg);
-	if (LogType == LOG_ERROR) printf("Press any key..."); getchar();;
+	if (LogType == LOG_ERROR) {printf("Press any key..."); getchar();}
 	va_end(arguments);
 }
 //--
@@ -542,6 +542,7 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 
 	char* vPath = getenv("PATH");
 	char* vOH = getenv("ORACLE_HOME");
+	//printf("PATH=%s\nORACLE_HOME=%s\n", vPath, vOH);
 
 	/* EXEC SQL CONTEXT ALLOCATE :vCtx; */ 
 
@@ -645,10 +646,9 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 		LogWrite_C(DebugInfo, LOG_INFO, "OraConnect() - Connected to ORACLE as user: %s ; DBConnInfo->DBCtx=%p\n", 2, username, DBConnInfo->DBCtx);
 	}
 	else {
+		LogWrite_C(DebugInfo, LOG_INFO, "PATH=%s\n", 1, vPath);
+		LogWrite_C(DebugInfo, LOG_INFO, "ORACLE_HOME=%s\n", 1, vOH);
 		LogWrite_C(DebugInfo, LOG_ERROR, "%s Error %d connecting to ORACLE as user: %s\n", 3, timestamp_C(), sqlca.sqlcode, DBConnInfo->DBUser);
-		LogWrite_C(DebugInfo, LOG_ERROR, "PATH=%s\n", 1, vPath);
-		LogWrite_C(DebugInfo, LOG_ERROR, "ORACLE_HOME=%s\n", 1, vOH);
-		printf("Press any key..."); getchar();;
 	}
 	return(sqlca.sqlcode);
 }
@@ -7969,7 +7969,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); printf("Press any key..."); getchar();;
+		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); {printf("Press any key..."); getchar();}
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL FETCH cLEPSOM INTO vInputCount, vOutputCount, vMaxEpochs, vTDFunction, vBaseTD, vLRFunction, vBaseLR; */ 
@@ -8172,7 +8172,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); printf("Press any key..."); getchar();;
+		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d\n", 2, __func__, sqlca.sqlcode); {printf("Press any key..."); getchar();}
 		return sqlca.sqlcode;
 	}
 	/* EXEC SQL FETCH cLEPSVM INTO vInputCount, vMaxEpochs, vC, vEpsilon, vIterToShrink, vKernelType, vPolyDegree, vRBFGamma, vCoefLin, vCoefConst, vKernelCacheSize; */ 
