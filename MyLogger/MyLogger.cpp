@@ -222,7 +222,7 @@ int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pD
 
 	return 0;
 }
-int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pInputCount, int pOutputCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	return 0;
 }
 int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
@@ -363,10 +363,10 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 }
 __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
+		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 	else {
-		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->LayersCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
+		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 }
 __declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {

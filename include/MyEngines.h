@@ -42,7 +42,8 @@ typedef struct sCore {
 //-- Engine Architecture
 typedef struct sEngineDef {
 	int EngineType;
-
+	int InputCount;
+	int OutputCount;
 	int LayersCount;
 	int* CoresCount;
 	tCore** Core;	// [LayerId][CoreId]

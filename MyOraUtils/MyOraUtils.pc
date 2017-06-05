@@ -257,7 +257,7 @@ EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* pDebugParms, int pid, int
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pLayersCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pInputCount, int pOutputCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = pDebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -270,7 +270,7 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int
 	LogWrite_C(pDebugParms, LOG_INFO, "Ora_InsertEngineParms() CheckPoint 2 - LogDB->DBCtx=%p , vCtx=%p\n", 2, pDebugParms->DebugDB->DBCtx, vCtx);
 
 	//-- 1. Insert into EngineParms
-	sprintf(&stmt[0], "insert into EngineParms(ProcessId, EngineType, LayersCount, WNN_DecompLevel, WNN_WaveletType) values(%d, %d, %d, %d, '%s')",	pid, pEngineType, pLayersCount, pWNNDecompLevel, pWNNWaveletType);
+	sprintf(&stmt[0], "insert into EngineParms(ProcessId, EngineType, InputCount, OutputCount, WNN_DecompLevel, WNN_WaveletType) values(%d, %d, %d, %d, %d, '%s')",	pid, pEngineType, pInputCount, pOutputCount, pWNNDecompLevel, pWNNWaveletType);
 	EXEC SQL EXECUTE IMMEDIATE : stmt;
 	if (sqlca.sqlcode != 0) {
 		LogWrite_C(pDebugParms, LOG_ERROR, "Ora_InsertEngineParms() Insert into EngineParms failed. SQL Error %d ; stmt=%s\n", 2, sqlca.sqlcode, stmt);
