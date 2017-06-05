@@ -1476,7 +1476,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 	int ret;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
-	int vEngineType, vLayersCount, vDecompLevel;
+	int vEngineType, vInputCount, vOutputCount, vDecompLevel;
 	char vWType[30];
 	EXEC SQL END   DECLARE SECTION;
 
@@ -1486,7 +1486,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select EngineType, LayersCount, WNN_DecompLevel, decode(WNN_WaveletType,NULL,'UNUSED',WNN_WaveletType) from EngineParms where ProcessId=%d", pid);
+	sprintf(&stmt[0], "select EngineType, InputCount, OutputCount, WNN_DecompLevel, decode(WNN_WaveletType,NULL,'UNUSED',WNN_WaveletType) from EngineParms where ProcessId=%d", pid);
 	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt = %s\n", 2, __func__, stmt);
 
 	//-- Executes SQL 
@@ -1495,10 +1495,10 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 	EXEC SQL PREPARE s16 FROM : stmt;
 	EXEC SQL DECLARE c16 CURSOR FOR s16;
 	EXEC SQL OPEN c16;
-	EXEC SQL FETCH c16 INTO :vEngineType, :vLayersCount, :vDecompLevel, :vWType;
+	EXEC SQL FETCH c16 INTO :vEngineType, :vInputCount, :vOutputCount, :vDecompLevel, :vWType;
 	ret = sqlca.sqlcode;
 	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d, stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
 		return sqlca.sqlcode;
 	}
 	EXEC SQL CLOSE c16;
@@ -1506,12 +1506,13 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 
 	//-- Fill oEngineParms, and returns
 	oEngineParms->EngineType = vEngineType;
-	oEngineParms->LayersCount = vLayersCount;
+	oEngineParms->InputCount = vInputCount;
+	oEngineParms->OutputCount = vOutputCount;
 	if (vEngineType == ENGINE_WNN) {
 		oEngineParms->WNN_DecompLevel = vDecompLevel;
 		strcpy(oEngineParms->WNN_WaveletType, vWType);
 	}
-	LogWrite_C(DebugParms, LOG_INFO, "%s(): EngineType=%d ; LayersCount=%d\n", 3, __func__, oEngineParms->EngineType, oEngineParms->LayersCount);
+	LogWrite_C(DebugParms, LOG_INFO, "%s(): EngineType=%d ; InputCount=%d, OutputCount=%d\n", 4, __func__, oEngineParms->EngineType, oEngineParms->InputCount, oEngineParms->OutputCount);
 	return ret;
 }
 //--

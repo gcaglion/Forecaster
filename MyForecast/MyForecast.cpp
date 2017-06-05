@@ -386,6 +386,8 @@ int LoadCoreImage(tDebugInfo* pDebugParms, int pid, int testid, int DSid, tEngin
 
 //--
 void setCoreInfo_Pre(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms** NNInfo, GA_Parms** GAInfo, SOM_Parms** SOMInfo, SVM_Parms** SVMInfo) {
+	pEngineParms->InputCount = pDataParms->SampleLen;
+	pEngineParms->OutputCount = pDataParms->PredictionLen;
 	switch (pEngineParms->EngineType) {
 	case ENGINE_NN:
 		pEngineParms->Core[0][0].CoreSpecs = new NN_Parms();
