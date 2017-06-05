@@ -930,8 +930,8 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		TSE_T = 0; TSE_V = 0;
 		for (s = 0; s < pSampleCount; s++){
 			//-- 1.1 Present Sample, and Sum up Squared Error for every Sample
-			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 			//-- 1.2 Calc dW for every sample based on BP algorithm
 			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 			//-- 1.3 BdW = BdW + dW
@@ -945,8 +945,8 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		TSE_T = 0; TSE_V = 0;
 		for (s = 0; s < pSampleCount; s++){
 			//-- 1. Present Sample, and Sum up Squared Error for every Sample
-			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 		}
 
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
@@ -985,8 +985,8 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 		for (s = 0; s < pSampleCount; s++){
 
 			//-- 1. Sum up Squared Error for every Sample
-			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 
 			//-- 2. Save Internals
 //			if (pDebugParms->SaveInternals == 1){
