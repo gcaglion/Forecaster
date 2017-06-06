@@ -6,8 +6,7 @@ PATH=$(ORACLE_HOME1)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platf
 SystemRoot=C:\Windows
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>
-    </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--IniFile=c:\temp\forecaster\Tester.ini --Forecaster.Engine=ENGINE_SVM --TestData.HistoryLen=200 --TestData.SampleLen=24 --TestData.PredictionLen=3 --TestData.DataTransformation=DT_DELTA --SVMInfo.C=10 --SVMInfo.epsilon=0.01 --SVMInfo.KernelType=KERNEL_TYPE_RBF --SVMInfo.RBFGamma=0.01</LocalDebuggerCommandArguments>
     <LocalDebuggerMergeEnvironment>false</LocalDebuggerMergeEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='No_Orcl|x64'">

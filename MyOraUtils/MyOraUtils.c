@@ -3882,7 +3882,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 	//-- Then, Build the Insert statement
 	sprintf(&stmt[0], "insert into MyLog_MSE (ProcessId, ThreadId, Epoch, MSE_T, MSE_V) values(:P01, :P02, :P03, :P04, :P05)");
-	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 4 - stmt='%s'\n", 1, stmt);
+	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 4 - stmt='%s' ; pid[0]=%d ; tid[0]=%d\n", 3, stmt, vProcessId[0], vThreadId[0]);
 
 	/* EXEC SQL CONTEXT USE :vCtx; */ 
 

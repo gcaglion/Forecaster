@@ -621,6 +621,9 @@ void BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms
 }
 
 void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
+
+	BOOL f = HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
+
 	int k;
 	int maxk = NN->MaxEpochs;
 

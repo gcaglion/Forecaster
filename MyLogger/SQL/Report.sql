@@ -6,7 +6,7 @@ decode(dp.DataSourceType,0,'FXDB',1,'FILE',2,'METATRADER','UNKNOWN') "DataSource
 decode(dp.datasourcetype,1,'', decode(dp.bardata,0,'OPEN',1,'HIGH',2,'LOW',3,'CLOSE',4,'VOLUME',5,'OTHER','UNKNOWN')) "FXBarData",
 decode(datatransformation,0,'DT_NONE',1,'DT_DELTA',2,'DT_DELTA',3,'DT_DELTALOG','UNKNOWN') "DataTransformation",
 decode(ep.EngineType,0,'ENGINE_NN',1,'ENGINE_GA',2,'ENGINE_SVM',3,'ENGINE_SOM',4,'ENGINE_WNN',5,'ENGINE_XIE','UNKNOWN') "EngineType",
-ep.LayersCount, ep.WNN_DecompLevel, ep.WNN_WaveletType,
+ep.WNN_DecompLevel, ep.WNN_WaveletType,
 et.LayerId, et.CoreId, et.ThreadId,
 run.error, run.errorp, run.barwidth,
 mse.MSE_T

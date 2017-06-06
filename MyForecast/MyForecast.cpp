@@ -208,10 +208,6 @@ void freeSampleTarget(tEngineDef* pEngineParms, tDataShape* pDataParms, double**
 }
 
 //--
-int LogSave_Data(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid) {
-	if (SaveTestLog_DataParms(pDebugParms, pDataParms, pid) != 0) return -1;
-	return 0;
-}
 int LogSave_MSE  (tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId) {
 	int l, n, d, i;
 	tLogMSE* vMSELog;
@@ -243,12 +239,6 @@ int LogSave_Run  (tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 		if (BulkRunInsert(pDebugParms, &rc, pDataParms->HistoryLen, R[d]) != 0) return -1;
 	}
 
-	return 0;
-}
-int LogSave_Engine(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId){
-	if (SaveTestLog_EngineParms(pDebugParms, pid, pEngineParms) != 0) return -1;
-
-	if (SaveTestLog_EngineThreads(pDebugParms, pid, pTestId, pEngineParms, pDataParms) != 0) return -1;
 	return 0;
 }
 int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId) {
@@ -1252,9 +1242,12 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
 
 	if (pTestId == 0) {
-		if (LogSave_Data(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		if (LogSave_Engine(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+		if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
 	}
+	
+	if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+
 	if (fp.DoTraining == 1) {
 		if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
 		if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;

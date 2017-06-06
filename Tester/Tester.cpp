@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv) {
 	int i;
+	int FinalPause;
 
 	//	char IniFileName[MAX_PATH];
 	char** TrainingStart;
@@ -27,7 +28,8 @@ int main(int argc, char** argv) {
 
 	//-- Tester-specific parameters
 	if (getParam(&fParms, "Tester.SimulationLength", &fParms.SimulationLength) < 0)		return -1;
-	if (getParam(&fParms, "Tester.SimulationStart", &fParms.SimulationStart[0]) < 0)		return -1;
+	if (getParam(&fParms, "Tester.SimulationStart", &fParms.SimulationStart[0]) < 0)	return -1;
+	if (getParam(&fParms, "Tester.PauseAtEnd", &FinalPause) <0)							return -1;
 
 	//-- 0. mallocs
 	double*  BaseValH = MallocArray<double>(fParms.DataParms.DatasetsCount);	//-- needed for DELTA transformation
@@ -116,7 +118,7 @@ int main(int argc, char** argv) {
 	//--
 	gotoxy(0, fParms.EngineParms.TotalCoresCount*fParms.DataParms.DatasetsCount + i + 4);
 	printf("Elapsed Time: %s\n", elapsedTimeS);
-	printf("Press any key..."); getchar();;
+	if(FinalPause>0){ printf("Press any key..."); getchar(); }
 
 	return 0;
 }
