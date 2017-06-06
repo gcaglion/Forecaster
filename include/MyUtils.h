@@ -11,6 +11,9 @@
 #undef EXPORT
 #define EXPORT __declspec(dllexport)
 
+//------------ CPU Usage utilities -------------------
+EXPORT float GetCPULoad();
+
 //------	Random Utilities	- Start		--------------
 //#define MyRnd(rmin, rmax) (rmin + (rand() % rmax))
 
