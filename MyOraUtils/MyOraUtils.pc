@@ -606,6 +606,11 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 	strcat(stmt, " values(:WSVM01, :WSVM02, :WSVM03, :WSVM04, :WSVM05)");
 
 	EXEC SQL CONTEXT USE : vCtx;
+
+	//EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 8';
+	//EXEC SQL ALTER SESSION SET TRACEFILE_IDENTIFIER = "InsertCoreImageSVM";
+	//EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
+
 	EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'WSVM';
 	EXEC SQL SET DESCRIPTOR 'WSVM' COUNT = 5;
 	EXEC SQL SET DESCRIPTOR 'WSVM' VALUE 1 TYPE = :int_type;
@@ -627,6 +632,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 		LogWrite_C(DebugParms, LOG_ERROR, "Ora_InsertCoreImage_SVM() failed. SQL Error %d\n", 1, sqlca.sqlcode);
 		return sqlca.sqlcode;
 	}
+	//EXEC SQL ALTER SESSION SET SQL_TRACE = FALSE;
 	EXEC SQL DEALLOCATE DESCRIPTOR 'WSVM';
 
 

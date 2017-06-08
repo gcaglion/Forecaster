@@ -31,6 +31,12 @@ typedef struct {
 	double** Target;
 } tRunParams;
 
+/*char fPerfName[MAX_PATH];
+FILE* fPerf;
+LARGE_INTEGER frequency;			// ticks per second
+LARGE_INTEGER time_start, time_end; // ticks
+double elapsedTime = 0; char elapsedTimeS[30];
+*/
 void freeCoreParms(tForecastParms* ioParms) {
 	switch (ioParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
@@ -293,8 +299,13 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 						if (InsertCoreParms_SVM(pDebugParms, pid, core->CoreLog[d].ThreadId, SVMParms) != 0) return -1;
 					}
 					//-- 2. save final image (weights) , for each dataset
-					if (InsertCoreImage_SVM(pDebugParms, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMFinalW) != 0) return -1;
 					if (InsertCoreLogs_SVM(pDebugParms, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
+					if (pDebugParms->SaveImages>0) {
+						//QueryPerformanceCounter(&time_start);																															// start timer
+						if (InsertCoreImage_SVM(pDebugParms, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMFinalW) != 0) return -1;										//===== THIS IS CREATING SYSTEM-WIDE CONTENTION / WAIT !!! ====					
+						//QueryPerformanceCounter(&time_end); elapsedTime = (time_end.QuadPart - time_start.QuadPart) * 1000.0 / frequency.QuadPart; ms2ts(elapsedTime, elapsedTimeS);	//-- stop timer, compute the elapsed time
+						//fprintf(fPerf, "InsertCoreImage_SVM(), %d, %f, %s\n", core->CoreLog[d].SVMResult.SVcount*pDataParms->SampleLen, elapsedTime, elapsedTimeS);											//-- print elapsed time in perf file
+					}
 				}
 				break;
 			}
@@ -520,13 +531,14 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Forecaster.DebugFileName", ioParms->DebugParms.fName) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.DebugFilePath", ioParms->DebugParms.fPath) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.ThreadSafeLogging", &ioParms->DebugParms.ThreadSafeLogging) < 0)	return -1;
-	if (getParam(ioParms, "Results.SaveMSE", &ioParms->DebugParms.SaveMSE) < 0)					return -1;
-	if (getParam(ioParms, "Results.SaveRUN", &ioParms->DebugParms.SaveRun) < 0)					return -1;
-	if (getParam(ioParms, "Results.SaveInternals", &ioParms->DebugParms.SaveInternals) < 0)		return -1;
-	if (getParam(ioParms, "Results.Destination", &ioParms->DebugParms.DebugDest, enumlist) < 0)	return -1;
-	if (getParam(ioParms, "Results.DBUser", ioParms->DebugParms.DebugDB->DBUser) < 0)								return -1;
-	if (getParam(ioParms, "Results.DBPassword", ioParms->DebugParms.DebugDB->DBPassword) < 0)						return -1;
-	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)					return -1;
+	if (getParam(ioParms, "Results.SaveMSE", &ioParms->DebugParms.SaveMSE) < 0)							return -1;
+	if (getParam(ioParms, "Results.SaveRUN", &ioParms->DebugParms.SaveRun) < 0)							return -1;
+	if (getParam(ioParms, "Results.SaveImages", &ioParms->DebugParms.SaveImages) < 0)					return -1;
+	if (getParam(ioParms, "Results.SaveInternals", &ioParms->DebugParms.SaveInternals) < 0)				return -1;
+	if (getParam(ioParms, "Results.Destination", &ioParms->DebugParms.DebugDest, enumlist) < 0)			return -1;
+	if (getParam(ioParms, "Results.DBUser", ioParms->DebugParms.DebugDB->DBUser) < 0)					return -1;
+	if (getParam(ioParms, "Results.DBPassword", ioParms->DebugParms.DebugDB->DBPassword) < 0)			return -1;
+	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)		return -1;
 	ioParms->DebugParms.DebugDB->DBCtx = NULL;
 
 	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
@@ -1096,8 +1108,13 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 
 __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
 
+	int pid = GetCurrentProcessId();
 	HANDLE FMutex = CreateMutex(NULL, FALSE, NULL);
 
+/*	sprintf(fPerfName, "c:/temp/Perf%d.csv", pid);
+	fPerf = fopen(fPerfName, "a");	
+	QueryPerformanceFrequency(&frequency);		// get ticks per second
+*/	
 	// Forecasting Parameters initialization. 
 	tForecastParms fp;
 	//-- a. set overrides from Command Line 
@@ -1108,7 +1125,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
 	fp.DebugParms.Mtx = FMutex;
-	int pid = GetCurrentProcessId();
 
 	int dscnt = fp.DataParms.DatasetsCount;
 	int hlen = fp.DataParms.HistoryLen;
@@ -1241,6 +1257,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
 
+	//-- Save Logs
+	printf("Saving Logs...\n");
 	if (pTestId == 0) {
 		if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
 		if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
@@ -1256,6 +1274,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
+	//fclose(fPerf);
+
 	FreeArray(dscnt, wlen, wd);
 	FreeArray(dscnt, wlen, wd_tr);
 	FreeArray(dscnt, wlen, wd_trs);

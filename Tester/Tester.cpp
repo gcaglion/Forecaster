@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
 	// Forecasting Parameters initialization. 
 	tForecastParms fParms;
 	//-- a. set overrides from Command Line 
-	if (CLProcess(argc, argv, &fParms) != 0) return -1;
+	if (CLProcess(argc, argv, &fParms) <0) return -1;
 	//-- b. process ini file
 	if (ForecastParamLoader(&fParms) <0) return -1;
 
@@ -47,6 +47,12 @@ int main(int argc, char** argv) {
 	//BOOL f = HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
 	int pid = GetCurrentProcessId();
+
+	//-- Multiple runs with different sets of parameters
+	char* Pdesc[] = { "Forecaster.Engine", "DataParms.HistoryLen", "DataParms.SampleLen", "DataParms.PredictionLen", "DataParms.DataTransformation", "SVMInfo.C", "SVMInfo.epsilon", "SVMInfo.KernelType", "SVMInfo.RBFGamma" };
+	int P0[] = {200, 500, 1000};
+	char* vEngine[] = { "ENGINE_SVM", "ENGINE_XIE" };
+
 
 	//-- 1. Load Training_Start[]
 	TrainingStart = (char**)malloc(fParms.SimulationLength * sizeof(char*)); for (i = 0; i < fParms.SimulationLength; i++) TrainingStart[i] = (char*)malloc(12 + 1);
