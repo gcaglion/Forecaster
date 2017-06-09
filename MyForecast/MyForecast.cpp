@@ -1258,19 +1258,19 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
 
 	//-- Save Logs
-	printf("Saving Logs...\n");
+	//printf("Saving Logs...\n");
 	if (pTestId == 0) {
-		if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
+		printf("SaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
 	}
 	
-	if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
 
 	if (fp.DoTraining == 1) {
-		if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
-		if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
+		printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
 	}
-	if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
+	printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
 	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 

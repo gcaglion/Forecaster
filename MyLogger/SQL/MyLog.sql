@@ -212,7 +212,7 @@ create table MyLog_Run(
 	ErrorC number,
 	BarWidth number,
 	ErrorP number
-) storage (initial 100m next 100m freelists 8);
+) storage (initial 1024M minextents 8 pctincrease 0);
 alter table MyLog_Run add constraint MyLog_Run_PK primary key( ProcessId, ThreadId, Pos );
 
 drop table CoreLogs_GA purge;

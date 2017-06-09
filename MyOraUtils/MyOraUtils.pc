@@ -914,6 +914,12 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 	double* vError; double* vError_TRS;
 	double* vBarWidth;
 	double* vErrorP;
+	//-- indicator variables, to set NULL without the need for an update
+	short* iActual; short* iActual_TRS;
+	short* iPredicted; short* iPredicted_TRS;
+	short* iError; short* iError_TRS;
+	short* iBarWidth;
+	short* iErrorP;
 	//--
 	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
 	int int_type = 3;	// 
@@ -944,6 +950,16 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 	vError_TRS = (double*)malloc(vInsertCount*sizeof(double));
 	vBarWidth = (double*)malloc(vInsertCount*sizeof(double));
 	vErrorP = (double*)malloc(vInsertCount*sizeof(double));
+	//-- indicators
+	iActual = (short*)malloc(vInsertCount*sizeof(short));
+	iPredicted = (short*)malloc(vInsertCount*sizeof(short));
+	iError = (short*)malloc(vInsertCount*sizeof(short));
+	iActual_TRS = (short*)malloc(vInsertCount*sizeof(short));
+	iPredicted_TRS = (short*)malloc(vInsertCount*sizeof(short));
+	iError_TRS = (short*)malloc(vInsertCount*sizeof(short));
+	iBarWidth = (short*)malloc(vInsertCount*sizeof(short));
+	iErrorP = (short*)malloc(vInsertCount*sizeof(short));
+
 	for (i = 0; i < vInsertCount; i++){
 		vProcessId[i] = RunData[i].ProcessId;
 		vThreadId[i] = RunData[i].ThreadId;
@@ -959,6 +975,18 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 		vError_TRS[i] = RunData[i].Error_TRS;
 		vBarWidth[i] = RunData[i].BarWidth;
 		vErrorP[i] = RunData[i].ErrorP;
+		//-- indicators
+		//strcpy(&stmt[0], "update MyLog_Run set Predicted=NULL, Error=NULL, PredictedC=NULL, ErrorC=NULL, BarWidth=NULL, ErrorP=NULL where Predicted=0");
+		iPredicted[i] = (vPredicted[i]==0) ? -1 : 0;
+		iError[i] = (vPredicted[i]==0 || vActual[i]==0) ? -1 : 0;
+		iErrorP[i] = (vPredicted[i]==0 || vActual[i]==0) ? -1 : 0;
+		iPredicted_TRS[i] = (vPredicted[i]==0) ? -1 : 0;
+		iError_TRS[i] = (vPredicted[i]==0) ? -1 : 0;
+		iBarWidth[i] = (vPredicted[i]==0) ? -1 : 0;
+		//strcpy(&stmt[0], "update MyLog_Run set Actual=NULL, ActualC=NULL, Error=NULL, ErrorP=NULL where Actual=0");
+		iActual[i] = (vActual[i]==0) ? -1 : 0;
+		iActual_TRS[i] = (vActual[i]==0) ? -1 : 0;
+
 		//LogWrite_C(DebugParms, LOG_INFO, "vProcessId[%d][%d][%d]=%d , vThreadId[%d][%d][%d]=%d , vTestId[%d][%d][%d]=%d , vNetId[%d][%d][%d]=%d, vPos[%d][%d][%d]=%d \n", 20, d, n, i, vProcessId[n][i], d, n, i, vThreadId[n][i], d, n, i, vTestId[n][i], d, n, i, vNetId[n][i], d, n, i, vPos[n][i]);
 	}
 	//-- Then, Build the Insert statement
@@ -966,8 +994,11 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 	strcat(stmt, " values(:Run1, :Run2, :Run3, :Run4, :Run5, :Run6, :Run7, :Run8, :Run9, :Run10, :Run11, :Run12, :Run13)");
 
 	EXEC SQL CONTEXT USE :vCtx;
-	//EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 4';
-	//EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
+
+//	EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 8';
+//	EXEC SQL ALTER SESSION SET TRACEFILE_IDENTIFIER = "BulkRunInsert";
+//	EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
+
 	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inRun';
 	EXEC SQL SET DESCRIPTOR 'inRun' VALUE 1 TYPE = :int_type;
 	EXEC SQL SET DESCRIPTOR 'inRun' VALUE 2 TYPE = :int_type;
@@ -989,18 +1020,19 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 3 DATA = :vNetProcessId;
 	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 4 DATA = :vNetThreadId;
 	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 5 DATA = :vPos;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 6 DATA = :vActual;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 7 DATA = :vPredicted;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 8 DATA = :vError;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 9 DATA = :vActual_TRS;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 10 DATA = :vPredicted_TRS;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 11 DATA = :vError_TRS;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 12 DATA = :vBarWidth;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 13 DATA = :vErrorP;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 6 DATA = :vActual,			INDICATOR = :iActual;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 7 DATA = :vPredicted,		INDICATOR = :iPredicted;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 8 DATA = :vError,			INDICATOR = :iError;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 9 DATA = :vActual_TRS,		INDICATOR = :iActual_TRS;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 10 DATA = :vPredicted_TRS,	INDICATOR = :iPredicted_TRS;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 11 DATA = :vError_TRS,		INDICATOR = :iError_TRS;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 12 DATA = :vBarWidth,		INDICATOR = :iBarWidth;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inRun' VALUE 13 DATA = :vErrorP,			INDICATOR = :iErrorP;
 
 	EXEC SQL PREPARE DynIns FROM :stmt;
 	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inRun';
-	//EXEC SQL ALTER SESSION SET SQL_TRACE = FALSE;
+	
+//	EXEC SQL ALTER SESSION SET SQL_TRACE = FALSE;
 
 	(*pInsertCount) = sqlca.sqlerrd[2];
 	LogWrite_C(DebugParms, LOG_INFO, "BulkRunInsert() CheckPoint 3 - InsertCount=%d\n", 1, (*pInsertCount));
@@ -1024,6 +1056,8 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 		}
 	}
 	EXEC SQL DEALLOCATE DESCRIPTOR 'inRun';
+/*
+	=== NOT NEEDED ANYMORE. USING INDICATORS, INSTEAD
 
 	//-- Fixing the '0' values on actual that mess up excel charts
 	strcpy(&stmt[0], "update MyLog_Run set Predicted=NULL, Error=NULL, PredictedC=NULL, ErrorC=NULL, BarWidth=NULL, ErrorP=NULL where Predicted=0");
@@ -1043,7 +1077,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 			return sqlca.sqlcode;
 		}
 	}
-
+*/
 	//-- free()s
 	free(vProcessId);
 	free(vThreadId);
@@ -1058,6 +1092,14 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 	free(vError_TRS);
 	free(vBarWidth);
 	free(vErrorP);
+	free(iActual);
+	free(iPredicted);
+	free(iError);
+	free(iActual_TRS);
+	free(iPredicted_TRS);
+	free(iError_TRS);
+	free(iBarWidth);
+	free(iErrorP);
 
 	return 0;
 }
