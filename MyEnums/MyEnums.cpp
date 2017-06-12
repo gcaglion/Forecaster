@@ -133,7 +133,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
-		Trim(vParamName);
+		Trim(vParamName); UpperCase(vParamName);
 		if (strcmp(&vParamName[0], &pParamName[0]) == 0) {
 			(*oParamValue) = atoi(vParamValue);
 			fclose(ParamFile);
@@ -156,7 +156,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
-		Trim(vParamName);
+		Trim(vParamName); UpperCase(vParamName);
 		//if (strcmp(Trim(&vParamName[0]), &pParamName[0]) == 0){
 		if (strcmp(&vParamName[0], &pParamName[0]) == 0) {
 			(*oParamValue) = atof(vParamValue);
@@ -181,7 +181,7 @@ __declspec(dllexport) int __stdcall	ReadParamFromFile(char* pFileName, char* pPa
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %[^\n]", &vParamName[0], &vParamValue[0]) != EOF) {
-		Trim(vParamName);
+		Trim(vParamName); UpperCase(vParamName);
 		if (strcmp(&vParamName[0], &pParamName[0]) == 0) {
 			strcpy(oParamValue, vParamValue);
 			fclose(ParamFile);
@@ -338,8 +338,7 @@ __declspec(dllexport) int __stdcall	CLProcess(int argc, char* argv[], tForecastP
 
 //-- single value (int, double, char*, enum)
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int* oparamVal) {
-	char* vparamName = _strdup(paramName);
-	UpperCase(vparamName);
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atoi(iniParms->CLparamVal[p]);
@@ -347,11 +346,12 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 			return 0;
 		}
 	}
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName);
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, double* oparamVal) {
-	char* vparamName = _strdup(paramName);
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			(*oparamVal) = atof(iniParms->CLparamVal[p]);
@@ -359,11 +359,12 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 			return 0;
 		}
 	}
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName);
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, char* oparamVal) {
-	char* vparamName = _strdup(paramName);
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(oparamVal, iniParms->CLparamVal[p]);
@@ -371,11 +372,12 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 			return 0;
 		}
 	}
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName);
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int* oparamVal, bool isenum) {
-	char* vparamName = _strdup(paramName);
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	char evals[100];
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
@@ -393,19 +395,26 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 
 //-- array value (int[], double[], char**, enum
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int** oparamVal) {
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, double** oparamVal) {
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, char*** oparamVal) {
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	return ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int** oparamVal, bool isenum) {
-	char pname[100]; strcpy(pname, paramName);
+	char* vparamName = _strdup(paramName); UpperCase(vparamName);
+	char pname[100]; strcpy(pname, vparamName);
 	char** carr = MallocArray<char>(100, 100);
 	int elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
 	if (elemCnt < 0) return -1;
@@ -413,6 +422,7 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 		(*oparamVal)[i] = getEnumVal(pname, carr[i]);
 	}
 	FreeArray(100, 100, carr);
+	free(vparamName);
 	return elemCnt;
 }
 

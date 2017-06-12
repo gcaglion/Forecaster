@@ -57,11 +57,19 @@ float GetCPULoad()
 	FILETIME idleTime, kernelTime, userTime;
 	return GetSystemTimes(&idleTime, &kernelTime, &userTime) ? CalculateCPULoad(FileTimeToInt64(idleTime), FileTimeToInt64(kernelTime)+FileTimeToInt64(userTime)) : -1.0f;
 }
-
+/*
 int main() {
 	printf("\n");
 	while (true) {
 		printf("\rCPU Usage: %f", GetCPULoad());
 		Sleep(1000);
 	}
+}
+*/
+
+int main() {
+	char* low = "giacomo";
+	char* upp = strdup(low);
+	printf("low=%s ; upp=%s\n", low, upp);
+	getchar();
 }

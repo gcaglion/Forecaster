@@ -620,6 +620,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 		switch (ioParms->EngineParms.EngineType) {
 		case ENGINE_NN:
+			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "NNInfo.UseContext", &NNInfo->UseContext) < 0)							return -1;
 			if (getParam(ioParms, "NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "NNInfo.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)						return -1;
@@ -634,6 +635,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "NNInfo.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 			break;
 		case ENGINE_GA:
+			GAInfo = (GA_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "GAInfo.SlidingFactor", &GAInfo->SlidingFactor) < 0)								return -1;
 			if (getParam(ioParms, "GAInfo.Levels", &GAInfo->Levels) < 0)											return -1;
 			if (getParam(ioParms, "GAInfo.PopulationSize", &GAInfo->PopulationSize) < 0)							return -1;
@@ -652,6 +654,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "GAInfo.BestChrPath", GAInfo->BestChrPath) < 0)									return -1;
 			break;
 		case ENGINE_SOM:
+			SOMInfo = (SOM_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "SOMInfo.OutputCount", &SOMInfo->OutputCount) < 0)			return -1;
 			if (getParam(ioParms, "SOMInfo.OutputWidth", &SOMInfo->OutputWidth) < 0)			return -1;
 			if (getParam(ioParms, "SOMInfo.MaxEpochs", &SOMInfo->MaxEpochs) < 0)				return -1;
@@ -660,6 +663,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "SOMInfo.LRFunction", &SOMInfo->LRFunction, enumlist) < 0)	return -1;
 			break;
 		case ENGINE_SVM:
+			SVMInfo = (SVM_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "SVMInfo.DebugLevel", &SVMInfo->DebugLevel) < 0)				return -1;
 			if (getParam(ioParms, "SVMInfo.C", &SVMInfo->C) < 0)								return -1;
 			if (getParam(ioParms, "SVMInfo.IterToShrink", &SVMInfo->svmIterToShrink) < 0)		return -1;
@@ -715,6 +719,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "WNNInfo.L1.LevelRatios", &NNInfo->LevelRatioS[0]) <0)						return -1;
 			break;
 		case ENGINE_XIE:
+			SVMInfo = (SVM_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "XIEInfo.SVM.DebugLevel", &SVMInfo->DebugLevel) < 0)				return -1;
 			if (getParam(ioParms, "XIEInfo.SVM.C", &SVMInfo->C) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.SVM.IterToShrink", &SVMInfo->svmIterToShrink) < 0)		return -1;
