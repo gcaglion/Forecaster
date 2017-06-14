@@ -13,6 +13,7 @@
 
 //------------ CPU Usage utilities -------------------
 EXPORT float GetCPULoad();
+EXPORT DWORD GetMemLoad();
 
 //------	Random Utilities	- Start		--------------
 //#define MyRnd(rmin, rmax) (rmin + (rand() % rmax))

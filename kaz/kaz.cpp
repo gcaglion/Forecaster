@@ -29,10 +29,9 @@
 }
 */
 
-#include <stdio.h>
-#include <Windows.h>
+#include <MyUtils.h>
 
-static float CalculateCPULoad(unsigned long long idleTicks, unsigned long long totalTicks)
+/*static float CalculateCPULoad(unsigned long long idleTicks, unsigned long long totalTicks)
 {
 	static unsigned long long _previousTotalTicks = 0;
 	static unsigned long long _previousIdleTicks = 0;
@@ -57,7 +56,7 @@ float GetCPULoad()
 	FILETIME idleTime, kernelTime, userTime;
 	return GetSystemTimes(&idleTime, &kernelTime, &userTime) ? CalculateCPULoad(FileTimeToInt64(idleTime), FileTimeToInt64(kernelTime)+FileTimeToInt64(userTime)) : -1.0f;
 }
-/*
+*/
 int main() {
 	printf("\n");
 	while (true) {
@@ -65,11 +64,12 @@ int main() {
 		Sleep(1000);
 	}
 }
-*/
 
-int main() {
+
+/*int main() {
 	char* low = "giacomo";
 	char* upp = strdup(low);
 	printf("low=%s ; upp=%s\n", low, upp);
 	getchar();
 }
+*/
