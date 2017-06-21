@@ -266,11 +266,11 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 			switch (core->CoreType) {
 			case ENGINE_NN:
 				NNParms = (NN_Parms*)core->CoreSpecs;
+				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
+				if (pTestId == 0) {
+					if (InsertCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
+				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
-					if (pTestId == 0) {
-						if (InsertCoreParms_NN(pDebugParms, pid, core->CoreLog[d].ThreadId, NNParms) != 0) return -1;
-					}
 					//-- 2. save final image (weights) , for each dataset
 					NNWeight = core->CoreLog[d].NNFinalW;
 					if (InsertCoreImage_NN(pDebugParms, NNParms, NNWeight) != 0) return -1;
@@ -281,11 +281,11 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				break;
 			case ENGINE_SOM:
 				SOMParms = (SOM_Parms*)core->CoreSpecs;
+				//-- 1. save engine parameters
+				if (pTestId == 0) {
+					if (InsertCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
+				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- 1. save engine parameters
-					if (pTestId == 0) {
-						if (InsertCoreParms_SOM(pDebugParms, pid, core->CoreLog[d].ThreadId, SOMParms) != 0) return -1;
-					}
 					//-- 2. save final image (weights) , for each dataset
 					SOMWeight = core->CoreLog[d].SOMFinalW;
 					if (InsertCoreImage_SOM(pDebugParms, SOMParms, SOMWeight) != 0) return -1;
@@ -293,11 +293,11 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				break;
 			case ENGINE_SVM:
 				SVMParms = (SVM_Parms*)core->CoreSpecs;
+				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
+				if (pTestId == 0) {
+					if (InsertCoreParms_SVM(pDebugParms, pid, l,n, SVMParms) != 0) return -1;
+				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
-					if (pTestId == 0) {
-						if (InsertCoreParms_SVM(pDebugParms, pid, core->CoreLog[d].ThreadId, SVMParms) != 0) return -1;
-					}
 					//-- 2. save final image (weights) , for each dataset
 					if (InsertCoreLogs_SVM(pDebugParms, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 					if (pDebugParms->SaveImages>0) {

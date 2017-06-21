@@ -229,13 +229,13 @@ int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngin
 	return 0;
 }
 //--
-int Txt_InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int tid, NN_Parms* NNParms) {
+int Txt_InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int lid, int cid, NN_Parms* NNParms) {
 	return 0;
 }
-int Txt_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int tid, SOM_Parms* SOMParms) {
+int Txt_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms) {
 	return 0;
 }
-int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SVMParms) {
+int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms) {
 	return 0;
 }
 //--
@@ -378,28 +378,28 @@ __declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebug
 	}
 }
 //--
-__declspec(dllexport) int __stdcall InsertCoreParms_NN(tDebugInfo* pDebugParms, int pid, int tid, NN_Parms* NNParms) {
+__declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* pDebugParms, int pid, int lid, int cid, NN_Parms* NNParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_NN(pDebugParms, pid, tid, NNParms);
+		return Ora_InsertCoreParms_NN(pDebugParms, pid, lid, cid, NNParms);
 	}
 	else {
-		return Txt_InsertCoreParms_NN(pDebugParms, pid, tid, NNParms);
+		return Txt_InsertCoreParms_NN(pDebugParms, pid, lid, cid, NNParms);
 	}
 }
-__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int tid, SOM_Parms* SOMParms) {
+__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_SOM(pDebugParms, pid, tid, SOMParms);
+		return Ora_InsertCoreParms_SOM(pDebugParms, pid, lid, cid, SOMParms);
 	}
 	else {
-		return Txt_InsertCoreParms_SOM(pDebugParms, pid, tid, SOMParms);
+		return Txt_InsertCoreParms_SOM(pDebugParms, pid, lid, cid, SOMParms);
 	}
 }
-__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int tid, SVM_Parms* SVMParms) {
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_SVM(pDebugParms, pid, tid, SVMParms);
+		return Ora_InsertCoreParms_SVM(pDebugParms, pid, lid, cid, SVMParms);
 	}
 	else {
-		return Txt_InsertCoreParms_SVM(pDebugParms, pid, tid, SVMParms);
+		return Txt_InsertCoreParms_SVM(pDebugParms, pid, lid, cid, SVMParms);
 	}
 }
 //--

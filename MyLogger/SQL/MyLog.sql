@@ -34,7 +34,7 @@ create table TesterParms(
 	DoTraining number,
 	DoRun number
 );
-alter table TesterParms add constraint TesterParms_PK primary key( ProcessId );
+alter table TesterParms add constraint TesterParms_PK primary key( ProcessId ) using index tablespace LogIdx;
 
 drop table DataParms purge;
 create table DataParms(
@@ -52,7 +52,7 @@ create table DataParms(
 	SampleLen number,
 	PredictionLen number
 );
-alter table DataParms add constraint DataParms_PK primary key( ProcessId, DatasetId);
+alter table DataParms add constraint DataParms_PK primary key( ProcessId, DatasetId) using index tablespace LogIdx;
 
 drop table EngineParms purge;
 create table EngineParms(
@@ -63,7 +63,7 @@ create table EngineParms(
 	WNN_DecompLevel number,
 	WNN_WaveletType varchar2(16)
 );
-alter table EngineParms add constraint EngineParms_PK primary key( ProcessId );
+alter table EngineParms add constraint EngineParms_PK primary key( ProcessId ) using index tablespace LogIdx;
 
 drop table EngineThreads purge;
 create table EngineThreads(
@@ -75,8 +75,8 @@ create table EngineThreads(
 	DatasetId number,
 	ThreadId number
 ) storage (freelists 8);
-alter table EngineThreads add primary key (ProcessId, TestId, LayerId, CoreId, DatasetId);
-alter table EngineThreads add unique (ProcessId, ThreadId);
+alter table EngineThreads add constraint EngineThreads_PK primary key (ProcessId, TestId, LayerId, CoreId, DatasetId) using index tablespace LogIdx;
+alter table EngineThreads add constraint EngineThreads_UK unique (ProcessId, ThreadId) using index tablespace LogIdx;
 
 drop table CoreImage_NN purge;
 create table CoreImage_NN(
@@ -88,7 +88,7 @@ create table CoreImage_NN(
 	Weight number,
 	CtxValue number
 ) storage (freelists 8);
-alter table CoreImage_NN add constraint CoreImage_NN_PK primary key( ProcessId, ThreadId, NeuronLevel, FromNeuron, ToNeuron );
+alter table CoreImage_NN add constraint CoreImage_NN_PK primary key( ProcessId, ThreadId, NeuronLevel, FromNeuron, ToNeuron ) using index tablespace LogIdx;
 
 drop table CoreImage_SOM purge;
 create table CoreImage_SOM(
@@ -98,7 +98,7 @@ create table CoreImage_SOM(
 	toNeuron number, 
 	Weight number
 ) storage (freelists 8);
-alter table CoreImage_SOM add constraint CoreImage_SOM_PK primary key( ProcessId, ThreadId, FromNeuron, ToNeuron );
+alter table CoreImage_SOM add constraint CoreImage_SOM_PK primary key( ProcessId, ThreadId, FromNeuron, ToNeuron ) using index tablespace LogIdx;
 
 drop table CoreImage_SVM purge;
 create table CoreImage_SVM(
@@ -108,12 +108,13 @@ create table CoreImage_SVM(
 	VarId number,
 	Weight number
 ) storage (freelists 8);
-alter table CoreImage_SVM add constraint CoreImage_SVM_PK primary key( ProcessId, ThreadId, SVId, VarId );
+alter table CoreImage_SVM add constraint CoreImage_SVM_PK primary key( ProcessId, ThreadId, SVId, VarId ) using index tablespace LogIdx;
 
 drop table CoreParms_NN purge;
 create table CoreParms_NN(
 	ProcessId number,
-	ThreadId number,
+	LayerId number,
+	CoreId number,
 	InputCount number,
 	OutputCount number,
 	LevelsCount number,
@@ -130,12 +131,13 @@ create table CoreParms_NN(
 	HCPbeta number,
 	Mu number
 );
-alter table CoreParms_NN add primary key( ProcessId, ThreadId );
+alter table CoreParms_NN add constraint CoreParms_NN_PK primary key( ProcessId, LayerId, CoreId ) using index tablespace LogIdx;
 
 drop table CoreParms_GA purge;
 create table CoreParms_GA(
 	ProcessId number,
-	ThreadId number,
+	LayerId number,
+	CoreId number,
 	InputCount number,
 	OutputCount number,
 	FitnessSizeThreshold number, 
@@ -153,12 +155,13 @@ create table CoreParms_GA(
 	ADF_Tree_DataPoints_Ratio number, 
 	ADF_Leaf_FixedValues_Ratio number
 );
-alter table CoreParms_GA add primary key( ProcessId, ThreadId );
+alter table CoreParms_GA add  constraint CoreParms_GA_PK primary key( ProcessId, LayerId, CoreId ) using index tablespace LogIdx;
 
 drop table CoreParms_SOM purge;
 create table CoreParms_SOM(
 	ProcessId number,
-	ThreadId number,
+	LayerId number,
+	CoreId number,
 	InputCount number,
 	OutputCount number,
 	MaxEpochs number, 
@@ -167,12 +170,13 @@ create table CoreParms_SOM(
 	LRFunction number, 
 	BaseLR number
 );
-alter table CoreParms_SOM add primary key( ProcessId, ThreadId );
+alter table CoreParms_SOM add  constraint CoreParms_SOM_PK primary key( ProcessId, LayerId, CoreId ) using index tablespace LogIdx;
 
 drop table CoreParms_SVM purge;
 create table CoreParms_SVM(
 	ProcessId number,
-	ThreadId number,
+	LayerId number,
+	CoreId number,
 	InputCount number,
 	MaxEpochs number, 
 	C number,
@@ -185,7 +189,7 @@ create table CoreParms_SVM(
 	CoefConst number,
 	KernelCacheSize number
 );
-alter table CoreParms_SVM add primary key( ProcessId, ThreadId );
+alter table CoreParms_SVM add  constraint CoreParms_SVM_PK primary key( ProcessId, LayerId, CoreId ) using index tablespace LogIdx;
 
 drop table MyLog_MSE purge;
 create table MyLog_MSE(
@@ -195,7 +199,7 @@ create table MyLog_MSE(
 	MSE_T number,
 	MSE_V number
 ) storage (initial 100m next 100m freelists 8);
-alter table MyLog_MSE add constraint MyLog_MSE_PK primary key( ProcessId, ThreadId, Epoch );
+alter table MyLog_MSE add constraint MyLog_MSE_PK primary key( ProcessId, ThreadId, Epoch ) using index tablespace LogIdx;
 
 drop table MyLog_Run purge;
 create table MyLog_Run(
@@ -213,7 +217,7 @@ create table MyLog_Run(
 	BarWidth number,
 	ErrorP number
 ) storage (initial 1024M minextents 8 pctincrease 0);
-alter table MyLog_Run add constraint MyLog_Run_PK primary key( ProcessId, ThreadId, Pos );
+alter table MyLog_Run add constraint MyLog_Run_PK primary key( ProcessId, ThreadId, Pos ) using index tablespace LogIdx;
 
 drop table CoreLogs_GA purge;
 create table CoreLogs_GA(
@@ -221,7 +225,7 @@ create table CoreLogs_GA(
 	ThreadId number,
 	ActualGenerations number
 ) storage (freelists 8);
-alter table CoreLogs_GA add primary key(ProcessId, ThreadId);
+alter table CoreLogs_GA add constraint CoreLogs_GA_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 drop table CoreLogs_NN purge;
 create table CoreLogs_NN(
@@ -229,7 +233,7 @@ create table CoreLogs_NN(
 	ThreadId number,
 	ActualEpochs number
 ) storage (initial 100m next 100m freelists 8);
-alter table CoreLogs_NN add primary key(ProcessId, ThreadId);
+alter table CoreLogs_NN add constraint CoreLogs_NN_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 drop   table CoreLogs_NN_SCGD purge;
 create table CoreLogs_NN_SCGD(
@@ -248,7 +252,7 @@ create table CoreLogs_NN_SCGD(
 	enorm number,
 	comp number
 ) storage (freelists 8);
-alter table CoreLogs_NN_SCGD add primary key(ProcessId, ThreadId, Epoch, BPid, K);
+alter table CoreLogs_NN_SCGD add constraint CoreLogs_NN_SCGD_PK primary key(ProcessId, ThreadId, Epoch, BPid, K) using index tablespace LogIdx;
 
 drop   table CoreLogs_SVM purge;
 create table CoreLogs_SVM(
@@ -263,7 +267,7 @@ create table CoreLogs_SVM(
 	LEVnorm number,
 	KEvCount number
 ) storage (initial 100m next 100m freelists 8);
-alter table CoreLogs_SVM add primary key(ProcessId, ThreadId);
+alter table CoreLogs_SVM add constraint CoreLogs_SVM_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 drop   table CoreLogs_SOM purge;
 create table CoreLogs_SOM(
@@ -271,7 +275,7 @@ create table CoreLogs_SOM(
 	ThreadId number,
 	ActualEpochs number
 ) storage (freelists 8);
-alter table CoreLogs_SOM add primary key(ProcessId, ThreadId);
+alter table CoreLogs_SOM add constraint CoreLogs_SOM_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 -------------------------------------------------------------------------------------- Foreign Key Constraints --------------------------------------------------------------------------------------
 alter table Dataparms add constraint DataParms_FK_TesterParms foreign key(ProcessId) references TesterParms(ProcessId);
@@ -280,9 +284,10 @@ alter table EngineThreads add constraint EngineThreads_FK_EngineParms foreign ke
 alter table CoreImage_NN add constraint CoreImage_NN_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreImage_SOM add constraint CoreImage_SOM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreImage_SVM add constraint CoreImage_SVM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
-alter table CoreParms_NN add constraint CoreParms_NN_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
-alter table CoreParms_SOM add constraint CoreParms_SOM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
-alter table CoreParms_SVM add constraint CoreParms_SVM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
+--alter table CoreParms_NN add constraint CoreParms_NN_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_GA add constraint CoreParms_GA_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_SOM add constraint CoreParms_SOM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_SVM add constraint CoreParms_SVM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
 alter table MyLog_MSE add constraint MyLog_MSE_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table MyLog_Run add constraint MyLog_Run_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreLogs_GA add constraint CoreLogs_GA_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
