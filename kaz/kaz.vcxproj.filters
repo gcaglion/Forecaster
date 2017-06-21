@@ -32,5 +32,8 @@
     <ClCompile Include="kaz.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RecursiveParms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

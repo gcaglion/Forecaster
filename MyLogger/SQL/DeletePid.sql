@@ -15,7 +15,7 @@ delete from netimage_wNN where processid not in(&&pid);
 delete from netimage_ga where processid not in(&&pid);
 delete from netimage_som where processid not in(&&pid);
 
-define pid=85100
+define pid=136952
 delete from COREIMAGE_NN where processid=&&pid;
 delete from COREIMAGE_SOM where processid=&&pid;
 delete from COREIMAGE_SVM where processid=&&pid;
@@ -34,6 +34,7 @@ delete from MYLOG_RUN where processid=&&pid;
 delete from ENGINETHREADS where processid=&&pid;
 delete from ENGINEPARMS where processid=&&pid;
 delete from TESTERPARMS where processid=&&pid;
+commit;
 
 delete from COREIMAGE_NN where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
 delete from COREIMAGE_SOM where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
@@ -49,7 +50,9 @@ delete from COREPARMS_SOM where processid in(select processid from(select proces
 delete from COREPARMS_SVM where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
 delete from DATAPARMS where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
 delete from MYLOG_MSE where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
+commit;
 delete from MYLOG_RUN where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
+commit;
 delete from ENGINETHREADS where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
 delete from ENGINEPARMS where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));
 delete from TESTERPARMS where processid in(select processid from(select processid, datasetid, count(threadid) from enginethreads having(count(threadid)<100) group by processid, datasetid));

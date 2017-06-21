@@ -807,6 +807,11 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL EXECUTE IMMEDIATE : stmt;
 	if (sqlca.sqlcode != 0) {
+		//--
+		FILE* errfile=fopen("C:/temp/Ora_InsertCoreLogs_SVM.err", "w");
+		fprintf(errfile, "%s failed. SQL Error %d ; stmt = %s\n", __func__, sqlca.sqlcode, stmt);
+		fclose(errfile);
+		//--
 		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);
 		return sqlca.sqlcode;
 	}

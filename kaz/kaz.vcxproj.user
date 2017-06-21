@@ -4,12 +4,14 @@
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME2)
 PATH=$(ORACLE_HOME2)\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerMergeEnvironment>false</LocalDebuggerMergeEnvironment>
+    <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
+    <LocalDebuggerWorkingDirectory>c:\temp\cpuhog</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerMergeEnvironment>false</LocalDebuggerMergeEnvironment>
+    <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME1)
 PATH=$(ORACLE_HOME1)\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerWorkingDirectory>c:\temp\cpuhog</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
 </Project>

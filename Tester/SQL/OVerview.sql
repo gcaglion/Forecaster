@@ -41,6 +41,7 @@ and   clSOM.ProcessId(+)=et.ProcessId and clSOM.ThreadId(+)=et.ThreadId
 and   clSVM.ProcessId(+)=et.ProcessId and clSVM.ThreadId(+)=et.ThreadId
 and run.processid=et.processid and run.threadid=et.threadid and run.pos=dp.HistoryLen
 --and tp.processid in(99692, 97052)
+and tp.processid=99692
 order by tp.processid, et.testid, et.layerid, et.coreid, dp.datasetid;
 
 --SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY(NULL));

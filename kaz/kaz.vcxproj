@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="kaz.cpp" />
+    <ClCompile Include="RecursiveParms.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
