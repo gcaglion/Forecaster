@@ -55,7 +55,7 @@ void getCmd(vector<tParm> parm, int* varCnt, int* varIdx, int parmid, vector<str
 	}
 }
 
-void RPmain() {
+vector<string> RPmain() {
 
 	vector<string> cmd;
 	vector<tParm> parm;
@@ -87,7 +87,9 @@ void RPmain() {
 	cmd.push_back(buildCmd(parm, varIdx));
 	getCmd(parm, varCnt, varIdx, (int)parm.size()-1, cmd);
 
-	cout<<"Completed. "<<cmd.size()<<" commands created.";
-	getchar();
+	//cout<<"Completed. "<<cmd.size()<<" commands created.";
+	//getchar();
+
+	return cmd;
 }
 

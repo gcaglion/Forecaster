@@ -3,6 +3,7 @@
 #include <sqlca.h>
 #include <time.h>
 #include <Windows.h>
+#include <float.h>
 
 #include <MyLogDefs.h>
 
@@ -810,6 +811,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
 		//--
 		FILE* errfile=fopen("C:/temp/Ora_InsertCoreLogs_SVM.err", "w");
 		fprintf(errfile, "%s failed. SQL Error %d ; stmt = %s\n", __func__, sqlca.sqlcode, stmt);
+		fprintf(errfile, "WVnorm=%f ; _isnan() returns %d\n", SVMResult->WVnorm, _isnan(SVMResult->WVnorm));
 		fclose(errfile);
 		//--
 		if (sqlca.sqlcode != 1) LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);

@@ -15,7 +15,7 @@ delete from netimage_wNN where processid not in(&&pid);
 delete from netimage_ga where processid not in(&&pid);
 delete from netimage_som where processid not in(&&pid);
 
-define pid=136952
+define pid=44764
 delete from COREIMAGE_NN where processid=&&pid;
 delete from COREIMAGE_SOM where processid=&&pid;
 delete from COREIMAGE_SVM where processid=&&pid;

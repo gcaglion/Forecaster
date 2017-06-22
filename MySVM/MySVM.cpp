@@ -41,7 +41,7 @@ void 	SaveFinalV(SVM_Parms* SVMParms, tCoreLog* SVMLog, DWORD pid, DWORD tid, MO
 	SVMLog->SVMResult.ThresholdB = model->b;
 	SVMLog->SVMResult.maxdiff = model->maxdiff;
 	SVMLog->SVMResult.L1loss = model->L1loss;
-	SVMLog->SVMResult.WVnorm = (_isnan(model->WVnorm))?-1:model->WVnorm;
+	SVMLog->SVMResult.WVnorm = (_isnan(model->WVnorm)!=0)?-1:model->WVnorm;
 	SVMLog->SVMResult.LEVnorm = model->LEVnorm;
 	SVMLog->SVMResult.KEvCount = model->KEvCount;
 

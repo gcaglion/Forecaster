@@ -73,8 +73,10 @@ void cpuHog(tHogParms* parms) {
 #include <vector>
 #include <string>
 using namespace std;
+#include <stdio.h>
 
-int main() {
+
+/*int main() {
 	HANDLE th;
 	LPDWORD tid=0;
 	const float MaxCPU = 0.6f;
@@ -91,7 +93,7 @@ int main() {
 		CPUload = GetCPULoad(); printf("CPU Load=%f\n", CPUload);
 	}
 }
-
+*/
 
 /*int main() {
 	tHogParms* hp=new tHogParms; hp->id = 0;
@@ -99,3 +101,68 @@ int main() {
 }
 */
 
+vector<string> RPmain();
+bool createProcess(string cmd, PROCESS_INFORMATION* pi) {
+
+	STARTUPINFO si;
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(pi, sizeof((*pi)));
+
+	DWORD winprops = STARTF_USEPOSITION || STARTF_USESHOWWINDOW;
+	si.dwFlags = winprops;
+	si.lpTitle = L"Window Title?";
+	si.dwX = 100; si.dwY = 100;
+	si.dwXSize = 200; si.dwYSize = 30;
+	si.wShowWindow = SW_SHOW;
+
+	return(
+		CreateProcess(NULL,   // No module name (use command line)
+		convertCharArrayToLPCWSTR(cmd.c_str()), // Command line
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		FALSE,          // Set handle inheritance to FALSE
+		0,              // No creation flags
+		NULL,           // Use parent's environment block
+		NULL,           // Use parent's starting directory 
+		&si,            // Pointer to STARTUPINFO structure
+		pi)           // Pointer to PROCESS_INFORMATION structure
+		);
+
+}
+
+bool isRunning(PROCESS_INFORMATION pi){
+	DWORD ret;
+	if (!GetExitCodeProcess(pi.hProcess, &ret)) {
+		printf("Could not get Process status...\n");
+		getchar();
+	}
+	return(ret==STILL_ACTIVE);
+}
+
+void main(int argc, char* argv[] ) {
+
+	int MaxProcs = 2; if (argc>1) MaxProcs = atoi(argv[1]);
+	vector<PROCESS_INFORMATION> runningPid;
+
+	vector<string> cmd = RPmain();
+	PROCESS_INFORMATION pi;
+
+	while (cmd.size()>0) {
+		if (runningPid.size()<MaxProcs) {
+			if(createProcess("tester.exe --IniFile=C:\\Users\\gcaglion\\Documents\\dev\\Forecaster\\Tester\\Tester.ini "+cmd[cmd.size()-1], &pi)){
+				runningPid.push_back(pi);
+				cmd.pop_back();
+			} else {
+				printf("CreateProcess failed (%d).\n", GetLastError());
+				break;
+			}
+		}
+		for (int i = 0; i<runningPid.size(); i++) {
+			if (!isRunning(runningPid[i])) {
+				runningPid.erase(runningPid.begin()+i);
+			}
+		}
+	}
+
+}
