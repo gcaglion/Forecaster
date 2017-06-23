@@ -1,27 +1,14 @@
 ////#include <vld.h>
 
-#include "stdafx.h"
+#include <Windows.h>
+#include <MyForecast.h>
+#include <MyTimeSeries.h>
+#include <MyOraUtils.h>
 
 int main(int argc, char** argv) {
 	int i;
 	int FinalPause;
 
-/*	//-- 0. before starting, wait for cpu and memory loads to get below thresholds
-	#define CPU_THRESHOLD 0.5
-	#define MEM_THRESHOLD 0.7
-	double cld; double mld;
-	while (true) {
-		for (int k = 0; k<2; k++) {
-			cld = GetCPULoad();
-			mld = GetMemLoad();
-			mld /= 100;
-			Sleep(1000);
-		}
-		printf("\rCPU Load=%f ; Memory Load=%f", cld, mld);
-		if (cld<CPU_THRESHOLD && mld<MEM_THRESHOLD) break;
-	}
-*/
-	//	char IniFileName[MAX_PATH];
 	char** TrainingStart;
 
 	//-- timer init
@@ -63,11 +50,6 @@ int main(int argc, char** argv) {
 
 	int pid = GetCurrentProcessId();
 
-	//-- Multiple runs with different sets of parameters
-	char* Pdesc[] = { "Forecaster.Engine", "DataParms.HistoryLen", "DataParms.SampleLen", "DataParms.PredictionLen", "DataParms.DataTransformation", "SVMInfo.C", "SVMInfo.epsilon", "SVMInfo.KernelType", "SVMInfo.RBFGamma" };
-	int P0[] = {200, 500, 1000};
-	char* vEngine[] = { "ENGINE_SVM", "ENGINE_XIE" };
-
 	//-- 1. Load Training_Start[]
 	TrainingStart = (char**)malloc(fParms.SimulationLength * sizeof(char*)); for (i = 0; i < fParms.SimulationLength; i++) TrainingStart[i] = (char*)malloc(12 + 1);
 	if (fParms.DataParms.DataSourceType == SOURCE_DATA_FROM_FXDB) {
@@ -107,8 +89,6 @@ int main(int argc, char** argv) {
 	//-- update elapsed time in test record, then commit
 	if (UpdateTestLog_Duration(&fParms.DebugParms, pid, elapsedTime) != 0) return -1;
 	LogCommit(&fParms.DebugParms);
-
-
 
 	//-- free(s)
 	ForecastParamFree(&fParms);
