@@ -1,3 +1,5 @@
+Tester-Multi launches tester.exe with combinations of different parameter values
+
 Train_<XXX>() always saves multiple engines (unique processid, different threadid(s))
 
 When Calling GetForecast() from either MT4 or Tester:

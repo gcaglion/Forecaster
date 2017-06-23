@@ -58,12 +58,62 @@ void getCmd(vector<tParm> parm, int* varCnt, int* varIdx, int parmid, vector<str
 }
 
 vector<string> getCmdList() {
+	const int MAX_LINELEN = 4096;
+	const int MAX_PARAMNAMELEN = 256;
+	const int MAX_PARAMTYPELEN = 8;
+	const int MAX_PARAMVALLEN = 64;
+	const int MAX_VARIANTS = 12;
+	const int MAX_PARAMVALTOTLEN = MAX_PARAMVALLEN*MAX_VARIANTS;
+	const char SEPARATOR = 124;
+	int vCnt;
+	FILE* fComb; FILE* ftmp;
 
 	vector<string> cmd;
 	vector<tParm> parm;
+	tParm* p;
+	int parmid = 0;
 
-	tParm p;
-	//p = { "Forecaster.Engine",{ "ENGINE_SVM" },{},{} };	parm.push_back(p);
+	fComb = fopen("TesterCombinations.ini", "r");
+	if (fComb==NULL) return{ "","" };
+	char vline[MAX_LINELEN];
+	char pname[MAX_PARAMNAMELEN];
+	char ptype[MAX_PARAMTYPELEN];
+	char pval[MAX_PARAMVALTOTLEN];
+	char** subP = (char**)malloc(MAX_VARIANTS * sizeof(char*)); for (int i = 0; i<MAX_VARIANTS; i++) subP[i] = (char*)malloc(MAX_PARAMVALLEN);
+
+	//-- create a comments.free version of the file
+	ftmp = fopen("TesterCombinations.tmp", "w");
+	while (fgets(vline, MAX_LINELEN, fComb)!=NULL) {
+		if ((vline[0]=='/' && vline[1]=='/') || (vline[0]=='\n') ) continue;
+		fprintf(ftmp, vline);
+	}
+	fclose(fComb); fclose(ftmp);
+	ftmp = fopen("TesterCombinations.tmp", "r");
+
+	while (fscanf(ftmp, "%s %s %[^\n] ", &pname[0], &ptype[0], &pval[0]) >0) {
+		Trim(pname); UpperCase(pname);
+		Trim(ptype); UpperCase(ptype);
+		Trim(pval); UpperCase(pval);
+		vCnt = cslToArray(pval, SEPARATOR, subP);
+
+		p = new tParm();
+		p->name = pname;
+		for (int v = 0; v<vCnt; v++) {
+			if (strcmp(ptype, "INT")==0) {
+				p->ival.push_back( atoi(subP[v]) );
+			}
+			else if (strcmp(ptype, "DOUBLE")==0) {
+				p->dval.push_back( atof(subP[v]) );
+			}
+			else if (strcmp(ptype, "STRING")==0) {
+				p->sval.push_back( subP[v] );
+			}
+		}
+		parm.push_back((*p));
+	}
+	fclose(ftmp);
+
+	/*//p = { "Forecaster.Engine",{ "ENGINE_SVM" },{},{} };	parm.push_back(p);
 	p = { "DataParms.HistoryLen",{},{ 200, 500, 1000 },{} }; parm.push_back(p);
 	p = { "DataParms.SampleLen",{},{ 24,100 },{} }; parm.push_back(p);
 	p = { "DataParms.PredictionLen",{},{ 3 },{} }; parm.push_back(p);
@@ -72,12 +122,12 @@ vector<string> getCmdList() {
 	//p = { "SVMInfo.epsilon",{},{},{ 0.01, 0.001 } }; parm.push_back(p);
 	//p = { "SVMInfo.KernelType",{ "KERNEL_TYPE_RBF", "KERNEL_TYPE_LINEAR" },{},{} }; parm.push_back(p);
 	//p = { "SVMInfo.RBFGamma",{},{},{ 0.1, 0.01 } }; parm.push_back(p);
-	//p = { "NNInfo.LevelRatios",{ "0.5", "1", "1,0.5", "0.5,1", "1,1" },{},{} }; parm.push_back(p);
+	p = { "NNInfo.LevelRatios",{ "0.5", "1", "1,0.5", "0.5,1", "1,1" },{},{} }; parm.push_back(p);
 	p = { "NNInfo.UseContext",{},{ 0, 1 },{} }; parm.push_back(p);
 	p = { "NNInfo.MaxEpochs",{},{ 1000, 3000 },{} }; parm.push_back(p);
 	p = { "NNInfo.LearningRate",{},{},{ 0.1, 0.05, 0.01 } }; parm.push_back(p);
 	p = { "NNInfo.LearningMomentum",{},{},{ 1, 0.5, 0.8 } }; parm.push_back(p);
-
+*/
 	int* varCnt = (int*)malloc(parm.size()*sizeof(int));
 	int* varIdx = (int*)malloc(parm.size()*sizeof(int));
 
@@ -92,6 +142,7 @@ vector<string> getCmdList() {
 	//cout<<"Completed. "<<cmd.size()<<" commands created.";
 	//getchar();
 
+	free(varCnt); free(varIdx);
 	return cmd;
 }
 
