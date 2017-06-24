@@ -1014,7 +1014,7 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
 		ReleaseMutex(Mx->ScreenMutex);
 		//LogWrite(pDebugParms, LOG_INFO, "NNTrain() - Thread=%d ; Epoch=%d ; MSE=%f\n", 3, tid, epoch, MSE);
-		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, MSE_V);
+		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, (Mx->useValidation>0)?MSE_V:0);
 		if (MSE_T < NNParms->TargetMSE) break;
 	}
 	NNLogs->ActualEpochs = epoch;
