@@ -181,46 +181,79 @@ bool createProcess(int id, string cmd, PROCESS_INFORMATION* pi) {
 	}
 }
 
-bool isRunning(PROCESS_INFORMATION pi) {
+bool isRunning(PROCESS_INFORMATION pi, LPDWORD lasterror) {
 	DWORD ret;
 	if (!GetExitCodeProcess(pi.hProcess, &ret)) {
 		printf("Could not get Process status...\n");
 		getchar();
 	}
+	lasterror = &ret;
 	return(ret==STILL_ACTIVE);
 }
 
 void main(int argc, char* argv[]) {
 	int MaxProcs = 3; if (argc>1) MaxProcs = atoi(argv[1]);
-	vector<PROCESS_INFORMATION> runningPid;
 
-	string cmdBase = "tester.exe --IniFile=C:\\Users\\gcaglion\\Documents\\dev\\Forecaster\\Tester\\Tester.ini ";
+	//string cmdBase = "C:\\Users\\gcaglion\\Documents\\dev\\Forecaster\\x64\\Debug\\cpuhog.exe ";
+	//vector<string> cmdParms = { "1 50000", "2 50000", "3 50000", "4 50000", "5 50000", "6 50000" , "7 50000" , "8 50000" };
+	string cmdBase = "tester.exe --Forecaster.PauseOnError=0 ";
 	vector<string> cmdParms = getCmdList();
-	PROCESS_INFORMATION pi;
-	HANDLE* h = (HANDLE*)malloc(MaxProcs*sizeof(HANDLE));
-	int pid = 0;
 
-	while (cmdParms.size()>0) {
-		if (runningPid.size()<MaxProcs) {
-			if (createProcess(pid, cmdBase+cmdParms[cmdParms.size()-1], &pi)) {
-				runningPid.push_back(pi);
-				cmdParms.pop_back();
-				pid++;
-				h[runningPid.size()-1] = pi.hProcess;
-			}
-			else {
-				printf("CreateProcess failed (%d).\n", GetLastError());
-				break;
-			}
+	vector<string> cmd;
+	int cmdCnt = (int)cmdParms.size();
+
+	int consoleId = 0;
+	int consoleCnt = 0;
+	vector<string> consoleCmd(MaxProcs);
+
+	PROCESS_INFORMATION* pi = (PROCESS_INFORMATION*)malloc(cmdCnt*sizeof(PROCESS_INFORMATION));
+	HANDLE* h = (HANDLE*)malloc(MaxProcs*sizeof(HANDLE)); for (int i = 0; i<MaxProcs; i++) h[i] = NULL;
+	int retW;
+	DWORD exitCode;
+	int i, c;
+
+	FILE* procLog=fopen("Tester-multi.log","w");
+
+	for (c = 0; c<cmdCnt; c++) {
+		cmd.push_back(cmdBase+cmdParms[c]);
+
+		
+		for (i = 0; i<MaxProcs; i++) {
+			if (h[i]==NULL) break;
 		}
-		WaitForMultipleObjects(MaxProcs, h, false, INFINITE);
-		printf("\r last pid=%d", pid);
+		consoleId = i;
 
-		for (int i = 0; i<runningPid.size(); i++) {
-			if (!isRunning(runningPid[i])) {
-				runningPid.erase(runningPid.begin()+i);
-			}
+		//printf("consoleId=%d ; starting new console\n", consoleId);
+		consoleCmd[consoleId] = cmd[c];
+		if (!createProcess(c, cmd[c], &pi[c])) continue;
+		h[consoleId] = pi[c].hProcess; //fprintf(procLog, "h[%d]=%p\n", consoleId, h[consoleId]);
+		consoleCnt++;
+
+		if (consoleCnt==(MaxProcs)) {
+			retW = (int)WaitForMultipleObjects(MaxProcs, h, false, INFINITE)+WAIT_OBJECT_0;
+			GetExitCodeProcess(h[retW], &exitCode);
+			printf("CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			h[retW] = NULL;
+			consoleCnt--;
 		}
 	}
-	free(h);
+
+	fprintf(procLog, "\n");
+	//- last remaining processes
+	while (consoleCnt>0) {
+		retW = (int)WaitForMultipleObjects(consoleCnt, h, false, INFINITE)+WAIT_OBJECT_0;
+		if (retW!=-1) {
+			GetExitCodeProcess(h[retW], &exitCode);
+			printf("CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+		}
+		consoleCnt--;
+		c++;
+	}
+
+	//system("pause");
+	fclose(procLog);
 }
+
+//						

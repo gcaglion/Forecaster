@@ -528,6 +528,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 	//-- 1. get Debug Parameters (needs to be before LoadXXXParms)
 	if (getParam(ioParms, "Forecaster.DebugLevel", &ioParms->DebugParms.DebugLevel) < 0)				return -1;
+	if (getParam(ioParms, "Forecaster.PauseOnError", &ioParms->DebugParms.PauseOnError) < 0)			return -1;
 	if (getParam(ioParms, "Forecaster.DebugFileName", ioParms->DebugParms.fName) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.DebugFilePath", ioParms->DebugParms.fPath) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.ThreadSafeLogging", &ioParms->DebugParms.ThreadSafeLogging) < 0)	return -1;

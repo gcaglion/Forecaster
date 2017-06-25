@@ -60,9 +60,10 @@ float GetCPULoad()
 
 typedef struct sHogParms {
 	int id;
+	int duration;
 } tHogParms;
 
-void cpuHog(tHogParms* parms) {
+int cpuHog(tHogParms* parms) {
 	//--
 	LARGE_INTEGER frequency;			// ticks per second
 	LARGE_INTEGER time_start, time_end; // ticks
@@ -73,17 +74,21 @@ void cpuHog(tHogParms* parms) {
 	QueryPerformanceCounter(&time_start);
 	//--
 
-	for (int i = 0; i<1000000; i++) {
+	for (int i = 0; i<parms->duration; i++) {
 		gotoxy(0, parms->id);
 		printf("\r%d: %d", parms->id, i);
 	}
+
+	//-- introduce failure for odd ids
+	if (parms->id%2==1) return -1;
 
 	//-- stop timer, compute the elapsed time
 	QueryPerformanceCounter(&time_end);
 	elapsedTime = (time_end.QuadPart - time_start.QuadPart) * 1000.0 / frequency.QuadPart;
 	ms2ts(elapsedTime, elapsedTimeS);
 	printf("\nCompleted in %s ", elapsedTimeS);
-	Sleep(5000);
+	//Sleep(5000);
+	return 1;
 }
 
 #include <Windows.h>
@@ -112,8 +117,10 @@ using namespace std;
 }
 */
 
-int main() {
-	tHogParms* hp=new tHogParms; hp->id = 0;
-	cpuHog(hp);
+int main(int argc, char* argv[]) {
+	tHogParms* hp=new tHogParms;
+	hp->id = (argc>1) ? atoi(argv[1]) : 1;
+	hp->duration = (argc>2) ? atoi(argv[2]) : 1000000;
+	return (cpuHog(hp) );
 }
 

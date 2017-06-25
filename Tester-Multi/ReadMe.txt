@@ -2,4 +2,4 @@
     CONSOLE APPLICATION : Tester-Multi Project Overview
 ========================================================================
 
-reads TesterCombinations.ini in current directory
+reads Tester.ini TesterCombinations.ini in current directory. No alternatives implemented

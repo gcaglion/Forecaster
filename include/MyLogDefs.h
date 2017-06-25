@@ -61,6 +61,7 @@ typedef struct {
 typedef struct sDebugInfo {
 	int DebugLevel;		//-- 0:Nothing ; 1:Screen-Only ; 2:File-Only ; 3:File+Screen
 	int DebugDest;		//-- ORCL | TEXT
+	int PauseOnError;
 	tDBConnection* DebugDB;
 	char fPath[MAX_PATH];
 	char fName[MAX_PATH];

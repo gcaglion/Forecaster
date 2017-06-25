@@ -178,7 +178,7 @@ __declspec(dllexport) void  __stdcall LogWrite(tDebugInfo* DebugParms, int LogTy
 	memcpy(submsg, &msg[prev_im], (im - prev_im + 2)); submsg[im - prev_im + 2] = '\0';
 	if (DebugParms->DebugLevel == 1 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) printf(submsg);
 	if (DebugParms->DebugLevel == 2 || DebugParms->DebugLevel == 3 || LogType == LOG_ERROR) fprintf(DebugParms->fHandle, submsg);
-	if (LogType == LOG_ERROR) { printf("Press any key..."); getchar(); }
+	if (LogType == LOG_ERROR && DebugParms->PauseOnError>0) { printf("Press any key..."); getchar(); }
 
 	va_end(arguments);
 
