@@ -631,7 +631,6 @@ void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	double lambda, lambdau;
 	double rnorm, pnorm, pnorm2;
 	double e_old, e_new, comp;
-	//double kcomp;
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
@@ -918,7 +917,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	int s;
 	int epoch;
 	double MSE_T=1, TSE_T;
-	double MSE_V, TSE_V=0;
+	double MSE_V=1, TSE_V=0;
 	double prevMSE_T;
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
