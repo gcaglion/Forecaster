@@ -501,7 +501,7 @@ EXPORT void svm_learn_regression(DOC **docs, double *value, long int totdoc,
   long *label;
   double levnorm;
 
-  int f = HeapSetInformation(NULL, 1, NULL, 0);
+  //int f = HeapSetInformation(NULL, 1, NULL, 0);
 
 
   /* set up regression problem in standard form */

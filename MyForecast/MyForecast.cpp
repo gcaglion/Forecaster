@@ -460,7 +460,7 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		pEngineParms->Core[0][0].TimeStepsCount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
 		pEngineParms->Core[0][0].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][0].TargetLen = (*NNInfo)->OutputCount;
-		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs;
+		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		break;
 	case ENGINE_GA:
@@ -1266,7 +1266,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//-- Save Logs
 	//printf("Saving Logs...\n");
 	if (pTestId == 0) {
-		printf("SaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
 		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
 	}
 	

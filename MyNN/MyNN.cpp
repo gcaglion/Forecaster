@@ -622,8 +622,6 @@ void BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms
 
 void BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
 
-	BOOL f = HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
-
 	int k;
 	int maxk = NN->MaxEpochs;
 
@@ -962,7 +960,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		if(NNParms->BP_Algo != BP_SCGD) SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, MSE_V);
 		if (MSE_T < NNParms->TargetMSE) break;
 	}
-	NNLogs->ActualEpochs = epoch;
+	NNLogs->ActualEpochs = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
 	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
 
 	LogWrite(pDebugParms, LOG_INFO, "NNTrain_Batch() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
