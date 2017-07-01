@@ -1,11 +1,4 @@
-////#include <vld.h>
-
-#include <Windows.h>
-#include <math.h>
-#include <MyLogDefs.h>
-#include <MyLogger.h>
-#include <MyUtils.h>
-#include <MyMatrix.h>
+//#include <vld.h>
 
 #include <MyNN.h>
 
@@ -266,12 +259,12 @@ void RestorePrevWeights(NN_Parms* NNParms, NN_MxData* Mx) {
 				//-- (t-2)
 				Mx->NN.W[l][t0][j][i] = Mx->NN.W[l][t1][j][i];
 				//Mx->NN.dW[l][t0][j][i] = Mx->NN.dW[l][t1][j][i];
-				Mx->NN.dJdW[l][t0][j][i] = Mx->NN.dJdW[l][t1][j][i];
+				//Mx->NN.dJdW[l][t0][j][i] = Mx->NN.dJdW[l][t1][j][i];
 				Mx->NN.Q_dJdW[l][t0][j][i] = Mx->NN.Q_dJdW[l][t1][j][i];
 				//-- (t-1)
 				Mx->NN.W[l][t1][j][i] = Mx->NN.W[l][t2][j][i];
 				//Mx->NN.dW[l][t1][j][i] = Mx->NN.dW[l][t2][j][i];
-				Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t2][j][i];
+				//Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t2][j][i];
 				Mx->NN.Q_dJdW[l][t1][j][i] = Mx->NN.Q_dJdW[l][t2][j][i];
 			}
 		}
@@ -340,10 +333,6 @@ void FeedBack(NN_Parms* NN, NN_MxData* Mx, bool Zero){
 			Mx->NN.F[l-1][t0][NN->NodesCount[l-1]-cc+i] = (Zero)?0:Mx->NN.F[l][t0][i];
 		}
 	}
-}
-
-void InitContext(NN_Parms* NN, NN_MxData* Mx){
-
 }
 
 void FF_Std(NN_Parms* pNNParms, NN_MxData* Mx){
@@ -468,7 +457,7 @@ double Qing_CalcD10W(NN_Parms* NN, NN_MxData* Mx){
 
 	return ret;
 }
-/*
+
 void Calc_H(NN_Parms* NN, NN_MxData* Mx){
 	// Hessian matrices for the whole network. There is one matrix for each neuron (n)
 	int l, n, j, i;
@@ -484,7 +473,7 @@ void Calc_H(NN_Parms* NN, NN_MxData* Mx){
 	}
 
 }
-*/
+
 void Calc_dJdW(NN_Parms* NN, NN_MxData* Mx, bool doFF, bool doCalcH){
 	int l;
 	
@@ -508,7 +497,7 @@ void Calc_dJdW(NN_Parms* NN, NN_MxData* Mx, bool doFF, bool doCalcH){
 	//if (doCalcH) Calc_H(NN, Mx);
 }
 
-void dEdW_at_w(NN_Parms* NN, NN_MxData* Mx, int level, double** W, int w_idx, double* w_new, double* odEdW_at_w){
+/*void dEdW_at_w(NN_Parms* NN, NN_MxData* Mx, int level, double** W, int w_idx, double* w_new, double* odEdW_at_w){
 	int mx = NN->NodesCount[level];
 	double* tmpW = (double*)malloc(mx*sizeof(double));
 
@@ -528,8 +517,9 @@ void dEdW_at_w(NN_Parms* NN, NN_MxData* Mx, int level, double** W, int w_idx, do
 
 	free(tmpW);
 }
+*/
 
-double E_at_w(NN_Parms* NN, NN_MxData* Mx, int my, int mx, double** M, int w_idx, double* w_new){
+/*double E_at_w(NN_Parms* NN, NN_MxData* Mx, int my, int mx, double** M, int w_idx, double* w_new){
 	double ret;
 	double* tmpW = (double*)malloc(mx*sizeof(double));
 
@@ -548,6 +538,7 @@ double E_at_w(NN_Parms* NN, NN_MxData* Mx, int my, int mx, double** M, int w_idx
 
 	return ret;
 }
+*/
 
 void dEdW_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new, double* odEdW_at_w){
 
@@ -585,8 +576,8 @@ double E_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new){
 	//-- 6. put original w back into place, and re-run FF
 	VCopy(NN->WeightsCountTotal, tmpW, LVV_W);
 	FF(NN, Mx);
-	free(tmpW);
 
+	free(tmpW);
 	return ret;
 }
 

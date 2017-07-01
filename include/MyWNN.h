@@ -1,12 +1,5 @@
 #pragma once
-#include <MyNN.h>		//-- to define NN_Parms
-
-//-- Net Layers
-#define L_WFE 0
-#define L_OUT 1
-
-
-#include <MyNN.h>
+#include <MyNN_Parms.h>
 #include <MyLogDefs.h>
 
 __declspec(dllexport) void BuildLayer0Input_WNN(int dataSet, int decompLevel, char* wtype, int tslen, double* its, double ibv, double** ots, double* obv);

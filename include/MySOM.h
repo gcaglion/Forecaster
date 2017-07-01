@@ -1,4 +1,6 @@
 #pragma once
+#include <MySOM_Parms.h>
+#include <DataShape.h>
 
 //-- Decay functions for the Topological Distance
 #define TD_DECAY_CONSTANT 0
@@ -10,25 +12,6 @@
 #define LR_DECAY_LINEAR 1
 #define LR_DECAY_STEPPED 2
 #define LR_DECAY_EXP 3
-
-//-- SOM engine specific parameters
-typedef struct {
-	int InputCount;
-	int OutputCount;	// Should be something like 21 (-10÷+10, plus 0)
-	double OutputWidth;	// Expected variability; should be proportional to timeframe
-	int MaxEpochs;
-	int ActualEpochs;
-	// Topological Distance
-	int TDFunction;	
-	double BaseTD;
-	// Learning Rate
-	int LRFunction;
-	double BaseLR;
-	tLogMSE** MSEOutput;	// [DataSet][Epoch]
-	tLogRUN** RunOutput;	// [DataSet][pos]
-	tSOMWeight*** FinalW;	// [DataSet][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
-	int* TrainingTid;		// [DataSet];
-} SOM_Parms;
 
 typedef struct {
 	int ActualEpochs;		// If training was stopped before reaching MaxEpochs (because TargetMSE was reached, or because of Training Divergence), this saves the actual Epochs run

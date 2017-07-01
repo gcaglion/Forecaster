@@ -1,6 +1,6 @@
 #pragma once
 #include <TSF.h>
-#include <MyNN.h>	// to define tNNWeight
+#include <MyLogDefs.h>
 
 #define MAX_LAYERS 8
 

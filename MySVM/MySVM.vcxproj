@@ -155,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MySVM.h" />
+    <ClInclude Include="..\include\MySVM_Parms.h" />
     <ClInclude Include="kernel.h" />
     <ClInclude Include="svm_common.h" />
     <ClInclude Include="svm_learn.h" />

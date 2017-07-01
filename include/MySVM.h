@@ -1,4 +1,6 @@
 #pragma once
+#include <MySVM_Parms.h>
+#include <DataShape.h>
 
 #define SLACK_NORM_L1 1
 #define SLACK_NORM_SQUARED 2
@@ -17,34 +19,6 @@
 #define KERNEL_TYPE_RBF 2
 #define KERNEL_TYPE_TANH 3
 #define KERNEL_TYPE_CUSTOM 4
-
-//-- SVM engine specific parameters
-typedef struct sSVMParms{
-	int DebugLevel;
-	int InputCount;
-	//int OutputCount;
-	int MaxEpochs;
-	//--
-	double C;				// -c
-	int SlackNorm;			// -p
-	int RescalingMethod;	// -o
-	int LossFunction;		// -l
-	int LearningAlgo;		// -w
-	double epsilon;			// -e
-	int NewConstrEtrain;	// -k
-	int CCacheSize;		// -f
-	int BatchSize;			// -b
-	int NewVarSinQP;		// -n
-	int KernelCacheSize;	// -m
-	int svmIterToShrink;	// -h
-	//--
-	int KernelType;			// -t
-	int PolyDegree;			// -d
-	double RBFGamma;		// -g
-	double CoefLin;			// -s
-	double CoefConst;		// -r
-	char CustomKernel[50];	// -u
-} SVM_Parms;
 
 __declspec(dllexport) void mallocSVMLog(tCoreLog* coreLog, int SVcnt, int slen);
 __declspec(dllexport) void freeSVMLog(tCoreLog* coreLog, int slen);

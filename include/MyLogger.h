@@ -4,10 +4,9 @@
 #include <FXData.h>			// tFXData
 #include <DataShape.h>		// tDataShape
 
-#include <MyNN.h>	// temporary, to allow saveinternalsdata
-#include <MySOM.h>
-#include <MySVM.h>
-
+#include <MyNN_Parms.h>
+#include <MySOM_Parms.h>
+#include <MySVM_Parms.h>
 
 //-- Save MSE and Run data should be common across engines
 __declspec(dllexport) void __stdcall SaveMSEData(tCoreLog* NNLog, DWORD pid, DWORD tid, int pEpoch, double pMSE_T, double pMSE_V);

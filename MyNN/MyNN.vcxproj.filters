@@ -18,6 +18,9 @@
     <ClInclude Include="..\include\MyNN.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MyNN_Parms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MyNN.cpp">

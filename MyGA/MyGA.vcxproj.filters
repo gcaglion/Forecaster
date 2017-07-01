@@ -23,5 +23,8 @@
     <ClInclude Include="..\include\MyGA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MyGA_Parms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

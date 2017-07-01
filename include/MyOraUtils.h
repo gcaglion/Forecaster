@@ -1,13 +1,19 @@
 #pragma once
 #include <stdio.h>
+#include <Windows.h>
+#include <time.h>
+#include <float.h>
 #include <Concordance.h>
 #include <FXData.h>
 #include <DataShape.h>
 #include <MyEngines.h>
-//#include <MyLog.h>
-#include <MyNN.h>	// temporary, to allow saveinternalsdata
-#include <MySOM.h>
-#include <MySVM.h>
+#include <MyLogDefs.h>
+
+#include <MyNN_Parms.h>
+#include <MySOM_Parms.h>
+#include <MySVM_Parms.h>
+#include <MyGA_Parms.h>
+#include <MyWNN.h>
 
 typedef void * sql_context;
 #define MAX_CONTEXTS 6

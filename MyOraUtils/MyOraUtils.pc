@@ -1,25 +1,7 @@
 ////#include <vld.h>
 
+#include <MyOraUtils.h>
 #include <sqlca.h>
-#include <time.h>
-#include <Windows.h>
-#include <float.h>
-
-#include <MyLogDefs.h>
-
-#include <MyWNN.h>
-#include <MyNN.h>
-#include <MySOM.h>
-#include <MySVM.h>
-#include <MyGA.h>
-
-#include <Concordance.h>
-
-/*#include <FXData.h>
-#include <DataShape.h>
-#include <FileData.h>
-
-*/
 
 #undef EXPORT
 #ifdef __cplusplus

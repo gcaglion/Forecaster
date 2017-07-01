@@ -30,6 +30,9 @@
     <ClInclude Include="..\include\MySVM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\MySVM_Parms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MySVM.cpp">
