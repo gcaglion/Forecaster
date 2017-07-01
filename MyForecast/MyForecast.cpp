@@ -457,10 +457,11 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 	switch (pEngineParms->EngineType) {
 	case ENGINE_NN:
 		if ((*NNInfo)->BP_Algo == BP_QING) pDataParms->PredictionLen = pDataParms->SampleLen;
-		pEngineParms->Core[0][0].TimeStepsCount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
+		pEngineParms->Core[0][0].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 		pEngineParms->Core[0][0].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][0].TargetLen = (*NNInfo)->OutputCount;
-		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
+		//pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
+		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		break;
 	case ENGINE_GA:
@@ -479,7 +480,7 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		//-- L0
 		for (int c = 0; c < pEngineParms->CoresCount[0]; c++) {
 			(*NNInfo) = (NN_Parms*)pEngineParms->Core[0][c].CoreSpecs;
-			pEngineParms->Core[0][c].TimeStepsCount = (*NNInfo)->MaxEpochs;
+			pEngineParms->Core[0][c].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 			pEngineParms->Core[0][c].SampleLen = (*NNInfo)->InputCount;
 			pEngineParms->Core[0][c].TargetLen = (*NNInfo)->OutputCount;
 			pEngineParms->Core[0][c].MSECount = (*NNInfo)->MaxEpochs;
@@ -487,7 +488,7 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		}
 		//-- L1
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[1][0].CoreSpecs;
-		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs;
+		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 		pEngineParms->Core[1][0].SampleLen = pEngineParms->Core[0][0].TargetLen*pEngineParms->CoresCount[0] + pEngineParms->TSFcnt;	//(*NNInfo)->InputCount;
 		pEngineParms->Core[1][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[1][0].MSECount = (*NNInfo)->MaxEpochs;
@@ -502,14 +503,14 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L0nn
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[0][1].CoreSpecs;
-		pEngineParms->Core[0][1].TimeStepsCount = (*NNInfo)->MaxEpochs;
+		pEngineParms->Core[0][1].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 		pEngineParms->Core[0][1].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][1].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[0][1].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][1].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L1nn
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[1][0].CoreSpecs;
-		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs;
+		pEngineParms->Core[1][0].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 		pEngineParms->Core[1][0].SampleLen = pEngineParms->Core[0][0].TargetLen + pEngineParms->Core[0][1].TargetLen;	//(*NNInfo)->InputCount;
 		pEngineParms->Core[1][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[1][0].MSECount = (*NNInfo)->MaxEpochs;
@@ -633,6 +634,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "NNInfo.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
 			if (getParam(ioParms, "NNInfo.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
 			if (getParam(ioParms, "NNInfo.mu", &NNInfo->mu) < 0)											return -1;
+			if (getParam(ioParms, "NNInfo.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 			if (getParam(ioParms, "NNInfo.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 			break;
 		case ENGINE_GA:
@@ -702,6 +704,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 				if (getParam(ioParms, "WNNInfo.L0.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
 				if (getParam(ioParms, "WNNInfo.L0.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
 				if (getParam(ioParms, "WNNInfo.L0.mu", &NNInfo->mu) <0)												return -1;
+				if (getParam(ioParms, "WNNInfo.L0.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 				if (getParam(ioParms, "WNNInfo.L0.LevelRatios", &NNInfo->LevelRatioS[0]) <0)						return -1;
 			}
 			l = 1;
@@ -717,6 +720,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "WNNInfo.L1.TargetMSE", &NNInfo->TargetMSE) <0)								return -1;
 			if (getParam(ioParms, "WNNInfo.L1.HCPbeta", &NNInfo->HCPbeta) <0)									return -1;
 			if (getParam(ioParms, "WNNInfo.L1.mu", &NNInfo->mu) <0)												return -1;
+			if (getParam(ioParms, "WNNInfo.L1.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 			if (getParam(ioParms, "WNNInfo.L1.LevelRatios", &NNInfo->LevelRatioS[0]) <0)						return -1;
 			break;
 		case ENGINE_XIE:
@@ -755,6 +759,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "XIEInfo.NN0.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.mu", &NNInfo->mu) < 0)											return -1;
+			if (getParam(ioParms, "XIEInfo.NN0.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 
 			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[1][0].CoreSpecs;
@@ -769,6 +774,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			if (getParam(ioParms, "XIEInfo.NN1.TargetMSE", &NNInfo->TargetMSE) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.HCPbeta", &NNInfo->HCPbeta) < 0)									return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.mu", &NNInfo->mu) < 0)											return -1;
+			if (getParam(ioParms, "XIEInfo.NN1.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)						return -1;
 
 			break;

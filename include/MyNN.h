@@ -49,8 +49,9 @@ typedef struct {
 	double LearningRate;
 	double LearningMomentum;
 	int ActivationFunction;
-	double HCPbeta;
-	double mu;	// used by QuickProp
+	double HCPbeta;		// used by Qing
+	double mu;			// used by QuickProp
+	int    SCGDmaxK;	// used by SCGD
 } NN_Parms;
 
 typedef struct {
@@ -65,7 +66,7 @@ typedef struct {
 	double** u;
 	double** Ve;
 	double** Vu;
-	double norm_e;
+	double* norm_e;
 	//-- weight levels -> [Levels-1][Time]
 	double**** W;
 	double**** dW;
