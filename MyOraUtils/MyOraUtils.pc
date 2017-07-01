@@ -636,7 +636,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
 	int i;
-	int vInsertCount = NNLogs->ActualEpochs;
+	int vInsertCount;
 	//-- Common
 	int* vProcessId;
 	int* vThreadId;
@@ -667,7 +667,6 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 	//-- 2. set Context & allocate descriptor
 	EXEC SQL CONTEXT USE : vCtx;
-	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inCLNN';
 
 	//-- 3. insert common NN logs into CoreLogs_NN
 	sprintf(&stmt[0], "insert into CoreLogs_NN(ProcessId, ThreadId, ActualEpochs) values(%d, %d, %d)", NNLogs->MSEOutput[0].ProcessId, NNLogs->MSEOutput[0].ThreadId, NNLogs->ActualEpochs);
@@ -679,6 +678,9 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 	}
 
 	//-- 4. Insert BP?Algo/dependent logs into CoreLogs_NN_<XXX>
+	vInsertCount = NNLogs->IntCnt;
+	EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'inCLNN';
+
 	switch (BPAlgo) {
 	case BP_QING:
 		//-- 3.1. malloc() column arrays
