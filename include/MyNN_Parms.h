@@ -5,11 +5,12 @@
 #define MAX_LEVELS  6
 
 //-- time step
-#define TimeSteps  4
+#define TimeSteps  5
 #define t0 0 //	(t)
 #define t1 1 //	(t - 1)
 #define t2 2 //	(t - 2)
-#define t3 3 //	(t - 3)
+#define t3 3 //	used for backup
+#define t4 4 //	used for backup
 
 //-- Training Protocols
 #define TP_STOCHASTIC	0
