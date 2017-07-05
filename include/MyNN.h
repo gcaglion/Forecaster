@@ -10,6 +10,26 @@
 #include <MyNN_Parms.h>
 
 typedef struct {
+	double*** LVV_W;
+	double*** LVV_dW;
+	double*** LVV_dJdW;
+	double* p;
+	double* r;
+	double* s;
+	double* dW;
+	double* TotdW;
+	double* newW;
+	double* prev_r;
+	double* bp;
+	double* lp;
+	double* dE0;
+	double* dE1;
+	double* dE;
+	double* sigmap;
+	double rnorm;
+} tSCGDMem;
+
+typedef struct {
 	//-- node levels -> [Levels][Time]
 	double*** a;
 	double*** F;
@@ -55,9 +75,7 @@ typedef struct {
 	double*** Q_M5;
 	double*** Q_M6;
 	//-- SCGD stuff
-	double*** LVV_W;
-	double*** LVV_dW;
-	double*** LVV_dJdW;
+	tSCGDMem* scgd;
 } NN_Mem;
 
 typedef struct {	

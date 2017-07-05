@@ -600,7 +600,7 @@ void dEdW_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new, d
 	//-- 4. calc dE/dW whole matrix
 	Calc_dJdW(NN, Mx, false, false);
 	//-- 5. return vector is one row of dE/dW corresponding to w_idx
-	VCopy(NN->WeightsCountTotal, Mx->NN.LVV_dJdW[t0], odEdW_at_w);
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], odEdW_at_w);
 
 	Restore_Neurons(NN, Mx, t4);
 	Restore_Weights(NN, Mx, t4);
@@ -740,24 +740,10 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	double sigma, delta, mu, alpha, beta = 0, b1, b2;
 	double lambda, lambdau;
-	double rnorm, pnorm, pnorm2;
+	double pnorm, pnorm2;
 	double e_old, e_new, comp;
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
-
-	double* p = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* r = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* s = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* dW = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* TotdW = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* newW = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* prev_r = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* bp = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* lp = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* dE0 = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* dE1 = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* dE = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
-	double* sigmap = (double*)malloc(NN->WeightsCountTotal * sizeof(double));
 
 	SavePrevWeights(NN, Mx);
 	Backup_Neurons(NN, Mx, t3);
@@ -766,10 +752,10 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	Calc_dJdW(NN, Mx, true, false);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
-	VCopy(NN->WeightsCountTotal, Mx->NN.LVV_dJdW[t0], p); //VbyS(NN->WeightsCountTotal, p, -1, p);
-	VCopy(NN->WeightsCountTotal, p, r); 
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, p, -1, p);
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->p, Mx->NN.scgd->r);
 	//-- 1.1 Zero TotdW
-	VInit(NN->WeightsCountTotal, TotdW, 0);
+	VInit(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, 0);
 
 	success = true;
 	sigma = 1e-4;
@@ -777,8 +763,8 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	k = 0;
 	do {
-		rnorm = Vnorm(NN->WeightsCountTotal, r);
-		pnorm = Vnorm(NN->WeightsCountTotal, p);
+		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
+		pnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->p);
 		pnorm2 = pow(pnorm, 2);
 
 		//-- 2. if success=true Calculate second-order  information (s and delta)
@@ -787,32 +773,32 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 			//-- non-Hessian approximation
 			sigma = sigma / pnorm;
 			//-- get dE0 (dJdW at current W)
-			VCopy(NN->WeightsCountTotal, Mx->NN.LVV_dJdW[t0], dE0);
+			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->dE0);
 			//-- get dE1 (dJdW at W+sigma*p)
-			VbyS(NN->WeightsCountTotal, p, sigma, sigmap);
-			VplusV(NN->WeightsCountTotal, Mx->NN.LVV_W[t0], sigmap, newW);
-			dEdW_at_w_LVV(NN, Mx, Mx->NN.LVV_W[t0], newW, dE1);
+			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, sigma, Mx->NN.scgd->sigmap);
+			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->sigmap, Mx->NN.scgd->newW);
+			dEdW_at_w_LVV(NN, Mx, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->newW, Mx->NN.scgd->dE1);
 			//-- calc s
-			VminusV(NN->WeightsCountTotal, dE0, dE1, dE);
-			VdivS(NN->WeightsCountTotal, dE, sigma, s);
+			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE0, Mx->NN.scgd->dE1, Mx->NN.scgd->dE);
+			VdivS(NN->WeightsCountTotal, Mx->NN.scgd->dE, sigma, Mx->NN.scgd->s);
 
 			//-- calc delta
-			delta = VdotV(NN->WeightsCountTotal, p, s);
+			delta = VdotV(NN->WeightsCountTotal, Mx->NN.scgd->p, Mx->NN.scgd->s);
 		}
 
 		//-- 3. scale s and delta
 
 		//--- 3.1 s=s+(lambda-lambdau)*p
-		VbyS(NN->WeightsCountTotal, p, (lambda - lambdau), lp);
-		VplusV(NN->WeightsCountTotal, s, lp, s);
+		VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, (lambda - lambdau), Mx->NN.scgd->lp);
+		VplusV(NN->WeightsCountTotal, Mx->NN.scgd->s, Mx->NN.scgd->lp, Mx->NN.scgd->s);
 		//--- 3.2 delta=delta+(lambda-lambdau)*|p|^2
 		delta += (lambda - lambdau)*pnorm2;
 
 		//-- 4. if delta<=0 (i.e. Hessian is not positive definite) , then make it positive
 		if (delta <= 0){
 			//-- adjust s
-			VbyS(NN->WeightsCountTotal, p, (lambda - 2 * delta / pnorm2), lp);
-			VplusV(NN->WeightsCountTotal, s, lp, s);
+			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, (lambda - 2 * delta / pnorm2), Mx->NN.scgd->lp);
+			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->s, Mx->NN.scgd->lp, Mx->NN.scgd->s);
 			//-- adjust lambdau
 			lambdau = 2 * (lambda - delta / pnorm2);
 			//-- adjust delta
@@ -822,18 +808,18 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 		}
 				
 		//-- 5. Calculate step size
-		mu = VdotV(NN->WeightsCountTotal, p, r);
+		mu = VdotV(NN->WeightsCountTotal, Mx->NN.scgd->p, Mx->NN.scgd->r);
 		alpha = mu / delta;
 
 		//-- 6. Comparison parameter
 
 		//--- 6.1 calc newW=w+alpha*p , which will also be used in (7)
-		VbyS(NN->WeightsCountTotal, p, alpha, dW);
-		VplusV(NN->WeightsCountTotal, Mx->NN.LVV_W[t0], dW, newW);
+		VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
+		VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->newW);
 		//--- 6.2 E(w) is current norm_e
 		e_old = Mx->NN.norm_e[t0];
 		//--- 6.3 E(w+dw) ir calculated by E_at_w()
-		e_new = E_at_w_LVV(NN, Mx, Mx->NN.LVV_W[t0], newW);
+		e_new = E_at_w_LVV(NN, Mx, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->newW);
 		//--- 6.4 comp=2*delta*(e_old-e_new)/mu^2
 		comp = 2 * delta*(e_old - e_new) / pow(mu, 2);
 
@@ -841,30 +827,30 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 			//-- 7. Update weight vector
 
 			//-- W = W + dW
-			VbyS(NN->WeightsCountTotal, p, alpha, dW);
-			VplusV(NN->WeightsCountTotal, Mx->NN.LVV_W[t0], dW, Mx->NN.LVV_W[t0]);
+			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
+			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->LVV_W[t0]);
 			//-- TotdW = TotdW + dW
-			VplusV(NN->WeightsCountTotal, TotdW, dW, TotdW);
+			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->dW, Mx->NN.scgd->TotdW);
 			//-- 7.1 recalc  dJdW
 			Calc_dJdW(NN, Mx, true, false);
 			//-- save r, and calc new r
-			VCopy(NN->WeightsCountTotal, r, prev_r);
-			VCopy(NN->WeightsCountTotal, Mx->NN.LVV_dJdW[t0], r); //VbyS(NN->WeightsCountTotal, r, -1, r);
+			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->r, Mx->NN.scgd->prev_r);
+			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->r); //VbyS(NN->WeightsCountTotal, r, -1, r);
 
 			//-- reset lambdau
 			lambdau = 0; success = true;
 
 			//-- 7a. if k mod N = 0 then restart algorithm, else create new conjugate direction
 			if (((k + 1) % NN->NodesCountTotal) == 0){
-				VCopy(NN->WeightsCountTotal, r, p);
+				VCopy(NN->WeightsCountTotal, Mx->NN.scgd->r, Mx->NN.scgd->p);
 			}
 			else{
-				b1 = pow(Vnorm(NN->WeightsCountTotal, r), 2);
-				b2 = VdotV(NN->WeightsCountTotal, r, prev_r);
+				b1 = pow(Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r), 2);
+				b2 = VdotV(NN->WeightsCountTotal, Mx->NN.scgd->r, Mx->NN.scgd->prev_r);
 				beta = (b1 - b2) / mu;
 				//-- p = r + beta*p
-				VbyS(NN->WeightsCountTotal, p, beta, bp);
-				VminusV(NN->WeightsCountTotal, bp, r, p);// VplusV(NN->WeightsCountTotal, r, bp, p);
+				VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, beta, Mx->NN.scgd->bp);
+				VminusV(NN->WeightsCountTotal, Mx->NN.scgd->bp, Mx->NN.scgd->r, Mx->NN.scgd->p);// VplusV(NN->WeightsCountTotal, r, bp, p);
 			}
 			//-- 7b. if comp>=0.75 reduce scale parameter
 			if (comp >= 0.75) lambda = lambda / 2;
@@ -880,16 +866,14 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 		if (comp<0.25) lambda = lambda * 4;
 
 		//-- 9. if the steepest descent direction r>epsilon and success=true, then set k=k+1 and go to 2, else terminate and return w as the desired minimum
-		rnorm = Vnorm(NN->WeightsCountTotal, r);
-		SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, rnorm, Mx->NN.norm_e[t0], comp);
+		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
+		SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], comp);
 
 		k++; Mx->SCGD_progK++;
-	} while ((rnorm>epsilon) && (k<NN->SCGDmaxK));
+	} while ((Mx->NN.scgd->rnorm>epsilon) && (k<NN->SCGDmaxK));
 
 	//-- save the total dW into Mx->dW[l][t0]
-	VCopy(NN->WeightsCountTotal, TotdW, Mx->NN.LVV_dW[t0]);
-
-	free(p); free(r); free(s); free(dW); free(TotdW); free(prev_r); free(bp); free(newW); free(dE0); free(dE1); free(dE); free(lp); free(sigmap);
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->LVV_dW[t0]);
 
 	//-- 0. Before exiting, Restore original neurons and weights
 	Restore_Neurons(NN, Mx, t3);
@@ -962,12 +946,12 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 			Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));;
 			Mx->NN.dJdW[l][t0][y][x] = 0;
 
-			Mx->NN.LVV_W[t0][k] = &Mx->NN.W[l][t0][y][x];
-			Mx->NN.LVV_dW[t0][k] = &Mx->NN.dW[l][t0][y][x];
-			Mx->NN.LVV_dJdW[t0][k] = &Mx->NN.dJdW[l][t0][y][x];
-			Mx->NN.LVV_W[t1][k] = &Mx->NN.W[l][t0][y][x];
-			Mx->NN.LVV_dW[t1][k] = &Mx->NN.dW[l][t0][y][x];
-			Mx->NN.LVV_dJdW[t1][k] = &Mx->NN.dJdW[l][t0][y][x];
+			Mx->NN.scgd->LVV_W[t0][k] = &Mx->NN.W[l][t0][y][x];
+			Mx->NN.scgd->LVV_dW[t0][k] = &Mx->NN.dW[l][t0][y][x];
+			Mx->NN.scgd->LVV_dJdW[t0][k] = &Mx->NN.dJdW[l][t0][y][x];
+			Mx->NN.scgd->LVV_W[t1][k] = &Mx->NN.W[l][t0][y][x];
+			Mx->NN.scgd->LVV_dW[t1][k] = &Mx->NN.dW[l][t0][y][x];
+			Mx->NN.scgd->LVV_dJdW[t1][k] = &Mx->NN.dJdW[l][t0][y][x];
 			k++;
 		}
 	}
@@ -1066,7 +1050,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 		}
-
+		
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
 		prevMSE_T = MSE_T;	// save previous MSE
 		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
@@ -1275,9 +1259,23 @@ NN_Mem Malloc_NNMem(NN_Parms* pNNParms) {
 		}
 	}
 	//-- SCGD stuff
-	ret.LVV_W = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.LVV_W[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
-	ret.LVV_dW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.LVV_dW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
-	ret.LVV_dJdW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.LVV_dJdW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
+	ret.scgd = new tSCGDMem;
+	ret.scgd->p = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->r = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->s = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->dW = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->TotdW = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->newW = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->prev_r = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->bp = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->lp = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->dE0 = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->dE1 = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->dE = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->sigmap = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->LVV_W = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_W[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
+	ret.scgd->LVV_dW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_dW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
+	ret.scgd->LVV_dJdW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_dJdW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
 
 	return ret;
 }
@@ -1404,13 +1402,27 @@ void   Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 
 	//-- SCGD stuff
 	for (t = 0; t < TimeSteps; t++) {
-		free(NN.LVV_W[t]);
-		free(NN.LVV_dW[t]);
-		free(NN.LVV_dJdW[t]);
+		free(NN.scgd->LVV_W[t]);
+		free(NN.scgd->LVV_dW[t]);
+		free(NN.scgd->LVV_dJdW[t]);
 	}
-	free(NN.LVV_W);
-	free(NN.LVV_dW);
-	free(NN.LVV_dJdW);
+	free(NN.scgd->LVV_W);
+	free(NN.scgd->LVV_dW);
+	free(NN.scgd->LVV_dJdW);
+	//--
+	free(NN.scgd->p);
+	free(NN.scgd->r);
+	free(NN.scgd->s);
+	free(NN.scgd->dW);
+	free(NN.scgd->TotdW);
+	free(NN.scgd->newW);
+	free(NN.scgd->prev_r);
+	free(NN.scgd->bp);
+	free(NN.scgd->lp);
+	free(NN.scgd->dE0);
+	free(NN.scgd->dE1);
+	free(NN.scgd->dE);
+	free(NN.scgd->sigmap);
 }
 
 void NNLoadW(NN_Parms* NN, double*** W) {
