@@ -28,6 +28,12 @@ __declspec(dllexport) int __stdcall getEnumVal(char* edesc, char* eval) {
 	}
 	else if (strcmp(edesc, "DATASOURCE.SOURCETYPE") == 0) {
 	}
+	else if (strcmp(edesc, "DATASOURCE.TEXTFIELDSEPARATOR") == 0) {
+		if (strcmp(eval, "COMMA") == 0) return (int)COMMA;
+		if (strcmp(eval, "TAB") == 0) return (int)TAB;
+		if (strcmp(eval, "SPACE") == 0) return (int)SPACE;
+		return -1;
+	}
 	else if (strcmp(edesc, "DATAPARMS.DATATRANSFORMATION") == 0) {
 		if (strcmp(eval, "DT_NONE") == 0) return DT_NONE;
 		if (strcmp(eval, "DT_DELTA") == 0) return DT_DELTA;
@@ -397,19 +403,19 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int** oparamVal) {
 	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, double** oparamVal) {
 	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, char*** oparamVal) {
 	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	//-- TODO: look in command-line parameters first
-	int ret = ReadParamFromFile(iniParms->IniFileName, paramName, oparamVal);
+	int ret = ReadParamFromFile(iniParms->IniFileName, vparamName, oparamVal);
 	free(vparamName); return ret;
 }
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int** oparamVal, bool isenum) {

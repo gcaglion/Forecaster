@@ -132,56 +132,56 @@ EXPORT int __stdcall LoadData_FXDB(tDebugInfo* DebugParms, tFXData* DBParms, int
 		char newDate0[12 + 1];
 		sprintf(&stmt[0], "select to_char(min(newdatetime),'YYYYMMDDHH24MI') from( select * from (	select newdatetime from History.%s_%s%s where newdatetime %s to_date(%s,'YYYYMMDDHH24MI') order by 1 desc ) where rownum<%d)", \
 			DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), ((pValidationShift > 0) ? ">" : "<"), pDate0, abs(pValidationShift));
-		if (GetCharPFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, &newDate0[0])) return -1;
+if (GetCharPFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, &newDate0[0])) return -1;
 
-		//-- then, same as for HistoryData
-		sprintf(&stmt[0], "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, nvl(Volume,0) from History.%s_%s%s where newdatetime <= to_date(%s,'YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), newDate0);
+//-- then, same as for HistoryData
+sprintf(&stmt[0], "select to_char(NewDateTime, 'YYYYMMDDHH24MI'), Open, High, Low, Close, nvl(Volume,0) from History.%s_%s%s where newdatetime <= to_date(%s,'YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled > 0) ? "FILLED" : ""), newDate0);
 
 
 #ifndef _NO_ORCL
-		if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen + 1, 1, PastBar) != 0) return -1;	//-- ValidationData
+if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen + 1, 1, PastBar) != 0) return -1;	//-- ValidationData
 #endif
 																															//-- Repeat for each Dataset
-		for (d = 0; d < pDatasetCount; d++) {
+for (d = 0; d < pDatasetCount; d++) {
 
-			//-- HistoryData
-			for (i = 0; i < pHistoryLen; i++) {
-				switch (DBParms->BarDataType[d]) {
-				case OPEN:
-					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Open;
-					break;
-				case HIGH:
-					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].High;
-					break;
-				case LOW:
-					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Low;
-					break;
-				case CLOSE:
-					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Close;
-					break;
-				case VOLUME:
-					oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Volume;
-					break;
-				}
-			}
-			switch (DBParms->BarDataType[d]) {
-			case OPEN:
-				oPrevValV[d] = PastBar[pHistoryLen].Open;
-				break;
-			case HIGH:
-				oPrevValV[d] = PastBar[pHistoryLen].High;
-				break;
-			case LOW:
-				oPrevValV[d] = PastBar[pHistoryLen].Low;
-				break;
-			case CLOSE:
-				oPrevValV[d] = PastBar[pHistoryLen].Close;
-				break;
-			case VOLUME:
-				oPrevValV[d] = PastBar[pHistoryLen].Volume;
-				break;
-			}
+	//-- HistoryData
+	for (i = 0; i < pHistoryLen; i++) {
+		switch (DBParms->BarDataType[d]) {
+		case OPEN:
+			oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Open;
+			break;
+		case HIGH:
+			oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].High;
+			break;
+		case LOW:
+			oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Low;
+			break;
+		case CLOSE:
+			oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Close;
+			break;
+		case VOLUME:
+			oValidationData[d][i] = PastBar[pHistoryLen - 1 - i].Volume;
+			break;
 		}
+	}
+	switch (DBParms->BarDataType[d]) {
+	case OPEN:
+		oPrevValV[d] = PastBar[pHistoryLen].Open;
+		break;
+	case HIGH:
+		oPrevValV[d] = PastBar[pHistoryLen].High;
+		break;
+	case LOW:
+		oPrevValV[d] = PastBar[pHistoryLen].Low;
+		break;
+	case CLOSE:
+		oPrevValV[d] = PastBar[pHistoryLen].Close;
+		break;
+	case VOLUME:
+		oPrevValV[d] = PastBar[pHistoryLen].Volume;
+		break;
+	}
+}
 	}
 	free(PastBar); free(FutureBar);
 
@@ -197,18 +197,61 @@ int GetDataSetFromCol(int col, tFileData* pDataFile) {
 	return -1;
 }
 
-EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, int pHistoryLen, int pFutureLen, char* pDate0, int pValidationShift, int pDatasetCount, double** oHistoryData, double** oHistoryBarW, double** oValidationData, double** oFutureData, double** oFutureBarW, double** oWholeData, double** oWholeBarW) {
-	//-- Data File must have no headers. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
-
-	const int MaxLineSize = 200;
-	char vLine[MaxLineSize];
-	char vTimeStamp[12 + 1];
+#define MaxLineSize 200
+void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int pHistoryLen, double** oHistoryData, double** oFutureData, double** oWholeData, double* oBaseVal) {
+	int i, ii;
+	int c, col, d, valcnt;
 	char vals[32];
 	double val;
-	int valcnt;
-	int d, i, c, l, ii;
-	int col;
-	char delimiter = '\t';
+	char delimiter = pDataFile->FieldSep;
+
+	//-- Read first column (datetime)
+	for (i = 0; i < 12; i++) pTimeStamp[i] = pLine[i];
+	pTimeStamp[12] = '\0';
+	//-- Remove first column from pLine, by sliding chars starting at pos.(12+1) backwards
+	for (i = 0; i < (MaxLineSize); i++) {
+		pLine[i] = pLine[i + 12 + 1];
+	}
+	//-- Now read each column into each dataset
+	c = 0;
+	col = 0;
+	d = 0;
+	valcnt = 0;
+	while (pLine[c] != '\0') {
+		vals[c] = pLine[c];
+		if (vals[c] == delimiter || vals[c] == '\n') {
+			val = atof(vals);
+			d = GetDataSetFromCol(col, pDataFile);
+			if (d != -1 && l>=0) oWholeData[d][l] = (double)val;
+			//-- BaseVal vs. History vs. Future
+			if (l < 0) {
+				if (d != -1) oBaseVal[d] = (double)val;
+			} else if (l<pHistoryLen) {
+				if (d != -1) oHistoryData[d][l] = (double)val;
+			} else {
+				if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
+			}
+			col++;
+			//-- Remove retrieved column from pLine, by sliding chars starting at pos. (i+1) backwards
+			for (ii = 0; ii < (MaxLineSize); ii++) {
+				pLine[ii] = pLine[ii + c + 1];
+			}
+			c = -1;
+		}
+		c++;
+	}
+
+}
+EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, int pHistoryLen, int pFutureLen, char* pDate0, int pValidationShift, int pDatasetCount, double** oHistoryData, double** oHistoryBarW, double** oValidationData, double** oFutureData, double** oFutureBarW, double** oWholeData, double** oWholeBarW, double* oPrevValH, double* oPrevValV, double* oPrevBarW) {
+	//-- Data File must have no headers. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
+
+	char vLine[MaxLineSize]; strcpy(vLine, "0");
+	char prevLine[MaxLineSize];
+	char vLineBkp[MaxLineSize];
+	char vTimeStamp[12 + 1];
+	int d, i;
+	int l = 0;
+	bool isBaseValSet = false;
 
 	//-- Open Data File
 	FILE* fData = fopen(pDataFile->FileName, "r");
@@ -231,48 +274,31 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	}
 
 	//-- Read Whole Data
-	for (l = 0; l < (pHistoryLen + pFutureLen); l++) {
+	while(!feof(fData) && l<(pHistoryLen+pFutureLen)){
+
+		strcpy(prevLine, vLineBkp);
+
 		if (fgets(vLine, MaxLineSize, fData) == NULL) {
 			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
-			printf("Press any key..."); getchar();;
 			return -1;
 		}
+		strcpy(vLineBkp, vLine);
+
 		//-- Read first column (datetime)
 		for (i = 0; i < 12; i++) vTimeStamp[i] = vLine[i];
 		vTimeStamp[12] = '\0';
-		//-- Remove first column from vLine, by sliding chars starting at pos.(12+1) backwards
-		for (i = 0; i < (MaxLineSize); i++) {
-			//if (vLine[i] == '\0') break;	// end of line
-			vLine[i] = vLine[i + 12 + 1];
-		}
-		//-- Now read each column into each dataset
-		c = 0;
-		col = 0;
-		d = 0;
-		valcnt = 0;
-		while (vLine[c] != '\0') {
-			vals[c] = vLine[c];
-			if (vals[c] == delimiter || vals[c] == '\n') {
-				val = atof(vals);
-				d = GetDataSetFromCol(col, pDataFile);
-				if (d != -1) oWholeData[d][l] = (double)val;
-				//-- History vs. Future
-				if (l<pHistoryLen) {
-					if (d != -1) oHistoryData[d][l] = (double)val;
-				}
-				else {
-					if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
-				}
-				col++;
-				//-- Remove retrieved column from vLine, by sliding chars starting at pos. (i+1) backwards
-				for (ii = 0; ii < (MaxLineSize); ii++) {
-					//if (vLine[ii] == 0) break;	// end of line
-					vLine[ii] = vLine[ii + c + 1];
-				}
-				c = -1;
+		if (atof(vTimeStamp) < atof(pDate0)) {
+			continue;
+		} else {
+			if (!isBaseValSet) {
+				LineParser(pDataFile, l-1, prevLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
+				isBaseValSet = true;
 			}
-			c++;
 		}
+		
+		LineParser(pDataFile, l, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
+
+		l++;
 	}
 
 	fclose(fData);

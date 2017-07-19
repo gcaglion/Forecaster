@@ -6,7 +6,7 @@
 typedef struct sFileData {
 	char FileName[MAX_PATH];
 	int FileDataSetsCount;
-	//int FileDataSet[MAXDATASETS];	// The first value is the number of BarDataTypes that are being used, the rest are the datatype codes	
+	int FieldSep;	// COMMA|TAB|SPACE
 	int* FileDataSet;
 #ifdef __cplusplus
 	sFileData() {

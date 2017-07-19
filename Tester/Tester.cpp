@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 			if (LoadData_FXDB(&fParms.DebugParms, &fParms.FXDBInfo, fParms.DataParms.HistoryLen, fParms.DataParms.PredictionLen, TrainingStart[i], fParms.DataParms.ValidationShift, fParms.DataParms.DatasetsCount, HistoryData, HistoryBarW, ValidationData, FutureData, FutureBarW, WholeData, WholeBarW, BaseValH, BaseValV, BaseBW) != 0) return -1;
 		}
 		else {
-			if (LoadData_CSV(&fParms.DebugParms, &fParms.DataSourceFileInfo, fParms.DataParms.HistoryLen, fParms.DataParms.PredictionLen, TrainingStart[i], fParms.DataParms.ValidationShift, fParms.DataParms.DatasetsCount, HistoryData, HistoryBarW, ValidationData, FutureData, FutureBarW, WholeData, WholeBarW) != 0) return -1;
+			if (LoadData_CSV(&fParms.DebugParms, &fParms.DataSourceFileInfo, fParms.DataParms.HistoryLen, fParms.DataParms.PredictionLen, TrainingStart[i], fParms.DataParms.ValidationShift, fParms.DataParms.DatasetsCount, HistoryData, HistoryBarW, ValidationData, FutureData, FutureBarW, WholeData, WholeBarW, BaseValH, BaseValV, BaseBW) != 0) return -1;
 		}
 
 		//-- 3.2 Do the Training, and get the Forecast

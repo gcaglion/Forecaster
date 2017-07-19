@@ -30,6 +30,11 @@
 #define DT_LOG		 2
 #define DT_DELTALOG	 3
 
+//-- DataFile field separators
+#define COMMA ','
+#define TAB '\t'
+#define SPACE ' '
+
 typedef struct sForecastParms {
 	//-- ini file and command-line overrides
 	char IniFileName[MAX_PATH];
