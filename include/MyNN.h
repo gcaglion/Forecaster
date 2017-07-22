@@ -47,7 +47,6 @@ typedef struct {
 	double**** dW;
 	double**** dJdW;
 	double**** BdW;
-	double**** Q_dJdW;
 	//-- temp matrices
 	double*** tmpM0;
 	double*** tmpM1;
@@ -56,6 +55,7 @@ typedef struct {
 	//-- Hessian
 	double***** H;
 	//-- Qing stuff
+	double**** Q_dJdW;
 	double** adzev;
 	double** uW;
 	double* Q_V1;

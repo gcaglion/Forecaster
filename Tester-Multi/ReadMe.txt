@@ -2,4 +2,5 @@
     CONSOLE APPLICATION : Tester-Multi Project Overview
 ========================================================================
 
-reads Tester.ini TesterCombinations.ini in current directory. No alternatives implemented
+Launches tester.exe with combinations of different parameter values
+Reads Tester.ini, TesterCombinations.ini in current directory. No alternatives implemented
