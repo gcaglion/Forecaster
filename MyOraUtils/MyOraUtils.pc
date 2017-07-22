@@ -677,94 +677,95 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 		return sqlca.sqlcode;
 	}
 
-	//-- 4. Insert BP?Algo/dependent logs into CoreLogs_NN_<XXX>
-	vInsertCount = NNLogs->IntCnt;
-	EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'inCLNN';
+	if (DebugParms->SaveInternals>0) {
+		//-- 4. Insert BP_Algo-dependent logs into CoreLogs_NN_<XXX>
+		vInsertCount = NNLogs->IntCnt;
+		EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'inCLNN';
 
-	switch (BPAlgo) {
-	case BP_QING:
-		//-- 3.1. malloc() column arrays
-		//-- 3.2. Assign struct fields to column arrays
-		//-- 3.3. Build Array Insert statement
-		return 0;
-		break;
-	case BP_QUICKPROP:
-		//-- 3.1. malloc() column arrays
-		//-- 3.2. Assign struct fields to column arrays
-		//-- 3.3. Build Array Insert statement
-		return 0;
-		break;
-	case BP_SCGD:
-		//-- 4.1. malloc() column arrays
-		vProcessId = (int*)malloc(vInsertCount * sizeof(int));
-		vThreadId = (int*)malloc(vInsertCount * sizeof(int));
-		vEpoch = (int*)malloc(vInsertCount * sizeof(int));
-		vBPid = (int*)malloc(vInsertCount * sizeof(int));
-		vK = (int*)malloc(vInsertCount * sizeof(int));
-		vdelta = (double*)malloc(vInsertCount * sizeof(double));
-		vmu = (double*)malloc(vInsertCount * sizeof(double));
-		valpha = (double*)malloc(vInsertCount * sizeof(double));
-		vbeta = (double*)malloc(vInsertCount * sizeof(double));
-		vlambda = (double*)malloc(vInsertCount * sizeof(double));
-		vlambdau = (double*)malloc(vInsertCount * sizeof(double));
-		vrnorm = (double*)malloc(vInsertCount * sizeof(double));
-		venorm = (double*)malloc(vInsertCount * sizeof(double));
-		vcomp = (double*)malloc(vInsertCount * sizeof(double));
+		switch (BPAlgo) {
+		case BP_QING:
+			//-- 3.1. malloc() column arrays
+			//-- 3.2. Assign struct fields to column arrays
+			//-- 3.3. Build Array Insert statement
+			return 0;
+			break;
+		case BP_QUICKPROP:
+			//-- 3.1. malloc() column arrays
+			//-- 3.2. Assign struct fields to column arrays
+			//-- 3.3. Build Array Insert statement
+			return 0;
+			break;
+		case BP_SCGD:
+			//-- 4.1. malloc() column arrays
+			vProcessId = (int*)malloc(vInsertCount * sizeof(int));
+			vThreadId = (int*)malloc(vInsertCount * sizeof(int));
+			vEpoch = (int*)malloc(vInsertCount * sizeof(int));
+			vBPid = (int*)malloc(vInsertCount * sizeof(int));
+			vK = (int*)malloc(vInsertCount * sizeof(int));
+			vdelta = (double*)malloc(vInsertCount * sizeof(double));
+			vmu = (double*)malloc(vInsertCount * sizeof(double));
+			valpha = (double*)malloc(vInsertCount * sizeof(double));
+			vbeta = (double*)malloc(vInsertCount * sizeof(double));
+			vlambda = (double*)malloc(vInsertCount * sizeof(double));
+			vlambdau = (double*)malloc(vInsertCount * sizeof(double));
+			vrnorm = (double*)malloc(vInsertCount * sizeof(double));
+			venorm = (double*)malloc(vInsertCount * sizeof(double));
+			vcomp = (double*)malloc(vInsertCount * sizeof(double));
 
-		//-- 4.2. Assign struct fields to column arrays
-		for (i = 0; i < vInsertCount; i++) {
-			vProcessId[i] = NNLogs->IntP[i].ProcessId;
-			vThreadId[i] = NNLogs->IntP[i].ThreadId;
-			vEpoch[i] = NNLogs->IntP[i].Epoch;
-			vBPid[i] = NNLogs->IntP[i].BPid;
-			vK[i] = NNLogs->IntP[i].K;
-			vdelta[i] = NNLogs->IntP[i].delta;
-			vmu[i] = NNLogs->IntP[i].mu;
-			valpha[i] = NNLogs->IntP[i].alpha;
-			vbeta[i] = NNLogs->IntP[i].beta;
-			vlambda[i] = NNLogs->IntP[i].lambda;
-			vlambdau[i] = NNLogs->IntP[i].lambdau;
-			vrnorm[i] = NNLogs->IntP[i].rnorm;
-			venorm[i] = NNLogs->IntP[i].enorm;
-			vcomp[i] = NNLogs->IntP[i].comp;
+			//-- 4.2. Assign struct fields to column arrays
+			for (i = 0; i < vInsertCount; i++) {
+				vProcessId[i] = NNLogs->IntP[i].ProcessId;
+				vThreadId[i] = NNLogs->IntP[i].ThreadId;
+				vEpoch[i] = NNLogs->IntP[i].Epoch;
+				vBPid[i] = NNLogs->IntP[i].BPid;
+				vK[i] = NNLogs->IntP[i].K;
+				vdelta[i] = NNLogs->IntP[i].delta;
+				vmu[i] = NNLogs->IntP[i].mu;
+				valpha[i] = NNLogs->IntP[i].alpha;
+				vbeta[i] = NNLogs->IntP[i].beta;
+				vlambda[i] = NNLogs->IntP[i].lambda;
+				vlambdau[i] = NNLogs->IntP[i].lambdau;
+				vrnorm[i] = NNLogs->IntP[i].rnorm;
+				venorm[i] = NNLogs->IntP[i].enorm;
+				vcomp[i] = NNLogs->IntP[i].comp;
+			}
+
+			//-- 4.3. Build Array Insert statement
+			sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Rnorm, Enorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14)");
+			EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 14;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 1 DATA = : vProcessId;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 2 DATA = : vThreadId;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 3 DATA = : vEpoch;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 4 DATA = : vBPid;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 5 DATA = : vK;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 6 DATA = : vdelta;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 7 DATA = : vmu;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 8 DATA = : valpha;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 9 DATA = : vbeta;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 10 DATA = : vlambda;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 11 DATA = : vlambdau;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = : vrnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = : venorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = : vcomp;
+
+			break;
+		case BP_STD:
+			return 0;
+			break;
 		}
 
-		//-- 4.3. Build Array Insert statement
-		sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Rnorm, Enorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14)");
-		EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 14;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 1 DATA = :vProcessId;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 2 DATA = :vThreadId;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 3 DATA = :vEpoch;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 4 DATA = :vBPid;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 5 DATA = :vK;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 6 DATA = :vdelta;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 7 DATA = :vmu;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 8 DATA = :valpha;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 9 DATA = :vbeta;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 10 DATA = :vlambda;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 11 DATA = :vlambdau;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = :vrnorm;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = :venorm;
-		EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = :vcomp;
-
-		break;
-	case BP_STD:
-		return 0;
-		break;
+		//-- 5. Execute Array Insert statement
+		EXEC SQL PREPARE DynIns FROM : stmt;
+		EXEC SQL FOR : vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inCLNN';
+		LogWrite_C(DebugParms, LOG_INFO, "Ora_InsertCoreLogs_NN() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
+		if (sqlca.sqlcode != 0) {
+			LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);
+			return sqlca.sqlcode;
+		}
+		//-- 6. free()s
+		EXEC SQL DEALLOCATE DESCRIPTOR 'inCLNN';
+		free(vProcessId); free(vThreadId); free(vEpoch); free(vBPid); free(vK); free(vdelta); free(vmu); free(valpha); free(vbeta); free(vlambda); free(vlambdau); free(vrnorm); free(venorm); free(vcomp);
 	}
-
-	//-- 5. Execute Array Insert statement
-	EXEC SQL PREPARE DynIns FROM :stmt;
-	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inCLNN';
-	LogWrite_C(DebugParms, LOG_INFO, "Ora_InsertCoreLogs_NN() inserted %d rows.\n", 1, sqlca.sqlerrd[2]);
-	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);
-		return sqlca.sqlcode;
-	}
-
-	//-- 6. free()s
-	EXEC SQL DEALLOCATE DESCRIPTOR 'inCLNN';
-	free(vProcessId); free(vThreadId); free(vEpoch); free(vBPid); free(vK); free(vdelta); free(vmu); free(valpha); free(vbeta); free(vlambda); free(vlambdau); free(vrnorm); free(venorm); free(vcomp);
 
 	return 0;
 }
