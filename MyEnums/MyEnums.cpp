@@ -321,7 +321,7 @@ __declspec(dllexport) int __stdcall	CLProcess(int argc, char* argv[], tForecastP
 		char* pch = strchr(argv[p], '=');
 		if (pch == NULL || argv[p][0] != '-' || argv[p][1] != '-') return CLFail(p);
 		memcpy(&iniParms->CLparamName[p][0], &argv[p][2], (pch - argv[p] - 2)); iniParms->CLparamName[p][pch - argv[p] - 2] = '\0';
-		memcpy(&iniParms->CLparamVal[p][0], &argv[p][pch - argv[p] + 1], strlen(argv[p]));
+		memcpy(&iniParms->CLparamVal[p][0], &argv[p][pch - argv[p] + 1], strlen(pch));
 
 		//-- if --IniFileName is specified, then set IniFileName global variable
 		UpperCase(iniParms->CLparamName[p]);
