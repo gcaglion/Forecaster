@@ -741,7 +741,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
-	Backup_Neurons(NN, Mx, t3);
+	//Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
 
 	Calc_dJdW(NN, Mx, false, false);
@@ -879,7 +879,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->LVV_dW[t0]);
 
 	//-- 0. Before exiting, Restore original neurons and weights
-	Restore_Neurons(NN, Mx, t3);
+	//Restore_Neurons(NN, Mx, t3);
 	Restore_Weights(NN, Mx, t3, true, false, false);
 
 	return(k<NN->SCGDmaxK);
@@ -937,12 +937,16 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 
 	//-- Weights
 	k = 0;
+	//FILE* fw = fopen("c:/temp/W.init", "r");
+	//float w, dw;
 	for (l = 0; l < (NN->LevelsCount-1); l++){
 		for (i = 0; i < (NN->NodesCount[l+1] * NN->NodesCount[l]); i++){
 			y = (int)(i / NN->NodesCount[l]);
 			x = i%NN->NodesCount[l];
-			Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));;
-			Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));;
+			Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+			Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+			//fprintf(fw, "%2.10f %2.10f\n", Mx->NN.W[l][t0][y][x], Mx->NN.dW[l][t0][y][x]);
+			//fscanf(fw, "%f %f\n", &w, &dw); Mx->NN.W[l][t0][y][x] = w; Mx->NN.dW[l][t0][y][x]=dw;
 			Mx->NN.dJdW[l][t0][y][x] = 0;
 
 			Mx->NN.scgd->LVV_W[t0][k] = &Mx->NN.W[l][t0][y][x];
@@ -954,6 +958,7 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 			k++;
 		}
 	}
+	//fclose(fw);
 	Mx->BPCount = 0; Mx->SCGD_progK = 0;
 
 	//-- Qing stuff
@@ -1086,28 +1091,26 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
 
-	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++){
+	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
+	ShuffleArray(sl, pSampleCount);
+
+	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++) {
 		TSE_T = 0; TSE_V = 0;
-		for (s = 0; s < pSampleCount; s++){
+		for (int si = 0; si < pSampleCount; si++) {
+			s = sl[si];
 
 			//-- 1. Sum up Squared Error for every Sample
 			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 
-			//-- 2. Save Internals
-//			if (pDebugParms->SaveInternals == 1){
-//				SaveIntWFa(pNNParms, pid, tid, pDataSetId, pNetId, pMxData->BPCount, pMxData->a, pMxData->F, pMxData->W);
-//				SaveIntParams(pNNParms, pid, tid, pDataSetId, pNetId, pMxData->BPCount, pMxData->Q_sigma[L10], pMxData->Q_ro[L10], pMxData->Q_D10W, pMxData->adzev[L10][0], pMxData->Q_gamma, pMxData->Q_sigma[L21], pMxData->Q_ro[L21], pMxData->Q_adzev21norm, pMxData->norm_e);
-//			}
-
-			//-- 3. BackPropagation calculates dW 
+			//-- 2. BackPropagation calculates dW 
 			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 
-			//-- 4. Update Weights
+			//-- 3. Update Weights
 			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.dW);
 		}
 
-		//-- 6. Calc MSE for epoch , and exit if less than TargetMSE
+		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
 		prevMSE_T = MSE_T;	// save previous MSE
 		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
 		if (Mx->useValidation>0) {
