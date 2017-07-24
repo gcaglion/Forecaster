@@ -742,14 +742,15 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
-	//SavePrevWeights(NN, Mx);
+	SavePrevWeights(NN, Mx);
+
 	//Backup_Neurons(NN, Mx, t3);
 	//Backup_Weights(NN, Mx, t3);
 
-	Calc_dJdW(NN, Mx, true, false);
+	Calc_dJdW(NN, Mx, false, false);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
-	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, p, -1, p);
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, -1, Mx->NN.scgd->p);
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->p, Mx->NN.scgd->r);
 	//-- 1.1 Zero TotdW
 	VInit(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, 0);
@@ -829,14 +830,18 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 			//-- W = W + dW
 			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
+			//===========================================================================================================
 			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->LVV_W[t0]);
+			//===========================================================================================================
 			//-- TotdW = TotdW + dW
 			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->dW, Mx->NN.scgd->TotdW);
 			//-- 7.1 recalc  dJdW
+			//===========================================================================================================
 			Calc_dJdW(NN, Mx, true, false);
+			//===========================================================================================================
 			//-- save r, and calc new r
 			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->r, Mx->NN.scgd->prev_r);
-			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->r); //VbyS(NN->WeightsCountTotal, r, -1, r);
+			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->r); //VbyS(NN->WeightsCountTotal, Mx->NN.scgd->r, -1, Mx->NN.scgd->r);
 
 			//-- reset lambdau
 			lambdau = 0; success = true;
@@ -915,12 +920,12 @@ bool BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 
 	Calc_dJdW(NN, Mx, false, false);
 
-	//-- calc dW = lr*@J/@W
+	//-- calc dW 
 	for (int l = 0; l<(NN->LevelsCount-1); l++){
 		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
 		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
 		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
-		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);				//-- dW = dW + prevdW
+		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
 	}
 	return true;
 }
@@ -1058,11 +1063,11 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		if (Mx->useValidation>0) {
 			MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
 			if (NNParms->StopAtDivergence == 1 && MSE_T > prevMSE_T) break;
-		}
+		} 
 		WaitForSingleObject(Mx->ScreenMutex, 10);
 		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
 		ReleaseMutex(Mx->ScreenMutex);
-		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, MSE_V);
+		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, (Mx->useValidation>0) ? MSE_V : 0);
 		if (MSE_T < NNParms->TargetMSE) break;
 	}
 	NNLogs->ActualEpochs = epoch;
