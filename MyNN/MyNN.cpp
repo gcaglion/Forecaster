@@ -696,7 +696,6 @@ bool BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms
 	//-- as per QuickProp2.pdf, 2.6.3	
 	int l, j, i;
 	
-	SavePrevWeights(pNNParms, Mx);
 	Calc_dJdW(pNNParms, Mx, false, false);
 	
 	for (l = 0; l<(pNNParms->LevelsCount-1); l++){
@@ -742,10 +741,8 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
-	SavePrevWeights(NN, Mx);
-
-	//Backup_Neurons(NN, Mx, t3);
-	//Backup_Weights(NN, Mx, t3);
+	Backup_Neurons(NN, Mx, t3);
+	Backup_Weights(NN, Mx, t3);
 
 	Calc_dJdW(NN, Mx, false, false);
 
@@ -882,10 +879,8 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->LVV_dW[t0]);
 
 	//-- 0. Before exiting, Restore original neurons and weights
-	//Restore_Neurons(NN, Mx, t3);
-	//Restore_Weights(NN, Mx, t3, true, false, false);
-	//RestorePrevNeurons(NN, Mx);
-	//RestorePrevWeights(NN, Mx);
+	Restore_Neurons(NN, Mx, t3);
+	Restore_Weights(NN, Mx, t3, true, false, false);
 
 	return(k<NN->SCGDmaxK);
 }
@@ -915,8 +910,6 @@ bool BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		}
 	}
 */
-
-	SavePrevWeights(NN, Mx);
 
 	Calc_dJdW(NN, Mx, false, false);
 
@@ -975,6 +968,9 @@ bool Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN
 	//-- All the BP routines should only set Mx->dW , and NOT change Mx->W
 
 	bool ret;	//-- if the specific BP routine returns false, than we do not apply the calculated dW
+
+	//-- common to all BP variants
+	SavePrevWeights(NN, Mx);
 
 	switch (NN->BP_Algo){
 	case BP_STD:
