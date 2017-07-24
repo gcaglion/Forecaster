@@ -69,7 +69,7 @@ void mallocCoreLogs(tForecastParms* ioParms){
 				//-- NN-specific
 				if (ioParms->EngineParms.Core[l][c].CoreType == ENGINE_NN) {
 					setNNTopology((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs);
-					mallocNNLog(&ioParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, ioParms->EngineParms.Core[l][c].TimeStepsCount);
+					mallocNNLog(&ioParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, (ioParms->DebugParms.SaveInternals>0), ioParms->EngineParms.Core[l][c].TimeStepsCount);
 				}
 				//-- GA-specific
 				//-- SVM-specific is called from SVMTrain() because we don't know SVMcount until the end of training
@@ -88,7 +88,7 @@ void freeCoreLogs(tForecastParms* ioParms){
 				free(ioParms->EngineParms.Core[l][c].CoreLog[d].RunOutput);
 				//-- NN-specific
 				if (ioParms->EngineParms.Core[l][c].CoreType == ENGINE_NN) {
-					freeNNLog(&ioParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, ioParms->EngineParms.Core[l][c].TimeStepsCount);
+					freeNNLog(&ioParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, (ioParms->DebugParms.SaveInternals>0), ioParms->EngineParms.Core[l][c].TimeStepsCount);
 				}
 				//-- GA-specific
 				//-- SVM-specific
@@ -460,7 +460,6 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		pEngineParms->Core[0][0].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
 		pEngineParms->Core[0][0].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][0].TargetLen = (*NNInfo)->OutputCount;
-		//pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs * (((*NNInfo)->BP_Algo == BP_SCGD) ? pDataParms->SampleCount : 1);
 		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		break;
@@ -1262,7 +1261,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 				break;
 			}
 		}
-
+		//-- Train and Run
 		if(fp.DoTraining) Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
 		Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, fp.DoTraining, l, pid, tp, rp, Sample, Target);
 		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.DoTraining, &fp.SavedEngine);
