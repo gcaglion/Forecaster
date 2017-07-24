@@ -6,7 +6,12 @@
 __declspec(dllexport) int __stdcall getEnumVal(char* edesc, char* eval) {
 	UpperCase(edesc);
 
-	if (strcmp(edesc, "FORECASTER.ENGINE") == 0) {
+	if(strcmp(edesc, "FORECASTER.ACTION")==0){
+		if (strcmp(eval, "TRAIN_SAVE_RUN")==0) return TRAIN_SAVE_RUN;
+		if (strcmp(eval, "ADD_SAMPLES")==0) return ADD_SAMPLES;
+		if (strcmp(eval, "JUST_RUN")==0) return JUST_RUN;
+	}
+	else if (strcmp(edesc, "FORECASTER.ENGINE") == 0) {
 		if (strcmp(eval, "ENGINE_NN") == 0) return ENGINE_NN;
 		if (strcmp(eval, "ENGINE_GA") == 0) return ENGINE_GA;
 		if (strcmp(eval, "ENGINE_SVM") == 0) return ENGINE_SVM;

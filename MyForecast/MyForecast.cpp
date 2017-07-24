@@ -580,11 +580,13 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	}
 
 	//-- 4. DoTraining and HaveFutureData
-	if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
+
+	//if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
+	if (getParam(ioParms, "Forecaster.Action", &ioParms->Action, enumlist) <0)					return -1;
 	if (getParam(ioParms, "Forecaster.HaveFutureData", &ioParms->HaveFutureData) < 0)			return -1;
 
 	//-- 5a. if using a saved engine, get EngineParms and DataShape here
-	if (ioParms->DoTraining == 0) {
+	if (ioParms->Action != TRAIN_SAVE_RUN) {
 		if (getParam(ioParms, "SavedEngine.ProcessId", &ioParms->SavedEngine.ProcessId) < 0)	return -1;
 		if (getParam(ioParms, "SavedEngine.TestId", &ioParms->SavedEngine.TestId) < 0)			return -1;
 		if (getParam(ioParms, "SavedEngine.DatasetId", &ioParms->SavedEngine.DatasetId) < 0)	return -1;
@@ -1261,10 +1263,24 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 				break;
 			}
 		}
-		//-- Train and Run
-		if(fp.DoTraining) Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
-		Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, fp.DoTraining, l, pid, tp, rp, Sample, Target);
-		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.DoTraining, &fp.SavedEngine);
+		switch (fp.Action) {
+		case TRAIN_SAVE_RUN:
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
+			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 1, l, pid, tp, rp, Sample, Target);
+			SetNetPidTid(&fp.EngineParms, l, dscnt, 0, &fp.SavedEngine);
+			break;
+		case ADD_SAMPLES:
+			//-- LoadEngine has already been done
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
+			SetNetPidTid(&fp.EngineParms, l, dscnt, 1, &fp.SavedEngine);
+			break;
+		case JUST_RUN:
+			//-- LoadEngine has already been done
+			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 0, l, pid, tp, rp, Sample, Target);
+			SetNetPidTid(&fp.EngineParms, l, dscnt, 1, &fp.SavedEngine);
+			break;
+		}
+
 	}
 
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
@@ -1278,11 +1294,13 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	
 	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
 
-	if (fp.DoTraining == 1) {
+	if (fp.Action !=JUST_RUN) {
 		printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
 		printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
 	}
-	printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
+	if (fp.Action!=ADD_SAMPLES) {
+		printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
+	}
 	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
