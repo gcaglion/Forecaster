@@ -95,6 +95,7 @@ typedef struct{
 	int TestId;
 	int LayerId;
 	int CoreId;
+	int AdderId;
 	int Epoch; 
 	double MSE_T;
 	double MSE_V;

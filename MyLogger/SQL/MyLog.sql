@@ -62,7 +62,8 @@ create table EngineParms(
 	InputCount number,
 	OutputCount number,
 	WNN_DecompLevel number,
-	WNN_WaveletType varchar2(16)
+	WNN_WaveletType varchar2(16),
+	AdderCount number
 );
 alter table EngineParms add constraint EngineParms_PK primary key( ProcessId ) using index tablespace LogIdx;
 
@@ -196,11 +197,13 @@ drop table MyLog_MSE purge;
 create table MyLog_MSE(
 	ProcessId number,
 	ThreadId number,
+	AdderId number,
 	Epoch number,
 	MSE_T number,
 	MSE_V number
 ) storage (initial 100m next 100m freelists 8);
-alter table MyLog_MSE add constraint MyLog_MSE_PK primary key( ProcessId, ThreadId, Epoch ) using index tablespace LogIdx;
+alter table MyLog_MSE add constraint MyLog_MSE_PK primary key( ProcessId, ThreadId, AdderId, Epoch ) using index tablespace LogIdx;
+alter table MyLog_MSE add constraint MyLog_MSE_AdderId_NN check(AdderId is not null);
 
 drop table MyLog_Run purge;
 create table MyLog_Run(

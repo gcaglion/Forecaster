@@ -595,15 +595,19 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 		int dscnt_from_file=ioParms->DataParms.DatasetsCount;
 		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->DataParms) != 0) return -1;
-		// if ADD_SAMPLES, we must have the same DatasetsCount of the original Training (we could do otherwise, this is the simplest way...)
+		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
+		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
+
 		if (ioParms->Action==ADD_SAMPLES) {
+			// if ADD_SAMPLES, we must have the same DatasetsCount of the original Training (we could do otherwise, this is the simplest way...)
 			if (ioParms->DataParms.DatasetsCount!=dscnt_from_file) {
 				LogWrite(&ioParms->DebugParms, LOG_ERROR, "When adding samples to an existing engine, DatasetsCount must be the same. We have %d in original engine, and %d from parameter file...\n", 2, ioParms->DataParms.DatasetsCount, dscnt_from_file);
 				return -1;
 			}
+			 // we also need ro retrieve the last AdderId from, to increase it
+			ioParms->EngineParms.AdderCount++;
 		}
-		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
-		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
+
 		//-- before loading cores, we need to set layout based on EngineType just loaded
 		if (setEngineLayout(ioParms) != 0) return -1;
 		setCoreInfo_Pre(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
@@ -617,6 +621,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	} else {
 		//-- 5b
 		if (getParam(ioParms, "Forecaster.Engine", &ioParms->EngineParms.EngineType, enumlist) < 0)	return -1;
+		ioParms->EngineParms.AdderCount = 0;
 		if (setEngineLayout(ioParms) != 0) return -1;
 
 		//-- Data Shape parameters 		
@@ -1005,7 +1010,7 @@ void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pD
 }
 //--
 
-void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int pDoTraining, tEngineHandle* pSavedEngine) {
+void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int pAction, int pAdderId, tEngineHandle* pSavedEngine) {
 	//-- from pSavedEngine we need pid and ONE tid.
 	//-- from pTrainParms we get an array of threads from current training session
 	int n, d, i, j;
@@ -1020,14 +1025,24 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 			MSELog = pEngineParms->Core[pLayer][n].CoreLog[d].MSEOutput;
 			RunLog = pEngineParms->Core[pLayer][n].CoreLog[d].RunOutput;
 
-			for (j = 0; j<pEngineParms->Core[pLayer][n].RunCount; j++) {
-				if (pDoTraining>0) {
-					RunLog[j].NetProcessId = RunLog[j].ProcessId;
-					RunLog[j].NetThreadId = RunLog[j].ThreadId;
+			//-- MSE: we kee the same pid,tid from original Training session, 
+			if (pAction==ADD_SAMPLES) {
+				for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
+					MSELog[j].ProcessId = pSavedEngine->ProcessId;
+					MSELog[j].ThreadId = pSavedEngine->ThreadId;
+					MSELog[j].AdderId = pAdderId;
 				}
-				else {
+			}
+
+			//-- Run
+			for (j = 0; j<pEngineParms->Core[pLayer][n].RunCount; j++) {
+				if (pAction==JUST_RUN) {
 					RunLog[j].NetProcessId = pSavedEngine->ProcessId;
 					RunLog[j].NetThreadId = pSavedEngine->ThreadId + i;
+				}
+				else {
+					RunLog[j].NetProcessId = RunLog[j].ProcessId;
+					RunLog[j].NetThreadId = RunLog[j].ThreadId;
 				}
 			}
 		}
@@ -1277,19 +1292,17 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		case TRAIN_SAVE_RUN:
 			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, false, tp, Sample, Target);
 			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 1, l, pid, tp, rp, Sample, Target);
-			SetNetPidTid(&fp.EngineParms, l, dscnt, 0, &fp.SavedEngine);
 			break;
 		case ADD_SAMPLES:
 			//-- LoadEngine has already been done
 			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, true, tp, Sample, Target);
-			SetNetPidTid(&fp.EngineParms, l, dscnt, 1, &fp.SavedEngine);
 			break;
 		case JUST_RUN:
 			//-- LoadEngine has already been done
 			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 0, l, pid, tp, rp, Sample, Target);
-			SetNetPidTid(&fp.EngineParms, l, dscnt, 1, &fp.SavedEngine);
 			break;
 		}
+		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.Action, fp.EngineParms.AdderCount, &fp.SavedEngine);
 
 	}
 
@@ -1299,7 +1312,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//printf("Saving Logs...\n");
 	if (pTestId == 0) {
 		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
+		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, (fp.Action==ADD_SAMPLES) ? fp.SavedEngine.ProcessId : pid, &fp.EngineParms) != 0) return -1;
 	}
 	
 	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;

@@ -43,7 +43,7 @@ typedef struct sForecastParms {
 	//int DoTraining;
 	int HaveFutureData;
 	int Action;		// TRAIN_SAVE_RUN | ADD_SAMPLES | JUST_RUN
-
+	
 	tEngineDef EngineParms;
 	tDebugInfo DebugParms;
 	tDataShape DataParms;
