@@ -11,6 +11,7 @@ typedef struct {
 	int LayerId; int CoreId; int DatasetId;
 	int CorePos; int TotCores; HANDLE ScreenMutex;
 	int useValidation;
+	bool useExistingW;
 	int SampleCount; double** SampleT; double** TargetT; double** SampleV; double** TargetV;
 	tEngineHandle TrainInfo;
 	int TrainSuccess;
@@ -591,8 +592,16 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		if (getParam(ioParms, "SavedEngine.TestId", &ioParms->SavedEngine.TestId) < 0)			return -1;
 		if (getParam(ioParms, "SavedEngine.DatasetId", &ioParms->SavedEngine.DatasetId) < 0)	return -1;
 		ioParms->DataParms.ValidationShift = 0;
-		
+
+		int dscnt_from_file=ioParms->DataParms.DatasetsCount;
 		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->DataParms) != 0) return -1;
+		// if ADD_SAMPLES, we must have the same DatasetsCount of the original Training (we could do otherwise, this is the simplest way...)
+		if (ioParms->Action==ADD_SAMPLES) {
+			if (ioParms->DataParms.DatasetsCount!=dscnt_from_file) {
+				LogWrite(&ioParms->DebugParms, LOG_ERROR, "When adding samples to an existing engine, DatasetsCount must be the same. We have %d in original engine, and %d from parameter file...\n", 2, ioParms->DataParms.DatasetsCount, dscnt_from_file);
+				return -1;
+			}
+		}
 		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
 		//-- before loading cores, we need to set layout based on EngineType just loaded
@@ -872,7 +881,7 @@ void Train_XXX(tTrainParams* tp) {
 	switch (tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreType) {
 	case ENGINE_NN:
 		NNParms = (NN_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
+		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->useExistingW, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
 	case ENGINE_GA:
@@ -887,7 +896,7 @@ void Train_XXX(tTrainParams* tp) {
 		break;
 	case ENGINE_SVM:
 		SVMParms = (SVM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
+		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->useExistingW, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
 	}
@@ -911,7 +920,7 @@ void Run_XXX(tRunParams* rp) {
 		//-- other engine core types ...
 	}
 }
-void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
+void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, bool loadW, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
 	int t;
 	int ThreadCount = pDataParms->DatasetsCount*pEngineParms->TotalCoresCount;
 	HANDLE* HTrain = (HANDLE*)malloc(ThreadCount * sizeof(HANDLE));
@@ -933,6 +942,7 @@ void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* 
 			tp[t].EngineParms = pEngineParms;
 			tp[t].SampleCount = pDataParms->SampleCount;
 			tp[t].useValidation = (pDataParms->ValidationShift != 0)?1:0;
+			tp[t].useExistingW = loadW;
 
 			//-- SampleData, TargetData
 			tp[t].SampleT = pSampleData[HD][d][pLayer][n];
@@ -1265,13 +1275,13 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		}
 		switch (fp.Action) {
 		case TRAIN_SAVE_RUN:
-			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, false, tp, Sample, Target);
 			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 1, l, pid, tp, rp, Sample, Target);
 			SetNetPidTid(&fp.EngineParms, l, dscnt, 0, &fp.SavedEngine);
 			break;
 		case ADD_SAMPLES:
 			//-- LoadEngine has already been done
-			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, true, tp, Sample, Target);
 			SetNetPidTid(&fp.EngineParms, l, dscnt, 1, &fp.SavedEngine);
 			break;
 		case JUST_RUN:

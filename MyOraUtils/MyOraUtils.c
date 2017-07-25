@@ -309,91 +309,91 @@ static const short sqlcud0[] =
 3836,0,0,20,0,0,17,1441,0,0,1,1,0,1,0,1,97,0,0,
 3855,0,0,20,0,0,23,1442,0,64,0,0,5,105,110,78,78,80,1,0,
 3875,0,0,0,0,0,91,1467,0,64,0,0,5,105,110,78,78,80,1,0,
-3895,0,0,23,0,0,17,1494,0,0,1,1,0,1,0,1,97,0,0,
-3914,0,0,23,0,0,45,1496,0,0,0,0,0,1,0,
-3929,0,0,23,0,0,13,1497,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
-3964,0,0,23,0,0,15,1503,0,0,0,0,0,1,0,
-3979,0,0,24,0,0,17,1536,0,0,1,1,0,1,0,1,97,0,0,
-3998,0,0,24,0,0,45,1538,0,0,0,0,0,1,0,
-4013,0,0,24,0,0,13,1539,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,97,0,0,
-4048,0,0,24,0,0,15,1545,0,0,0,0,0,1,0,
-4063,0,0,25,0,0,17,1578,0,0,1,1,0,1,0,1,97,0,0,
-4082,0,0,25,0,0,45,1580,0,0,0,0,0,1,0,
-4097,0,0,25,0,0,13,1585,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
+3895,0,0,23,0,0,17,1495,0,0,1,1,0,1,0,1,97,0,0,
+3914,0,0,23,0,0,45,1497,0,0,0,0,0,1,0,
+3929,0,0,23,0,0,13,1500,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+3964,0,0,23,0,0,15,1507,0,0,0,0,0,1,0,
+3979,0,0,24,0,0,17,1541,0,0,1,1,0,1,0,1,97,0,0,
+3998,0,0,24,0,0,45,1543,0,0,0,0,0,1,0,
+4013,0,0,24,0,0,13,1544,0,0,5,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,97,0,0,
+4048,0,0,24,0,0,15,1550,0,0,0,0,0,1,0,
+4063,0,0,25,0,0,17,1584,0,0,1,1,0,1,0,1,97,0,0,
+4082,0,0,25,0,0,45,1586,0,0,0,0,0,1,0,
+4097,0,0,25,0,0,13,1591,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,97,0,0,2,3,0,0,2,3,0,
 0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,2,4,0,0,2,4,0,0,
-4156,0,0,25,0,0,15,1596,0,0,0,0,0,1,0,
-4171,0,0,26,0,0,17,1617,0,0,1,1,0,1,0,1,97,0,0,
-4190,0,0,26,0,0,45,1619,0,0,0,0,0,1,0,
-4205,0,0,26,0,0,13,1624,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4156,0,0,25,0,0,15,1602,0,0,0,0,0,1,0,
+4171,0,0,26,0,0,17,1623,0,0,1,1,0,1,0,1,97,0,0,
+4190,0,0,26,0,0,45,1625,0,0,0,0,0,1,0,
+4205,0,0,26,0,0,13,1630,0,0,7,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
 2,3,0,0,2,4,0,0,
-4248,0,0,26,0,0,15,1634,0,0,0,0,0,1,0,
-4263,0,0,27,0,0,17,1655,0,0,1,1,0,1,0,1,97,0,0,
-4282,0,0,27,0,0,45,1657,0,0,0,0,0,1,0,
-4297,0,0,27,0,0,13,1662,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
+4248,0,0,26,0,0,15,1640,0,0,0,0,0,1,0,
+4263,0,0,27,0,0,17,1661,0,0,1,1,0,1,0,1,97,0,0,
+4282,0,0,27,0,0,45,1663,0,0,0,0,0,1,0,
+4297,0,0,27,0,0,13,1668,0,0,11,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
 2,3,0,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,3,0,0,
-4356,0,0,27,0,0,15,1672,0,0,0,0,0,1,0,
-4371,0,0,28,0,0,17,1694,0,0,1,1,0,1,0,1,97,0,0,
-4390,0,0,28,0,0,45,1696,0,0,0,0,0,1,0,
-4405,0,0,28,0,0,13,1697,0,0,1,0,0,1,0,2,3,0,0,
-4424,0,0,28,0,0,15,1702,0,0,0,0,0,1,0,
-4439,0,0,29,0,0,17,1726,0,0,1,1,0,1,0,1,97,0,0,
-4458,0,0,29,0,0,45,1728,0,0,0,0,0,1,0,
-4473,0,0,29,0,0,13,1730,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4504,0,0,29,0,0,15,1743,0,0,0,0,0,1,0,
-4519,0,0,30,0,0,17,1766,0,0,1,1,0,1,0,1,97,0,0,
-4538,0,0,30,0,0,45,1768,0,0,0,0,0,1,0,
-4553,0,0,30,0,0,13,1770,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4580,0,0,30,0,0,15,1783,0,0,0,0,0,1,0,
-4595,0,0,31,0,0,17,1806,0,0,1,1,0,1,0,1,97,0,0,
-4614,0,0,31,0,0,45,1808,0,0,0,0,0,1,0,
-4629,0,0,31,0,0,13,1810,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
-4656,0,0,31,0,0,15,1821,0,0,0,0,0,1,0,
-4671,0,0,31,0,0,17,1846,0,0,1,1,0,1,0,1,97,0,0,
-4690,0,0,31,0,0,45,1848,0,0,0,0,0,1,0,
-4705,0,0,31,0,0,13,1849,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4356,0,0,27,0,0,15,1678,0,0,0,0,0,1,0,
+4371,0,0,28,0,0,17,1700,0,0,1,1,0,1,0,1,97,0,0,
+4390,0,0,28,0,0,45,1702,0,0,0,0,0,1,0,
+4405,0,0,28,0,0,13,1703,0,0,1,0,0,1,0,2,3,0,0,
+4424,0,0,28,0,0,15,1708,0,0,0,0,0,1,0,
+4439,0,0,29,0,0,17,1732,0,0,1,1,0,1,0,1,97,0,0,
+4458,0,0,29,0,0,45,1734,0,0,0,0,0,1,0,
+4473,0,0,29,0,0,13,1736,0,0,4,0,0,1,0,2,3,0,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4504,0,0,29,0,0,15,1749,0,0,0,0,0,1,0,
+4519,0,0,30,0,0,17,1772,0,0,1,1,0,1,0,1,97,0,0,
+4538,0,0,30,0,0,45,1774,0,0,0,0,0,1,0,
+4553,0,0,30,0,0,13,1776,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4580,0,0,30,0,0,15,1789,0,0,0,0,0,1,0,
+4595,0,0,31,0,0,17,1812,0,0,1,1,0,1,0,1,97,0,0,
+4614,0,0,31,0,0,45,1814,0,0,0,0,0,1,0,
+4629,0,0,31,0,0,13,1816,0,0,3,0,0,1,0,2,3,0,0,2,3,0,0,2,4,0,0,
+4656,0,0,31,0,0,15,1827,0,0,0,0,0,1,0,
+4671,0,0,31,0,0,17,1852,0,0,1,1,0,1,0,1,97,0,0,
+4690,0,0,31,0,0,45,1854,0,0,0,0,0,1,0,
+4705,0,0,31,0,0,13,1855,0,0,7,0,0,1,0,2,3,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,3,0,0,
-4748,0,0,31,0,0,15,1862,0,0,0,0,0,1,0,
-4763,0,0,32,0,0,17,1887,0,0,1,1,0,1,0,1,97,0,0,
-4782,0,0,32,0,0,45,1889,0,0,0,0,0,1,0,
-4797,0,0,32,0,0,13,1890,0,0,1,0,0,1,0,2,97,0,0,
-4816,0,0,32,0,0,15,1895,0,0,0,0,0,1,0,
-4831,0,0,33,0,0,17,1906,0,0,1,1,0,1,0,1,97,0,0,
-4850,0,0,33,0,0,45,1908,0,0,0,0,0,1,0,
-4865,0,0,33,0,0,13,1909,0,0,1,0,0,1,0,2,3,0,0,
-4884,0,0,33,0,0,15,1914,0,0,0,0,0,1,0,
-4899,0,0,34,0,0,17,1959,0,0,1,1,0,1,0,1,97,0,0,
-4918,0,0,34,0,0,45,1961,0,0,0,0,0,1,0,
-4933,0,0,34,0,0,13,1968,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
-4960,0,0,34,0,0,15,1978,0,0,0,0,0,1,0,
-4975,0,0,35,0,0,17,1991,0,0,1,1,0,1,0,1,97,0,0,
-4994,0,0,35,0,0,45,1993,0,0,0,0,0,1,0,
-5009,0,0,35,0,0,13,1998,0,0,1,0,0,1,0,2,97,0,0,
-5028,0,0,35,0,0,15,2004,0,0,0,0,0,1,0,
-5043,0,0,36,0,0,17,2016,0,0,1,1,0,1,0,1,97,0,0,
-5062,0,0,36,0,0,45,2018,0,0,0,0,0,1,0,
-5077,0,0,36,0,0,13,2024,0,0,1,0,0,1,0,2,97,0,0,
-5096,0,0,36,0,0,15,2031,0,0,0,0,0,1,0,
-5111,0,0,37,0,0,17,2043,0,0,1,1,0,1,0,1,97,0,0,
-5130,0,0,37,0,0,45,2045,0,0,0,0,0,1,0,
-5145,0,0,37,0,0,13,2046,0,0,1,0,0,1,0,2,3,0,0,
-5164,0,0,37,0,0,15,2054,0,0,0,0,0,1,0,
-5179,0,0,38,0,0,17,2082,0,0,1,1,0,1,0,1,97,0,0,
-5198,0,0,38,0,0,45,2084,0,0,0,0,0,1,0,
-5213,0,0,38,0,0,13,2086,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+4748,0,0,31,0,0,15,1868,0,0,0,0,0,1,0,
+4763,0,0,32,0,0,17,1893,0,0,1,1,0,1,0,1,97,0,0,
+4782,0,0,32,0,0,45,1895,0,0,0,0,0,1,0,
+4797,0,0,32,0,0,13,1896,0,0,1,0,0,1,0,2,97,0,0,
+4816,0,0,32,0,0,15,1901,0,0,0,0,0,1,0,
+4831,0,0,33,0,0,17,1912,0,0,1,1,0,1,0,1,97,0,0,
+4850,0,0,33,0,0,45,1914,0,0,0,0,0,1,0,
+4865,0,0,33,0,0,13,1915,0,0,1,0,0,1,0,2,3,0,0,
+4884,0,0,33,0,0,15,1920,0,0,0,0,0,1,0,
+4899,0,0,34,0,0,17,1965,0,0,1,1,0,1,0,1,97,0,0,
+4918,0,0,34,0,0,45,1967,0,0,0,0,0,1,0,
+4933,0,0,34,0,0,13,1974,0,0,3,0,0,1,0,2,97,0,0,2,3,0,0,2,97,0,0,
+4960,0,0,34,0,0,15,1984,0,0,0,0,0,1,0,
+4975,0,0,35,0,0,17,1997,0,0,1,1,0,1,0,1,97,0,0,
+4994,0,0,35,0,0,45,1999,0,0,0,0,0,1,0,
+5009,0,0,35,0,0,13,2004,0,0,1,0,0,1,0,2,97,0,0,
+5028,0,0,35,0,0,15,2010,0,0,0,0,0,1,0,
+5043,0,0,36,0,0,17,2022,0,0,1,1,0,1,0,1,97,0,0,
+5062,0,0,36,0,0,45,2024,0,0,0,0,0,1,0,
+5077,0,0,36,0,0,13,2030,0,0,1,0,0,1,0,2,97,0,0,
+5096,0,0,36,0,0,15,2037,0,0,0,0,0,1,0,
+5111,0,0,37,0,0,17,2049,0,0,1,1,0,1,0,1,97,0,0,
+5130,0,0,37,0,0,45,2051,0,0,0,0,0,1,0,
+5145,0,0,37,0,0,13,2052,0,0,1,0,0,1,0,2,3,0,0,
+5164,0,0,37,0,0,15,2060,0,0,0,0,0,1,0,
+5179,0,0,38,0,0,17,2088,0,0,1,1,0,1,0,1,97,0,0,
+5198,0,0,38,0,0,45,2090,0,0,0,0,0,1,0,
+5213,0,0,38,0,0,13,2092,0,0,6,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,
-5252,0,0,38,0,0,15,2099,0,0,0,0,0,1,0,
-5267,0,0,39,0,0,17,2124,0,0,1,1,0,1,0,1,97,0,0,
-5286,0,0,39,0,0,45,2126,0,0,0,0,0,1,0,
-5301,0,0,39,0,0,13,2128,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
+5252,0,0,38,0,0,15,2105,0,0,0,0,0,1,0,
+5267,0,0,39,0,0,17,2130,0,0,1,1,0,1,0,1,97,0,0,
+5286,0,0,39,0,0,45,2132,0,0,0,0,0,1,0,
+5301,0,0,39,0,0,13,2134,0,0,9,0,0,1,0,2,97,0,0,2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
 2,4,0,0,2,4,0,0,2,4,0,0,2,4,0,0,
-5352,0,0,39,0,0,15,2147,0,0,0,0,0,1,0,
-5367,0,0,40,52,0,1,2234,0,0,0,0,0,1,0,
-5382,0,0,41,0,0,24,2235,0,0,1,1,0,1,0,1,97,0,0,
-5401,0,0,42,0,0,29,2238,0,0,0,0,0,1,0,
-5416,0,0,0,0,0,58,2253,0,0,1,1,0,1,0,3,109,0,0,
-5435,0,0,0,0,0,60,2259,0,0,0,0,0,1,0,
-5450,0,0,43,0,0,30,2267,0,0,0,0,0,1,0,
-5465,0,0,0,0,0,59,2268,0,0,1,1,0,1,0,3,109,0,0,
+5352,0,0,39,0,0,15,2153,0,0,0,0,0,1,0,
+5367,0,0,40,52,0,1,2240,0,0,0,0,0,1,0,
+5382,0,0,41,0,0,24,2241,0,0,1,1,0,1,0,1,97,0,0,
+5401,0,0,42,0,0,29,2244,0,0,0,0,0,1,0,
+5416,0,0,0,0,0,58,2259,0,0,1,1,0,1,0,3,109,0,0,
+5435,0,0,0,0,0,60,2265,0,0,0,0,0,1,0,
+5450,0,0,43,0,0,30,2273,0,0,0,0,0,1,0,
+5465,0,0,0,0,0,59,2274,0,0,1,1,0,1,0,3,109,0,0,
 };
 
 
@@ -7396,7 +7396,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 	int ret;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
-	int vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
+	int vDScnt, vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
 	double vWiggleRoom;
 	/* EXEC SQL END   DECLARE SECTION; */ 
 
@@ -7412,6 +7412,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 	//-- Executes SQL 
 	vCtx = DebugParms->DebugDB->DBCtx;
+	vDScnt = 0;
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
 	/* EXEC SQL PREPARE s15 FROM : stmt; */ 
@@ -7474,81 +7475,84 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 }
 
 
-	/* EXEC SQL FETCH c15 INTO :vHistoryLen, :vSampleLen, :vPredictionLen, :vDataTransformation, :vWiggleRoom; */ 
+
+	while (sqlca.sqlcode!= 1403) {
+		/* EXEC SQL FETCH c15 INTO : vHistoryLen, : vSampleLen, : vPredictionLen, : vDataTransformation, : vWiggleRoom; */ 
 
 {
- struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
- sqlstm.arrsiz = 5;
- sqlstm.sqladtp = &sqladt;
- sqlstm.sqltdsp = &sqltds;
- sqlstm.iters = (unsigned int  )1;
- sqlstm.offset = (unsigned int  )3929;
- sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
- sqlstm.cud = sqlcud0;
- sqlstm.sqlest = (unsigned char  *)&sqlca;
- sqlstm.sqlety = (unsigned short)4352;
- sqlstm.occurs = (unsigned int  )0;
- sqlstm.sqfoff = (           int )0;
- sqlstm.sqfmod = (unsigned int )2;
- sqlstm.sqhstv[0] = (         void  *)&vHistoryLen;
- sqlstm.sqhstl[0] = (unsigned int  )sizeof(int);
- sqlstm.sqhsts[0] = (         int  )0;
- sqlstm.sqindv[0] = (         void  *)0;
- sqlstm.sqinds[0] = (         int  )0;
- sqlstm.sqharm[0] = (unsigned int  )0;
- sqlstm.sqadto[0] = (unsigned short )0;
- sqlstm.sqtdso[0] = (unsigned short )0;
- sqlstm.sqhstv[1] = (         void  *)&vSampleLen;
- sqlstm.sqhstl[1] = (unsigned int  )sizeof(int);
- sqlstm.sqhsts[1] = (         int  )0;
- sqlstm.sqindv[1] = (         void  *)0;
- sqlstm.sqinds[1] = (         int  )0;
- sqlstm.sqharm[1] = (unsigned int  )0;
- sqlstm.sqadto[1] = (unsigned short )0;
- sqlstm.sqtdso[1] = (unsigned short )0;
- sqlstm.sqhstv[2] = (         void  *)&vPredictionLen;
- sqlstm.sqhstl[2] = (unsigned int  )sizeof(int);
- sqlstm.sqhsts[2] = (         int  )0;
- sqlstm.sqindv[2] = (         void  *)0;
- sqlstm.sqinds[2] = (         int  )0;
- sqlstm.sqharm[2] = (unsigned int  )0;
- sqlstm.sqadto[2] = (unsigned short )0;
- sqlstm.sqtdso[2] = (unsigned short )0;
- sqlstm.sqhstv[3] = (         void  *)&vDataTransformation;
- sqlstm.sqhstl[3] = (unsigned int  )sizeof(int);
- sqlstm.sqhsts[3] = (         int  )0;
- sqlstm.sqindv[3] = (         void  *)0;
- sqlstm.sqinds[3] = (         int  )0;
- sqlstm.sqharm[3] = (unsigned int  )0;
- sqlstm.sqadto[3] = (unsigned short )0;
- sqlstm.sqtdso[3] = (unsigned short )0;
- sqlstm.sqhstv[4] = (         void  *)&vWiggleRoom;
- sqlstm.sqhstl[4] = (unsigned int  )sizeof(double);
- sqlstm.sqhsts[4] = (         int  )0;
- sqlstm.sqindv[4] = (         void  *)0;
- sqlstm.sqinds[4] = (         int  )0;
- sqlstm.sqharm[4] = (unsigned int  )0;
- sqlstm.sqadto[4] = (unsigned short )0;
- sqlstm.sqtdso[4] = (unsigned short )0;
- sqlstm.sqphsv = sqlstm.sqhstv;
- sqlstm.sqphsl = sqlstm.sqhstl;
- sqlstm.sqphss = sqlstm.sqhsts;
- sqlstm.sqpind = sqlstm.sqindv;
- sqlstm.sqpins = sqlstm.sqinds;
- sqlstm.sqparm = sqlstm.sqharm;
- sqlstm.sqparc = sqlstm.sqharc;
- sqlstm.sqpadto = sqlstm.sqadto;
- sqlstm.sqptdso = sqlstm.sqtdso;
- sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
+  struct sqlexd sqlstm;
+  sqlstm.sqlvsn = 13;
+  sqlstm.arrsiz = 5;
+  sqlstm.sqladtp = &sqladt;
+  sqlstm.sqltdsp = &sqltds;
+  sqlstm.iters = (unsigned int  )1;
+  sqlstm.offset = (unsigned int  )3929;
+  sqlstm.selerr = (unsigned short)1;
+  sqlstm.sqlpfmem = (unsigned int  )0;
+  sqlstm.cud = sqlcud0;
+  sqlstm.sqlest = (unsigned char  *)&sqlca;
+  sqlstm.sqlety = (unsigned short)4352;
+  sqlstm.occurs = (unsigned int  )0;
+  sqlstm.sqfoff = (           int )0;
+  sqlstm.sqfmod = (unsigned int )2;
+  sqlstm.sqhstv[0] = (         void  *)&vHistoryLen;
+  sqlstm.sqhstl[0] = (unsigned int  )sizeof(int);
+  sqlstm.sqhsts[0] = (         int  )0;
+  sqlstm.sqindv[0] = (         void  *)0;
+  sqlstm.sqinds[0] = (         int  )0;
+  sqlstm.sqharm[0] = (unsigned int  )0;
+  sqlstm.sqadto[0] = (unsigned short )0;
+  sqlstm.sqtdso[0] = (unsigned short )0;
+  sqlstm.sqhstv[1] = (         void  *)&vSampleLen;
+  sqlstm.sqhstl[1] = (unsigned int  )sizeof(int);
+  sqlstm.sqhsts[1] = (         int  )0;
+  sqlstm.sqindv[1] = (         void  *)0;
+  sqlstm.sqinds[1] = (         int  )0;
+  sqlstm.sqharm[1] = (unsigned int  )0;
+  sqlstm.sqadto[1] = (unsigned short )0;
+  sqlstm.sqtdso[1] = (unsigned short )0;
+  sqlstm.sqhstv[2] = (         void  *)&vPredictionLen;
+  sqlstm.sqhstl[2] = (unsigned int  )sizeof(int);
+  sqlstm.sqhsts[2] = (         int  )0;
+  sqlstm.sqindv[2] = (         void  *)0;
+  sqlstm.sqinds[2] = (         int  )0;
+  sqlstm.sqharm[2] = (unsigned int  )0;
+  sqlstm.sqadto[2] = (unsigned short )0;
+  sqlstm.sqtdso[2] = (unsigned short )0;
+  sqlstm.sqhstv[3] = (         void  *)&vDataTransformation;
+  sqlstm.sqhstl[3] = (unsigned int  )sizeof(int);
+  sqlstm.sqhsts[3] = (         int  )0;
+  sqlstm.sqindv[3] = (         void  *)0;
+  sqlstm.sqinds[3] = (         int  )0;
+  sqlstm.sqharm[3] = (unsigned int  )0;
+  sqlstm.sqadto[3] = (unsigned short )0;
+  sqlstm.sqtdso[3] = (unsigned short )0;
+  sqlstm.sqhstv[4] = (         void  *)&vWiggleRoom;
+  sqlstm.sqhstl[4] = (unsigned int  )sizeof(double);
+  sqlstm.sqhsts[4] = (         int  )0;
+  sqlstm.sqindv[4] = (         void  *)0;
+  sqlstm.sqinds[4] = (         int  )0;
+  sqlstm.sqharm[4] = (unsigned int  )0;
+  sqlstm.sqadto[4] = (unsigned short )0;
+  sqlstm.sqtdso[4] = (unsigned short )0;
+  sqlstm.sqphsv = sqlstm.sqhstv;
+  sqlstm.sqphsl = sqlstm.sqhstl;
+  sqlstm.sqphss = sqlstm.sqhsts;
+  sqlstm.sqpind = sqlstm.sqindv;
+  sqlstm.sqpins = sqlstm.sqinds;
+  sqlstm.sqparm = sqlstm.sqharm;
+  sqlstm.sqparc = sqlstm.sqharc;
+  sqlstm.sqpadto = sqlstm.sqadto;
+  sqlstm.sqptdso = sqlstm.sqtdso;
+  sqlcxt(&vCtx, &sqlctx, &sqlstm, &sqlfpn);
 }
 
 
-	ret = sqlca.sqlcode;
-	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
-		return sqlca.sqlcode;
+		if (sqlca.sqlcode!= 1403 && sqlca.sqlcode != 0) {
+			LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		vDScnt++;
 	}
 	/* EXEC SQL CLOSE c15; */ 
 
@@ -7571,6 +7575,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 	ret = sqlca.sqlcode;
 
 	//-- Fill oDataParms, and returns
+	oDataParms->DatasetsCount = vDScnt-1;
 	oDataParms->HistoryLen = vHistoryLen;
 	oDataParms->SampleLen = vSampleLen;
 	oDataParms->PredictionLen = vPredictionLen;
@@ -7778,7 +7783,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 	char stmt[1000];
 	//-- Network Properties variables
 	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction;
-	char vLevelRatios[256];
+	char vLevelRatios[60];
 	double vLearningRate, vLearningMomentum, vHCPBeta, vTargetMSE;
 	/* EXEC SQL END DECLARE SECTION; */ 
 
@@ -7789,7 +7794,8 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
+	//sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
+	sprintf(stmt, "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from coreparms_nn where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
 	/* EXEC SQL CONTEXT USE : vCtx; */ 
 
 	/* EXEC SQL PREPARE sLEPNN FROM : stmt; */ 
@@ -7891,7 +7897,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.sqadto[1] = (unsigned short )0;
  sqlstm.sqtdso[1] = (unsigned short )0;
  sqlstm.sqhstv[2] = (         void  *)vLevelRatios;
- sqlstm.sqhstl[2] = (unsigned int  )256;
+ sqlstm.sqhstl[2] = (unsigned int  )60;
  sqlstm.sqhsts[2] = (         int  )0;
  sqlstm.sqindv[2] = (         void  *)0;
  sqlstm.sqinds[2] = (         int  )0;

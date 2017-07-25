@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
 	}
 
 	//-- 2. Save Tester Log (elapsedTime is 0)
-	if (SaveTestLog_TesterParms(&fParms.DebugParms, pid, fParms.SimulationLength, fParms.SimulationStart, elapsedTime, fParms.DoTraining, fParms.HaveFutureData) != 0) return -1;
+	if (SaveTestLog_TesterParms(&fParms.DebugParms, pid, fParms.SimulationLength, fParms.SimulationStart, elapsedTime, fParms.Action, fParms.HaveFutureData) != 0) return -1;
 
 	//-- 3. Prepare, Train, Run for each Training_Start
 	for (i = 0; i < fParms.SimulationLength; i++) {

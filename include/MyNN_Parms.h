@@ -35,7 +35,7 @@ typedef struct {
 	int OutputCount;
 	int LevelsCount;
 	double LevelRatio[MAX_LEVELS];	// Ratio between # of nodes at current and previous level
-	char LevelRatioS[256];			// comma-separated string with level ratios
+	char LevelRatioS[60];			// comma-separated string with level ratios
 	int NodesCount[MAX_LEVELS];	// # of nodes at each level
 	int NodesCountTotal;		// total # of nodes
 	int WeightsCountTotal;		// total # of weights

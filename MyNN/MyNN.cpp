@@ -923,7 +923,7 @@ bool BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 	return true;
 }
 
-void NNInit(NN_Parms* NN, NN_MxData* Mx){
+void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 	int i, k, l, x, y;
 
 	//-- Neurons
@@ -943,7 +943,14 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx){
 		for (i = 0; i < (NN->NodesCount[l+1] * NN->NodesCount[l]); i++){
 			y = (int)(i / NN->NodesCount[l]);
 			x = i%NN->NodesCount[l];
-			Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+
+			if (loadW) {
+				//-- load weights as we do in Run_NN():
+				Mx->NN.W[l][t0][y][x] = NNLogs->NNFinalW[l][y][x].Weight;
+			} else {
+				Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+			}
+
 			Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
 			//fprintf(fw, "%2.10f %2.10f\n", Mx->NN.W[l][t0][y][x], Mx->NN.dW[l][t0][y][x]);
 			//fscanf(fw, "%f %f\n", &w, &dw); Mx->NN.W[l][t0][y][x] = w; Mx->NN.dW[l][t0][y][x]=dw;
@@ -1430,9 +1437,6 @@ void   Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	free(NN.scgd->sigmap);
 }
 
-void NNLoadW(NN_Parms* NN, double*** W) {
-}
-
 __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget) {
 	int i, s, l, j;
 	int vTSCount = 1, d = 0;
@@ -1496,7 +1500,7 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 
 }
 
-__declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, NN_Parms* pNNParms, tCoreLog* pNNLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
+__declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, NN_Parms* pNNParms, tCoreLog* pNNLogs, bool loadW, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
 
@@ -1511,7 +1515,7 @@ __declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMu
 	MxData.useValidation = useValidation;
 
 	//-- Init Weights and Neurons
-	NNInit(pNNParms, &MxData);
+	NNInit(pNNParms, &MxData, loadW, pNNLogs);
 	//-- Train 
 	NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	//-- Save Final Weights

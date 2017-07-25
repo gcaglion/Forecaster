@@ -1475,7 +1475,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 	int ret;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
-	int vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
+	int vDScnt, vHistoryLen, vSampleLen, vPredictionLen, vDataTransformation;
 	double vWiggleRoom;
 	EXEC SQL END   DECLARE SECTION;
 
@@ -1490,20 +1490,25 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 	//-- Executes SQL 
 	vCtx = DebugParms->DebugDB->DBCtx;
+	vDScnt = 0;
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE s15 FROM : stmt;
 	EXEC SQL DECLARE c15 CURSOR FOR s15;
 	EXEC SQL OPEN c15;
-	EXEC SQL FETCH c15 INTO :vHistoryLen, :vSampleLen, :vPredictionLen, :vDataTransformation, :vWiggleRoom;
-	ret = sqlca.sqlcode;
-	if (sqlca.sqlcode != 0) {
-		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
-		return sqlca.sqlcode;
+
+	while (sqlca.sqlcode!= 1403) {
+		EXEC SQL FETCH c15 INTO : vHistoryLen, : vSampleLen, : vPredictionLen, : vDataTransformation, : vWiggleRoom;
+		if (sqlca.sqlcode!= 1403 && sqlca.sqlcode != 0) {
+			LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d\n", 2, __func__, sqlca.sqlcode);
+			return sqlca.sqlcode;
+		}
+		vDScnt++;
 	}
 	EXEC SQL CLOSE c15;
 	ret = sqlca.sqlcode;
 
 	//-- Fill oDataParms, and returns
+	oDataParms->DatasetsCount = vDScnt-1;
 	oDataParms->HistoryLen = vHistoryLen;
 	oDataParms->SampleLen = vSampleLen;
 	oDataParms->PredictionLen = vPredictionLen;
@@ -1563,7 +1568,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 	char stmt[1000];
 	//-- Network Properties variables
 	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction;
-	char vLevelRatios[256];
+	char vLevelRatios[60];
 	double vLearningRate, vLearningMomentum, vHCPBeta, vTargetMSE;
 	EXEC SQL END DECLARE SECTION;
 
@@ -1573,7 +1578,8 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
+	//sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
+	sprintf(stmt, "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from coreparms_nn where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLEPNN FROM : stmt;
 	EXEC SQL DECLARE cLEPNN CURSOR FOR sLEPNN;

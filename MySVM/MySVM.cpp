@@ -216,7 +216,7 @@ double SVMPredict(char* sample, int ktype, long max_words_doc, MODEL* model, svm
 	return pred;
 }
 
-__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
+__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, bool loadW, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
 
 	int i;
 	//--
