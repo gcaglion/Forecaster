@@ -72,7 +72,7 @@ __declspec(dllexport) void __stdcall freeNNLog(tCoreLog* coreLog, int levelsCnt,
 	if(freeIntP) free(coreLog->IntP);
 }
 
-void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double**** W, double** F0) {
+void SaveFinalW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD tid) {
 	//-- This should be called only once at the end of training
 	int i, j, l;
 	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
@@ -83,9 +83,11 @@ void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double
 				NNLog->NNFinalW[l][j][i].NeuronLevel = l;
 				NNLog->NNFinalW[l][j][i].FromNeuron = j;
 				NNLog->NNFinalW[l][j][i].ToNeuron = i;
-				NNLog->NNFinalW[l][j][i].Weight = W[l][t0][j][i];
+				NNLog->NNFinalW[l][j][i].Weight = NN->W[l][t0][j][i];
+				NNLog->NNFinalW[l][j][i].dW = NN->dW[l][t0][j][i];
+				NNLog->NNFinalW[l][j][i].dJdW = NN->dJdW[l][t0][j][i];
 				//-- Context neurons
-				if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
+				if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? NN->F[0][t0][i] : 0;
 			}
 		}
 	}
@@ -971,14 +973,16 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 			if (loadW) {
 				//-- load weights as we do in Run_NN():
 				Mx->NN.W[l][t0][y][x] = NNLogs->NNFinalW[l][y][x].Weight;
+				Mx->NN.dW[l][t0][y][x] = NNLogs->NNFinalW[l][y][x].dW;
+				Mx->NN.dJdW[l][t0][y][x] = NNLogs->NNFinalW[l][y][x].dJdW;
 			} else {
 				Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+				Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
+				Mx->NN.dJdW[l][t0][y][x] = 0;
 			}
 
-			Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l + 1]), 1 / sqrt((double)NN->NodesCount[l]));
 			//fprintf(fw, "%2.10f %2.10f\n", Mx->NN.W[l][t0][y][x], Mx->NN.dW[l][t0][y][x]);
 			//fscanf(fw, "%f %f\n", &w, &dw); Mx->NN.W[l][t0][y][x] = w; Mx->NN.dW[l][t0][y][x]=dw;
-			Mx->NN.dJdW[l][t0][y][x] = 0;
 
 			Mx->NN.scgd->LVV_W[t0][k] = &Mx->NN.W[l][t0][y][x];
 			Mx->NN.scgd->LVV_dW[t0][k] = &Mx->NN.dW[l][t0][y][x];
@@ -1477,6 +1481,8 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 		for (j = 0; j<NNParms->NodesCount[l+1]; j++){
 			for (i = 0; i<NNParms->NodesCount[l]; i++){
 				MxData.NN.W[l][t0][j][i] = NNLogs->NNFinalW[l][j][i].Weight;
+				MxData.NN.dW[l][t0][j][i] = NNLogs->NNFinalW[l][j][i].dW;
+				MxData.NN.dJdW[l][t0][j][i] = NNLogs->NNFinalW[l][j][i].dJdW;
 			}
 		}
 	}
@@ -1545,7 +1551,7 @@ __declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMu
 	//-- Train 
 	NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	//-- Save Final Weights
-	SaveFinalW(pNNParms, pNNLogs, pid, tid, MxData.NN.W, MxData.NN.F[0]);
+	SaveFinalW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 
 	//-- free()s
 	Free_NNMem(pNNParms, MxData.NN);

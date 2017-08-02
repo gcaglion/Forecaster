@@ -15,7 +15,8 @@
 //-- NN Weights Logging parameters
 typedef struct {
 	int ProcessId; int ThreadId;  int TimeStep;
-	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
+	int NeuronLevel; int FromNeuron; int ToNeuron; 
+	double Weight; double dW; double dJdW; double CtxValue;
 } tNNWeight;
 
 //-- Internals Logging parameters

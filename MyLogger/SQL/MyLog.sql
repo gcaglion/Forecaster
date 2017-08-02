@@ -92,8 +92,12 @@ create table CoreImage_NN(
 	NeuronLevel number,
 	FromNeuron number,
 	toNeuron number, 
-	StartWeight number,
-	EndWeight number,
+	StartW number,
+	EndW number,
+	StartdW number,
+	EnddW number,
+	StartdJdW number,
+	EnddJdW number,
 	CtxValue number
 ) storage (freelists 8);
 alter table CoreImage_NN add constraint CoreImage_NN_PK primary key( ProcessId, ThreadId, NeuronLevel, FromNeuron, ToNeuron ) using index tablespace LogIdx;
