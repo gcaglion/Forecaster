@@ -240,7 +240,7 @@ EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* DebugParms, int pid, int 
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int pEngineType, int pInputCount, int pOutputCount, int pAdderCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int basepid, int pEngineType, int pInputCount, int pOutputCount, int pAdderCount, int pWNNDecompLevel, char* pWNNWaveletType) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -254,7 +254,7 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int 
 
 	if (pAdderCount>0) {
 		//-- Just Update AdderCount for existing record
-		sprintf(&stmt[0], "update EngineParms set AdderCount=%d where ProcessId=%d", pAdderCount, pid);
+		sprintf(&stmt[0], "update EngineParms set AdderCount=%d where ProcessId=%d", pAdderCount, basepid);
 	} else {
 		//-- Insert into EngineParms
 		sprintf(&stmt[0], "insert into EngineParms(ProcessId, EngineType, InputCount, OutputCount, AdderCount, WNN_DecompLevel, WNN_WaveletType) values(%d, %d, %d, %d, %d, %d, '%s')", pid, pEngineType, pInputCount, pOutputCount, 0, pWNNDecompLevel, pWNNWaveletType);
@@ -267,7 +267,7 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int 
 
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* DebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* DebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	int l, c, d;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -284,7 +284,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* DebugParms, int pid, in
 	for (l = 0; l < pEngineParms->LayersCount; l++) {
 		for (c = 0; c < pEngineParms->CoresCount[l]; c++) {
 			for (d = 0; d < pDataParms->DatasetsCount; d++) {
-				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, CoreType, DatasetId, ThreadId) values(%d, %d, %d, %d, %d, %d, %d)", pid, testid, l, c, pEngineParms->Core[l][c].CoreType, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId);
+				sprintf(&stmt[0], "insert into EngineThreads(ProcessId, TestId, LayerId, CoreId, CoreType, DatasetId, ThreadId, BasePid, BaseTid, AdderId) values(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)", pid, testid, l, c, pEngineParms->Core[l][c].CoreType, d, pEngineParms->Core[l][c].CoreLog[d].ThreadId, pEngineParms->Core[l][c].CoreLog[d].MSEOutput->BaseProcessId, pEngineParms->Core[l][c].CoreLog[d].MSEOutput->BaseThreadId, aid);
 				EXEC SQL EXECUTE IMMEDIATE : stmt;
 				if (sqlca.sqlcode != 0) {
 					LogWrite_C(DebugParms, LOG_ERROR, "%s failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);
@@ -297,7 +297,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* DebugParms, int pid, in
 	return 0;
 }
 //--
-EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int pid, int lid, int cid, NN_Parms* NNParms) {
+EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, NN_Parms* NNParms) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -313,7 +313,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int pid, in
 	}
 	//-- Builds Insert statement
 	//sprintf(&stmt[0], "insert into CoreParms_NN(ProcessId, ThreadId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingProtocol, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu) values(%d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f)", pid, tid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingProtocol, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu);
-	sprintf(&stmt[0], "insert into CoreParms_NN(ProcessId, LayerId, CoreId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingProtocol, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu) values(%d, %d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f)", pid, lid, cid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingProtocol, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu);
+	sprintf(&stmt[0], "insert into CoreParms_NN(AdderId, ProcessId, LayerId, CoreId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingProtocol, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu) values(%d, %d, %d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f)", aid, pid, lid, cid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingProtocol, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu);
 	//-- Executes Insert statements
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL EXECUTE IMMEDIATE : stmt;
@@ -323,7 +323,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int pid, in
 	}
 	return 0;
 }
-EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms) {
+EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, SOM_Parms* SOMParms) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -338,7 +338,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, in
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into EngineParms_SOM	(ProcessId, LayerId, CoreId, InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR) values(%d, %d, %d, %d, %d, %d, %d, %f, %d, %f )", pid, lid, cid, SOMParms->InputCount, SOMParms->OutputCount, SOMParms->MaxEpochs, SOMParms->TDFunction, SOMParms->BaseTD, SOMParms->LRFunction, SOMParms->BaseLR);
+	sprintf(&stmt[0], "insert into EngineParms_SOM	(AdderId, ProcessId, LayerId, CoreId, InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR) values(%d, %d, %d, %d, %d, %d, %d, %d, %f, %d, %f )", aid, pid, lid, cid, SOMParms->InputCount, SOMParms->OutputCount, SOMParms->MaxEpochs, SOMParms->TDFunction, SOMParms->BaseTD, SOMParms->LRFunction, SOMParms->BaseLR);
 
 	//-- Executes Insert statements
 	EXEC SQL CONTEXT USE : vCtx;
@@ -350,7 +350,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, in
 	return 0;
 
 }
-EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms) {
+EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, SVM_Parms* SVMParms) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -365,9 +365,9 @@ EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, in
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into CoreParms_SVM	(ProcessId, LayerId, CoreId, InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize)\
-												 values(%d, %d, %d, %d, %d, %f, %f, %d, %d, %d, %f, %f, %f, %d)",\
-												pid, lid, cid, SVMParms->InputCount, SVMParms->MaxEpochs, SVMParms->C, SVMParms->epsilon, SVMParms->svmIterToShrink, SVMParms->KernelType, SVMParms->PolyDegree, SVMParms->RBFGamma, SVMParms->CoefLin, SVMParms->CoefConst, SVMParms->KernelCacheSize);
+	sprintf(&stmt[0], "insert into CoreParms_SVM	(AdderId, ProcessId, LayerId, CoreId, InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize)\
+												 values(%d, %d, %d, %d, %d, %d, %f, %f, %d, %d, %d, %f, %f, %f, %d)",\
+												aid, pid, lid, cid, SVMParms->InputCount, SVMParms->MaxEpochs, SVMParms->C, SVMParms->epsilon, SVMParms->svmIterToShrink, SVMParms->KernelType, SVMParms->PolyDegree, SVMParms->RBFGamma, SVMParms->CoefLin, SVMParms->CoefConst, SVMParms->KernelCacheSize);
 
 	//-- Executes Insert statements
 	EXEC SQL CONTEXT USE : vCtx;
@@ -820,7 +820,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 	//--
 	int* vProcessId;
 	int* vThreadId;
-	int* vAdderId;
+	//int* vAdderId;
 	int* vEpoch;
 	double* vMSE_T;
 	double* vMSE_V;
@@ -845,7 +845,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 	vInsertCount = (*pInsertCount);
 	vProcessId = (int*)malloc(vInsertCount*sizeof(int));
 	vThreadId = (int*)malloc(vInsertCount*sizeof(int));
-	vAdderId = (int*)malloc(vInsertCount*sizeof(int));
+	//vAdderId = (int*)malloc(vInsertCount*sizeof(int));
 	vEpoch = (int*)malloc(vInsertCount*sizeof(int));
 	vMSE_T = (double*)malloc(vInsertCount*sizeof(double));
 	vMSE_V = (double*)malloc(vInsertCount*sizeof(double));
@@ -853,7 +853,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 	for (i = 0; i < vInsertCount; i++){
 		vProcessId[i] = MSEData[i].ProcessId;
 		vThreadId[i] = MSEData[i].ThreadId;
-		vAdderId[i] = MSEData[i].AdderId;
+		//vAdderId[i] = MSEData[i].AdderId;
 		vEpoch[i] = MSEData[i].Epoch;
 		vMSE_T[i] = MSEData[i].MSE_T;
 		vMSE_V[i] = MSEData[i].MSE_V;
@@ -861,20 +861,19 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 	}
 
 	//-- Then, Build the Insert statement
-	sprintf(&stmt[0], "insert into MyLog_MSE (ProcessId, ThreadId, AdderId, Epoch, MSE_T, MSE_V) values(:P01, :P02, :P03, :P04, :P05, :P06)");
+	sprintf(&stmt[0], "insert into MyLog_MSE (ProcessId, ThreadId, Epoch, MSE_T, MSE_V) values(:P01, :P02, :P03, :P04, :P05)");
 	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 4 - stmt='%s' ; pid[0]=%d ; tid[0]=%d\n", 3, stmt, vProcessId[0], vThreadId[0]);
 
 	EXEC SQL CONTEXT USE :vCtx;
 	//EXEC SQL ALTER SESSION SET EVENTS '10046 trace name context forever, level 4';
 	//EXEC SQL ALTER SESSION SET SQL_TRACE = TRUE;
 	EXEC SQL FOR :vInsertCount ALLOCATE DESCRIPTOR 'inMSE';
-	EXEC SQL SET DESCRIPTOR 'inMSE' COUNT = 6;
+	EXEC SQL SET DESCRIPTOR 'inMSE' COUNT = 5;
 	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 1 DATA = :vProcessId;
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inMSE' VALUE 2 DATA = : vThreadId;
-	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inMSE' VALUE 3 DATA = : vAdderId;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 4 DATA = :vEpoch;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 5 DATA = :vMSE_T;
-	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 6 DATA = :vMSE_V;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 3 DATA = :vEpoch;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 4 DATA = :vMSE_T;
+	EXEC SQL FOR :vInsertCount SET DESCRIPTOR 'inMSE' VALUE 5 DATA = :vMSE_V;
 	EXEC SQL PREPARE DynIns FROM :stmt;
 	EXEC SQL FOR :vInsertCount EXECUTE DynIns USING DESCRIPTOR 'inMSE';
 	LogWrite_C(DebugParms, LOG_INFO, "BulkMSEInsert() CheckPoint 5\n", 0);
@@ -1550,6 +1549,10 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 	EXEC SQL PREPARE s16 FROM : stmt;
 	EXEC SQL DECLARE c16 CURSOR FOR s16;
 	EXEC SQL OPEN c16;
+	if (sqlca.sqlcode != 0) {
+		LogWrite_C(DebugParms, LOG_ERROR, "%s(): SQL Error %d, stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
+		return sqlca.sqlcode;
+	}
 	EXEC SQL FETCH c16 INTO :vEngineType, :vInputCount, :vOutputCount, :vAdderCount, :vDecompLevel, :vWType;
 	ret = sqlca.sqlcode;
 	if (sqlca.sqlcode != 0) {

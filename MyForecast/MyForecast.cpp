@@ -269,7 +269,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				NNParms = (NN_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
 				if (pTestId == 0) {
-					if (InsertCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
+					if (InsertCoreParms_NN(pDebugParms, pEngineParms->AdderCount, pid, l, n, NNParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					//-- 2. save final image (weights) , for each dataset
@@ -284,7 +284,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				SOMParms = (SOM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
 				if (pTestId == 0) {
-					if (InsertCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
+					if (InsertCoreParms_SOM(pDebugParms, pEngineParms->AdderCount, pid, l, n, SOMParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					//-- 2. save final image (weights) , for each dataset
@@ -296,7 +296,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				SVMParms = (SVM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
 				if (pTestId == 0) {
-					if (InsertCoreParms_SVM(pDebugParms, pid, l,n, SVMParms) != 0) return -1;
+					if (InsertCoreParms_SVM(pDebugParms, pEngineParms->AdderCount, pid, l,n, SVMParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					//-- 2. save final image (weights) , for each dataset
@@ -1015,8 +1015,8 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 	//-- from pTrainParms we get an array of threads from current training session
 	int n, d, i, j;
 
-	tLogMSE* MSELog = nullptr;
-	tLogRUN* RunLog = nullptr;
+	tLogMSE* MSELog;
+	tLogRUN* RunLog;
 
 	i = 0;
 	for (n = 0; n<pEngineParms->CoresCount[pLayer]; n++) {
@@ -1025,13 +1025,12 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 			MSELog = pEngineParms->Core[pLayer][n].CoreLog[d].MSEOutput;
 			RunLog = pEngineParms->Core[pLayer][n].CoreLog[d].RunOutput;
 
-			//-- MSE: we kee the same pid,tid from original Training session, 
-			if (pAction==ADD_SAMPLES) {
-				for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
-					MSELog[j].ProcessId = pSavedEngine->ProcessId;
-					MSELog[j].ThreadId = pSavedEngine->ThreadId;
-					MSELog[j].AdderId = pAdderId;
-				}
+			
+			//-- MSE: we kee the same pid,tid from original Training session,
+			for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
+				MSELog[j].BaseProcessId = (pAction==ADD_SAMPLES) ? pSavedEngine->ProcessId : MSELog[j].ProcessId;
+				MSELog[j].BaseThreadId  = (pAction==ADD_SAMPLES) ? pSavedEngine->ThreadId : MSELog[j].ThreadId;
+				MSELog[j].AdderId = pAdderId;
 			}
 
 			//-- Run
@@ -1312,10 +1311,10 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//printf("Saving Logs...\n");
 	if (pTestId == 0) {
 		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, (fp.Action==ADD_SAMPLES) ? fp.SavedEngine.ProcessId : pid, &fp.EngineParms) != 0) return -1;
+		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, (fp.Action==ADD_SAMPLES)?fp.SavedEngine.ProcessId:pid, &fp.EngineParms) != 0) return -1;
 	}
 	
-	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, fp.EngineParms.AdderCount, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
 
 	if (fp.Action !=JUST_RUN) {
 		printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;

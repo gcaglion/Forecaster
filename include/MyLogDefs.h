@@ -92,6 +92,8 @@ typedef struct sDebugInfo {
 typedef struct{
 	int ProcessId;
 	int ThreadId;
+	int BaseProcessId;	// used when ADD_SAMPLE
+	int BaseThreadId;	// used when ADD_SAMPLE
 	int TestId;
 	int LayerId;
 	int CoreId;

@@ -22,12 +22,12 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms);
 __declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun);
 __declspec(dllexport) int __stdcall UpdateTestLog_Duration(tDebugInfo* pDebugParms, int pid, double pElapsedS);
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid);
-__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms);
-__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms);
+__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, int basepid, tEngineDef* pEngineParms);
+__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms);
 //--
-__declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* DebugParms, int pid, int lid, int cid, NN_Parms* NNParms);
-__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms);
-__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, NN_Parms* NNParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SOM_Parms* SOMParms);
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SVM_Parms* SVMParms);
 //--
 __declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight);
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
