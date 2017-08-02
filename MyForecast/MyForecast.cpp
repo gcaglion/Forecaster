@@ -256,7 +256,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 	//-- 3. save cores logs       into CoreLogs_<XXX>
 
 	tCore* core;
-	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
+	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight0 = nullptr; tNNWeight*** NNWeight1 = nullptr;
 	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
 	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
 	SVM_Parms* SVMParms = nullptr;
@@ -272,9 +272,10 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 					if (InsertCoreParms_NN(pDebugParms, pEngineParms->AdderCount, pid, l, n, NNParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- 2. save final image (weights) , for each dataset
-					NNWeight = core->CoreLog[d].NNFinalW;
-					if (InsertCoreImage_NN(pDebugParms, NNParms, NNWeight) != 0) return -1;
+					//-- 2. save initial and final image (weights) , for each dataset
+					NNWeight0 = core->CoreLog[d].NNInitW;
+					NNWeight1 = core->CoreLog[d].NNFinalW;
+					if (InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1) != 0) return -1;
 					if (InsertCoreLogs_NN(pDebugParms, (NN_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 				}
 				break;

@@ -239,7 +239,7 @@ int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int aid, int pid, int lid, i
 	return 0;
 }
 //--
-int Txt_InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight) {
+int Txt_InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1) {
 	return 0;
 }
 int Txt_InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight) {
@@ -403,12 +403,12 @@ __declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms,
 	}
 }
 //--
-__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight) {
+__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight);
+		return Ora_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1);
 	}
 	else {
-		return Txt_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight);
+		return Txt_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1);
 	}
 }
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight) {

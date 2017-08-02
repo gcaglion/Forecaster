@@ -129,6 +129,7 @@ typedef struct sCoreLog {
 	int ThreadId;
 
 	//-- NN-specific
+	tNNWeight***	NNInitW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the beginning of the training
 	tNNWeight***	NNFinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
 	int				IntCnt;	// number of IntP elements
 	tLogInt*		IntP;	// [TimeStep]

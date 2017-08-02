@@ -380,7 +380,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int aid, in
 
 }
 //--
-EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight) {
+EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	int i, l, fn, tn;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
@@ -391,7 +391,8 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 	int* vNeuronLevel;
 	int* vFromNeuron;
 	int* vToNeuron;
-	double* vWeight;
+	double* vStartWeight;
+	double* vEndWeight;
 	double* vCtxValue;
 	int dbl_type = 22;	// Oracle SQLT_BDOUBLE
 	int int_type = 3;	// 
@@ -409,31 +410,33 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 	vNeuronLevel = (int*)malloc(vInsertCount * sizeof(int));
 	vFromNeuron = (int*)malloc(vInsertCount * sizeof(int));
 	vToNeuron = (int*)malloc(vInsertCount * sizeof(int));
-	vWeight = (double*)malloc(vInsertCount * sizeof(double));
+	vStartWeight = (double*)malloc(vInsertCount * sizeof(double));
+	vEndWeight = (double*)malloc(vInsertCount * sizeof(double));
 	vCtxValue = (double*)malloc(vInsertCount * sizeof(double));
 
 	i = 0;
 	for (l = 0; l < (NNParms->LevelsCount - 1); l++) {
 		for (fn = 0; fn < NNParms->NodesCount[l + 1]; fn++) {
 			for (tn = 0; tn < NNParms->NodesCount[l]; tn++) {
-				vProcessId[i] = NNWeight[l][fn][tn].ProcessId;
-				vThreadId[i] = NNWeight[l][fn][tn].ThreadId;
-				vNeuronLevel[i] = NNWeight[l][fn][tn].NeuronLevel;
-				vFromNeuron[i] = NNWeight[l][fn][tn].FromNeuron;
-				vToNeuron[i] = NNWeight[l][fn][tn].ToNeuron;
-				vWeight[i] = NNWeight[l][fn][tn].Weight;
-				vCtxValue[i] = NNWeight[l][fn][tn].CtxValue;
+				vProcessId[i] = NNWeight0[l][fn][tn].ProcessId;
+				vThreadId[i] = NNWeight0[l][fn][tn].ThreadId;
+				vNeuronLevel[i] = NNWeight0[l][fn][tn].NeuronLevel;
+				vFromNeuron[i] = NNWeight0[l][fn][tn].FromNeuron;
+				vToNeuron[i] = NNWeight0[l][fn][tn].ToNeuron;
+				vStartWeight[i] = NNWeight0[l][fn][tn].Weight;
+				vEndWeight[i] = NNWeight1[l][fn][tn].Weight;
+				vCtxValue[i] = NNWeight0[l][fn][tn].CtxValue;
 				i++;
 			}
 		}
 	}
 	//-- Then, Build the Insert statement
-	sprintf(&stmt[0], "insert into CoreImage_NN (ProcessId, ThreadId, NeuronLevel, FromNeuron, ToNeuron, Weight, CtxValue)");
-	strcat(stmt, " values(:WNN01, :WNN02, :WNN03, :WNN04, :WNN05, :WNN06, :WNN07)");
+	sprintf(&stmt[0], "insert into CoreImage_NN (ProcessId, ThreadId, NeuronLevel, FromNeuron, ToNeuron, StartWeight, EndWeight, CtxValue)");
+	strcat(stmt, " values(:WNN01, :WNN02, :WNN03, :WNN04, :WNN05, :WNN06, :WNN07, :WNN08)");
 
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL FOR : vInsertCount ALLOCATE DESCRIPTOR 'WNN';
-	EXEC SQL SET DESCRIPTOR 'WNN' COUNT = 7;
+	EXEC SQL SET DESCRIPTOR 'WNN' COUNT = 8;
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 1 TYPE = :int_type;
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 2 TYPE = :int_type;
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 3 TYPE = :int_type;
@@ -441,14 +444,16 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 5 TYPE = :int_type;
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 6 TYPE = :dbl_type;
 	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 7 TYPE = :dbl_type;
+	EXEC SQL SET DESCRIPTOR 'WNN' VALUE 8 TYPE = :dbl_type;
 
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 1 DATA = : vProcessId;
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 2 DATA = : vThreadId;
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 3 DATA = : vNeuronLevel;
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 4 DATA = : vFromNeuron;
 	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 5 DATA = : vToNeuron;
-	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 6 DATA = : vWeight;
-	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 7 DATA = : vCtxValue;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 6 DATA = : vStartWeight;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 7 DATA = : vEndWeight;
+	EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'WNN' VALUE 8 DATA = : vCtxValue;
 
 	EXEC SQL PREPARE DynWNNs FROM : stmt;
 	EXEC SQL FOR : vInsertCount EXECUTE DynWNNs USING DESCRIPTOR 'WNN';
@@ -466,7 +471,8 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 	free(vNeuronLevel);
 	free(vFromNeuron);
 	free(vToNeuron);
-	free(vWeight);
+	free(vStartWeight);
+	free(vEndWeight);
 	free(vCtxValue);
 
 	return 0;
@@ -1739,7 +1745,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
 	}
 
 	//-- Load Network Weights from CoreImage_NN
-	sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, Weight from CoreImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
+	sprintf(&stmt[0], "select NeuronLevel, FromNeuron, ToNeuron, EndWeight from CoreImage_NN where ProcessId=%d and ThreadId=%d order by 1,2,3", pid, tid);
 	LogWrite_C(DebugParms, LOG_INFO, "%s() CheckPoint 3 - stmt=%s\n", 2, __func__, stmt);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLINN FROM : stmt;

@@ -42,36 +42,42 @@ __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN) {
 __declspec(dllexport) void __stdcall mallocNNLog(tCoreLog* coreLog, int levelsCnt, int* nodesCnt, bool mallocIntP, int tscnt) {
 	//-- mallocs specific portions of coreLog (FinalW, IntP)
 
-	//-- FinalW
+	//-- InitW, FinalW
 	coreLog->NNFinalW = (tNNWeight***)malloc((levelsCnt - 1) * sizeof(tNNWeight**));
+	coreLog->NNInitW = (tNNWeight***)malloc((levelsCnt - 1) * sizeof(tNNWeight**));
 	for (int l = 0; l < (levelsCnt - 1); l++) {
 		coreLog->NNFinalW[l] = (tNNWeight**)malloc(nodesCnt[l+1] * sizeof(tNNWeight*));
+		coreLog->NNInitW[l] = (tNNWeight**)malloc(nodesCnt[l+1] * sizeof(tNNWeight*));
 		for (int fn = 0; fn < nodesCnt[l+1]; fn++) {
 			coreLog->NNFinalW[l][fn] = (tNNWeight*)malloc(nodesCnt[l] * sizeof(tNNWeight));
+			coreLog->NNInitW[l][fn] = (tNNWeight*)malloc(nodesCnt[l] * sizeof(tNNWeight));
 		}
 	}
 	//-- IntP
 	if(mallocIntP) coreLog->IntP = MallocArray<tLogInt>(tscnt);
 }
 __declspec(dllexport) void __stdcall freeNNLog(tCoreLog* coreLog, int levelsCnt, int* nodesCnt, bool freeIntP, int tscnt) {
-	//-- FinalW
+	//-- InitW, FinalW
 	for (int l = 0; l < (levelsCnt - 1); l++) {
 		for (int fn = 0; fn < nodesCnt[l + 1]; fn++) {
 			free(coreLog->NNFinalW[l][fn]);
+			free(coreLog->NNInitW[l][fn]);
 		}
 		free(coreLog->NNFinalW[l]);
+		free(coreLog->NNInitW[l]);
 	}
 	free(coreLog->NNFinalW);
+	free(coreLog->NNInitW);
 	//-- IntP
 	if(freeIntP) free(coreLog->IntP);
 }
 
-void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double**** W, double** F0){
+void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double**** W, double** F0) {
 	//-- This should be called only once at the end of training
 	int i, j, l;
-	for (l = 0; l<(NNParms->LevelsCount-1); l++){
-		for (j = 0; j < NNParms->NodesCount[l+1]; j++){
-			for (i = 0; i < NNParms->NodesCount[l]; i++){
+	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
+		for (j = 0; j < NNParms->NodesCount[l+1]; j++) {
+			for (i = 0; i < NNParms->NodesCount[l]; i++) {
 				NNLog->NNFinalW[l][j][i].ProcessId = pid;
 				NNLog->NNFinalW[l][j][i].ThreadId = tid;
 				NNLog->NNFinalW[l][j][i].NeuronLevel = l;
@@ -80,6 +86,24 @@ void SaveFinalW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double
 				NNLog->NNFinalW[l][j][i].Weight = W[l][t0][j][i];
 				//-- Context neurons
 				if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
+			}
+		}
+	}
+}
+void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double**** W, double** F0) {
+	//-- This should be called only once at the beginning of training
+	int i, j, l;
+	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
+		for (j = 0; j < NNParms->NodesCount[l+1]; j++) {
+			for (i = 0; i < NNParms->NodesCount[l]; i++) {
+				NNLog->NNInitW[l][j][i].ProcessId = pid;
+				NNLog->NNInitW[l][j][i].ThreadId = tid;
+				NNLog->NNInitW[l][j][i].NeuronLevel = l;
+				NNLog->NNInitW[l][j][i].FromNeuron = j;
+				NNLog->NNInitW[l][j][i].ToNeuron = i;
+				NNLog->NNInitW[l][j][i].Weight = W[l][t0][j][i];
+				//-- Context neurons
+				if (l==0) NNLog->NNInitW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
 			}
 		}
 	}
@@ -1516,6 +1540,8 @@ __declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMu
 
 	//-- Init Weights and Neurons
 	NNInit(pNNParms, &MxData, loadW, pNNLogs);
+	//-- Save Initial Weights
+	SaveInitW(pNNParms, pNNLogs, pid, tid, MxData.NN.W, MxData.NN.F[0]);
 	//-- Train 
 	NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	//-- Save Final Weights

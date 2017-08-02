@@ -29,7 +29,7 @@ __declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* DebugParms, 
 __declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SOM_Parms* SOMParms);
 __declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SVM_Parms* SVMParms);
 //--
-__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight);
+__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1);
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight);
 __declspec(dllexport) int __stdcall InsertCoreImage_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, tSVMResult* SVMResult, tSVMWeight** SVMWeight);
 //--
