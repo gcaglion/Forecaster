@@ -1113,10 +1113,6 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 }
 
-void NNTrain_Online(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
-	LogWrite(pDebugParms, LOG_ERROR, "NNTrain_Online() has not been implemented!\n", 0);
-}
-
 void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
 	int s;
 	int epoch;
@@ -1173,9 +1169,6 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 		break;
 	case TP_BATCH:
 		NNTrain_Batch(pDebugParms, NNParms, NNLogs, Mx, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
-		break;
-	case TP_ONLINE:
-		NNTrain_Online(pDebugParms, NNParms, NNLogs, Mx, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 		break;
 	}
 }
