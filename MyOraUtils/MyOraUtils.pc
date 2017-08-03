@@ -1658,7 +1658,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR from CoreParms_SOM where ProcessId=%d and ThreadId=%d", pid, tid);
+	sprintf(&stmt[0], "select InputCount, OutputCount, MaxEpochs, TDFunction, BaseTD, LRFunction, BaseLR from CoreParms_SOM where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLEPSOM FROM : stmt;
 	EXEC SQL DECLARE cLEPSOM CURSOR FOR sLEPSOM;
@@ -1696,7 +1696,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
-	sprintf(&stmt[0], "select InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize from CoreParms_SVM where ProcessId=%d and ThreadId=%d", pid, tid);
+	sprintf(&stmt[0], "select InputCount, MaxEpochs, C, Epsilon, IterToShrink, KernelType, PolyDegree, RBFGamma, CoefLin, CoefConst, KernelCacheSize from CoreParms_SVM where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLEPSVM FROM : stmt;
 	EXEC SQL DECLARE cLEPSVM CURSOR FOR sLEPSVM;

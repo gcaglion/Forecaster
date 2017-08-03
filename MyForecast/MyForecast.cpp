@@ -1029,8 +1029,8 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 			
 			//-- MSE: we kee the same pid,tid from original Training session,
 			for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
-				MSELog[j].BaseProcessId = (pAction==ADD_SAMPLES) ? pSavedEngine->ProcessId : MSELog[j].ProcessId;
-				MSELog[j].BaseThreadId  = (pAction==ADD_SAMPLES) ? pSavedEngine->ThreadId : MSELog[j].ThreadId;
+				MSELog[j].BaseProcessId = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
+				MSELog[j].BaseThreadId  = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
 				MSELog[j].AdderId = pAdderId;
 			}
 
@@ -1367,7 +1367,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 }
 
-extern "C" __declspec(dllexport) int MTgetForecast(int paramOverrideCnt, char** paramOverride, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
+extern "C" __declspec(dllexport) int MTgetForecast(int paramOverrideCnt, char** paramOverride, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, double** pFutureData, double** pFutureBW, double** oPredictedData) {
 	
-	return (getForecast(paramOverrideCnt, paramOverride, NULL, pTestId, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, haveActualFuture, pFutureData, pFutureBW, oPredictedData));
+	return (getForecast(paramOverrideCnt, paramOverride, NULL, 0, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, 0, pFutureData, pFutureBW, oPredictedData));
 }
