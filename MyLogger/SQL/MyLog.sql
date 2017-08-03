@@ -13,10 +13,10 @@ alter table EngineThreads drop constraint EngineThreads_FK_DataParms;
 alter table CoreImage_NN drop constraint CoreImage_NN_FK_EngineThreads;
 alter table CoreImage_SOM drop constraint CoreImage_SOM_FK_EngineThreads;
 alter table CoreImage_SVM drop constraint CoreImage_SVM_FK_EngineThreads;
-alter table CoreParms_NN drop constraint CoreParms_NN_FK_EngineThreads;
-alter table CoreParms_GA drop constraint CoreParms_GA_FK_EngineThreads;
-alter table CoreParms_SOM drop constraint CoreParms_SOM_FK_EngineThreads;
-alter table CoreParms_SVM drop constraint CoreParms_SVM_FK_EngineThreads;
+--alter table CoreParms_NN drop constraint CoreParms_NN_FK_EngineThreads;
+--alter table CoreParms_GA drop constraint CoreParms_GA_FK_EngineThreads;
+--alter table CoreParms_SOM drop constraint CoreParms_SOM_FK_EngineThreads;
+--alter table CoreParms_SVM drop constraint CoreParms_SVM_FK_EngineThreads;
 alter table MyLog_MSE drop constraint MyLog_MSE_FK_EngineThreads;
 alter table MyLog_Run drop constraint MyLog_Run_FK_EngineThreads;
 alter table CoreLogs_NN drop constraint CoreLogs_NN_FK_EngineThreads;
@@ -83,7 +83,7 @@ create table EngineThreads(
 ) storage (freelists 8);
 alter table EngineThreads add constraint EngineThreads_PK primary key (ProcessId, TestId, LayerId, CoreId, DatasetId) using index tablespace LogIdx;
 alter table EngineThreads add constraint EngineThreads_UK1 unique (ProcessId, ThreadId) using index tablespace LogIdx;
-alter table EngineThreads add constraint EngineThreads_UK2 unique (ProcessId, LayerId, CoreId) using index tablespace LogIdx;
+--alter table EngineThreads add constraint EngineThreads_UK2 unique (ProcessId, LayerId, CoreId) using index tablespace LogIdx;
 
 drop table CoreImage_NN purge;
 create table CoreImage_NN(
@@ -302,10 +302,10 @@ alter table EngineThreads add constraint EngineThreads_FK_DataParms foreign key(
 alter table CoreImage_NN add constraint CoreImage_NN_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreImage_SOM add constraint CoreImage_SOM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreImage_SVM add constraint CoreImage_SVM_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
-alter table CoreParms_NN add constraint CoreParms_NN_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
-alter table CoreParms_GA add constraint CoreParms_GA_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
-alter table CoreParms_SOM add constraint CoreParms_SOM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
-alter table CoreParms_SVM add constraint CoreParms_SVM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_NN add constraint CoreParms_NN_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_GA add constraint CoreParms_GA_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_SOM add constraint CoreParms_SOM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
+--alter table CoreParms_SVM add constraint CoreParms_SVM_FK_EngineThreads foreign key(ProcessId, LayerId, CoreId) references EngineThreads(ProcessId, LayerId, CoreId);
 alter table MyLog_MSE add constraint MyLog_MSE_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table MyLog_Run add constraint MyLog_Run_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
 alter table CoreLogs_GA add constraint CoreLogs_GA_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);
