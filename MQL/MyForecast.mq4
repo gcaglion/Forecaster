@@ -208,7 +208,6 @@ double vBaseH, vBaseL;
 
 int    Default_Slippage=5;     
 int    NN_Retries = 5;
-//double vTestId;
 int    vBarId;
 double vPrevFH0, vPrevFL0;
 bool   fLog;

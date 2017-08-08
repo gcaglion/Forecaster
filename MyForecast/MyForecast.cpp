@@ -1145,6 +1145,21 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 
 }
 
+void dataDump(int pHistoryLen, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int pFutureLen, double** pFutureData, double** pFutureBW) {
+	//-- data log
+	FILE* fd = fopen("C:/temp/MT4data.csv", "w");
+	fprintf(fd, "High, Low, BarWidth \n");
+	//--- BaseVal
+	fprintf(fd, "%f, %f, %f \n", pHistoryBaseVal[0], pHistoryBaseVal[1], 0.0);
+	//---HistoryData
+	for (int i = 0; i<pHistoryLen; i++) fprintf(fd, "%f, %f, %f \n", pHistoryData[0][i], pHistoryData[1][i], pHistoryBW[0][i]);
+	//---
+	//--- FutureData
+	for (int i = 0; i<pFutureLen; i++) fprintf(fd, "%f, %f, %f \n", pFutureData[0][i], pFutureData[1][i], pFutureBW[0][i]);
+	//---
+	fclose(fd);
+
+}
 __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
 
 	int pid = GetCurrentProcessId();
@@ -1162,6 +1177,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (ForecastParamLoader(&fp) <0) return -1;
 	//-- c. restore Ctx for LogDB, if the caller has already opened a session
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
+
+	dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
 
 	fp.DebugParms.Mtx = FMutex;
 
@@ -1367,7 +1384,59 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 }
 
-extern "C" __declspec(dllexport) int MTgetForecast(int paramOverrideCnt, char** paramOverride, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, double** pFutureData, double** pFutureBW, double** oPredictedData) {
-	
-	return (getForecast(paramOverrideCnt, paramOverride, NULL, 0, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, 0, pFutureData, pFutureBW, oPredictedData));
+extern "C" __declspec(dllexport) int MTgetForecast(
+	int paramCnt, char* paramOverride,
+	double* pHistoryDataH, double pHistoryBaseValH,
+	double* pHistoryDataL, double pHistoryBaseValL,
+	double* pHistoryBW,
+	double* pValidationDataH, double pValidationBaseValH,
+	double* pValidationDataL, double pValidationBaseValL,
+	double* pFutureDataH,
+	double* pFutureDataL,
+	double* pFutureBW,
+	double* oPredictedDataH, double* oPredictedDataL
+) {
+
+	//-- High and Low arrays are put together in double arrays, with High in 0, Low in 1. BarWidth is duplicated
+	double* vHistoryData[2];
+	double  vHistoryBaseVal[2];
+	double* vHistoryBW[2];
+	double* vValidationData[2];
+	double  vValidationBaseVal[2];
+	double* vFutureData[2];
+	double* vFutureBW[2];
+	double* vPredictedData[2];
+	//--
+	vHistoryData[0] = pHistoryDataH;				vHistoryData[1] = pHistoryDataL;
+	vHistoryBaseVal[0] = pHistoryBaseValH;			vHistoryBaseVal[1] = pHistoryBaseValL;
+	vHistoryBW[0] = pHistoryBW;						vHistoryBW[1] = pHistoryBW;
+	vValidationData[0] = pValidationDataH;			vValidationData[1] = pValidationDataL;
+	vValidationBaseVal[0] = pValidationBaseValH;	vValidationBaseVal[1] = pValidationBaseValL;
+	vFutureData[0] = pFutureDataH;					vFutureData[1] = pFutureDataL;
+	vFutureBW[0] = pFutureBW;						vFutureBW[1] = pFutureBW;
+	vPredictedData[0] = oPredictedDataH;			vPredictedData[1] = oPredictedDataL;
+
+	// Forecasting Parameters initialization. 
+	tForecastParms fParms;
+	char** param = (char**)malloc(ARRAY_PARAMETER_MAX_LEN * sizeof(char*)); for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) param[i] = (char*)malloc(256);
+
+	//-- parameters log
+	FILE* fp = fopen("C:/temp/MT4parms.txt", "w");
+	fprintf(fp, "%d\n%s\n", paramCnt, paramOverride);
+
+	//-- a. set overrides from full string in paramOverride parameter
+	paramCnt = cslToArray(paramOverride, ' ', param);
+	if (CLProcess(paramCnt, param, &fParms) <0) return -1;
+	//===
+	for (int p = 1; p<paramCnt; p++) fprintf(fp, "%d: %s = %s\n", p, fParms.CLparamName[p], fParms.CLparamVal[p]);
+	//===
+	//-- b. process ini file
+	//if (ForecastParamLoader(&fParms) <0) return -2;
+
+	return (getForecast(paramCnt, param, NULL, 0, vHistoryData, vHistoryBaseVal, vHistoryBW, vValidationData, vValidationBaseVal, 0, vFutureData, vFutureBW, vPredictedData));
+
+	fclose(fp);
+
+	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
+	return 0;
 }

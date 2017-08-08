@@ -29,7 +29,7 @@
 }
 */
 
-#include <MyUtils.h>
+//#include <MyUtils.h>
 
 /*static float CalculateCPULoad(unsigned long long idleTicks, unsigned long long totalTicks)
 {
@@ -57,7 +57,7 @@ float GetCPULoad()
 	return GetSystemTimes(&idleTime, &kernelTime, &userTime) ? CalculateCPULoad(FileTimeToInt64(idleTime), FileTimeToInt64(kernelTime)+FileTimeToInt64(userTime)) : -1.0f;
 }
 */
-
+/*
 typedef struct sHogParms {
 	int id;
 	int duration;
@@ -96,7 +96,7 @@ int cpuHog(tHogParms* parms) {
 #include <string>
 using namespace std;
 #include <stdio.h>
-
+*/
 
 /*int main() {
 	HANDLE th;
@@ -116,7 +116,7 @@ using namespace std;
 	}
 }
 */
-
+/*
 int main(int argc, char* argv[]) {
 	tHogParms* hp=new tHogParms;
 	hp->id = (argc>1) ? atoi(argv[1]) : 1;
@@ -124,3 +124,22 @@ int main(int argc, char* argv[]) {
 	return (cpuHog(hp) );
 }
 
+*/
+
+extern "C" __declspec(dllexport) int MTgetForecast(
+	int paramCnt, char* paramOverride,
+	double* pHistoryDataH, double pHistoryBaseValH,
+	double* pHistoryDataL, double pHistoryBaseValL,
+	double* pHistoryBW,
+	double* pValidationDataH, double pValidationBaseValH,
+	double* pValidationDataL, double pValidationBaseValL,
+	double* pFutureDataH,
+	double* pFutureDataL,
+	double* pFutureBW,
+	double* oPredictedDataH, double* oPredictedDataL
+);
+
+int main(int argc, char* argv[]) {
+	char* paramstring = "MT4.exe --IniFile=c:/temp/tester.ini --DataParms.HistoryLen=1000 --DataParms.PredictionLen=5";
+	int ret = MTgetForecast(4, paramstring, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+}

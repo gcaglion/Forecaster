@@ -23,5 +23,6 @@
 
 __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms);
 __declspec(dllexport) void ForecastParamFree(tForecastParms* ioParms);
-__declspec(dllexport) int  getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData);
-extern "C" __declspec(dllexport) int MTgetForecast(int paramOverrideCnt, char** paramOverride, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, double** pFutureData, double** pFutureBW, double** oPredictedData);
+
+__declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData);
+
