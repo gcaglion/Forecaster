@@ -420,11 +420,10 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	int elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
 	if (elemCnt < 0) return -1;
 	for (int i = 0; i < elemCnt; i++) {
-		ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], oparamVal[i]);
+		ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], &(*oparamVal)[i]);
 		if (ret<0) break;
 	}
 	FreeArray(100, 100, carr);
 	free(vparamName);
 	return (ret<0)?ret:elemCnt;
 }
-
