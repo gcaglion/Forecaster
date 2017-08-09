@@ -303,7 +303,8 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 					//-- 2. save final image (weights) , for each dataset
 					if (InsertCoreLogs_SVM(pDebugParms, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 					if (pDebugParms->SaveImages>0) {
-						//QueryPerformanceCounter(&time_start);																															// start timer
+						//QueryPerformanceCounter(&time_start);		// start timer
+						LogWrite(pDebugParms, LOG_INFO, "%s(): SVCount=%d\n", 3, __func__, core->CoreLog[d].SVMResult.SVcount);
 						if (InsertCoreImage_SVM(pDebugParms, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMFinalW) != 0) return -1;										//===== THIS IS CREATING SYSTEM-WIDE CONTENTION / WAIT !!! ====					
 						//QueryPerformanceCounter(&time_end); elapsedTime = (time_end.QuadPart - time_start.QuadPart) * 1000.0 / frequency.QuadPart; ms2ts(elapsedTime, elapsedTimeS);	//-- stop timer, compute the elapsed time
 						//fprintf(fPerf, "InsertCoreImage_SVM(), %d, %f, %s\n", core->CoreLog[d].SVMResult.SVcount*pDataParms->SampleLen, elapsedTime, elapsedTimeS);											//-- print elapsed time in perf file
@@ -1126,7 +1127,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			runLog_o[d][i].Error = err[i];
 			runLog_o[d][i].Error_TRS = err_trs[i];
 
-			runLog_o[d][i].BarWidth = wd_bw[d][i];
+			if(pOOS==1) runLog_o[d][i].BarWidth = wd_bw[d][i];
 			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0)?0:(runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
 		}
 
@@ -1163,6 +1164,7 @@ void dataDump(int pHistoryLen, double** pHistoryData, double* pHistoryBaseVal, d
 __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
 
 	int pid = GetCurrentProcessId();
+	int tid = GetCurrentThreadId();
 	HANDLE FMutex = CreateMutex(NULL, FALSE, NULL);
 
 /*	sprintf(fPerfName, "c:/temp/Perf%d.csv", pid);
@@ -1178,7 +1180,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//-- c. restore Ctx for LogDB, if the caller has already opened a session
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
-	dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
 
@@ -1198,7 +1201,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	int rc = sampleLen0 + sampleCnt + flen;
 
 	//-- Transform and Scale History, Validation, Future Data
-	int wlen = hlen + flen;
+	int wlen = hlen + ((fp.HaveFutureData==0)?0:flen);
 
 	double** wd			= MallocArray<double>(dscnt, wlen);
 	double** wd_tr		= MallocArray<double>(dscnt, wlen);
@@ -1235,6 +1238,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	double****** Sample = mallocSample(&fp.EngineParms, &fp.DataParms);
 	double****** Target = mallocTarget(&fp.EngineParms, &fp.DataParms);
 
+
 	/*
 		ts		[HD/VD][Dataset][Layer][Core][item]
 		Sample	[HD/VD][Dataset][Layer][Core][Sample][item]
@@ -1249,9 +1253,11 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 			wd[d][i] = hd[d][i];
 			wd_bw[d][i] = pHistoryBW[d][i];
 		}
-		for (i = 0; i < flen; i++) {
-			wd[d][hlen + i] = fd[d][i];
-			wd_bw[d][hlen + i] = pFutureBW[d][i];
+		if (fp.HaveFutureData==1) {
+			for (i = 0; i < flen; i++) {
+				wd[d][hlen + i] = fd[d][i];
+				wd_bw[d][hlen + i] = pFutureBW[d][i];
+			}
 		}
 		SetTSScaleRange(fp.EngineParms.EngineType, fp.EngineParms.Core[0][0].CoreSpecs, &scaleMin, &scaleMax);
 		//-- transform/scale wd
@@ -1264,10 +1270,11 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		}
 		//-- derive hd_trs, fd_trs from wd_trs
 		for (int i = 0; i < hlen; i++) hd_trs[d][i] = wd_trs[d][i];
-		for (int i = 0; i < flen; i++) fd_trs[d][i] = wd_trs[d][hlen + i];
-
+		if (fp.HaveFutureData==1) {
+			for (int i = 0; i < flen; i++) fd_trs[d][i] = wd_trs[d][hlen + i];
+		}
 		// regardless of the engine, we slide base timeserie. If needed by specific engine, this will get overwritten
-		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 0);
+		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 2);
 		if (fp.DataParms.ValidationShift != 0) SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], 0);
 
 		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
@@ -1324,9 +1331,15 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	}
 
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
+	FILE* f = fopen("c:/temp/MyForecast.log", "w");
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
+	fclose(f);
 
 	//-- Save Logs
-	//printf("Saving Logs...\n");
+	LogWrite(&fp.DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
 	if (pTestId == 0) {
 		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
 		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, (fp.Action==ADD_SAMPLES)?fp.SavedEngine.ProcessId:pid, &fp.EngineParms) != 0) return -1;
@@ -1344,8 +1357,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
-	//fclose(fPerf);
-
 	FreeArray(dscnt, wlen, wd);
 	FreeArray(dscnt, wlen, wd_tr);
 	FreeArray(dscnt, wlen, wd_trs);
@@ -1375,10 +1386,11 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	FreeArray(dscnt, rc, runLog);
 
 	freeSampleTarget(&fp.EngineParms, &fp.DataParms, Sample, Target);
+	ForecastParamFree(&fp);
+
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s completed.\n", 2, timestamp(), __func__);
 
 	LogClose(&fp.DebugParms);
-
-	ForecastParamFree(&fp);
 
 	return 0;
 
@@ -1386,6 +1398,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 extern "C" __declspec(dllexport) int MTgetForecast(
 	int paramCnt, char* paramOverride,
+	int progId,	//-- equivalent to Tester.cpp's testid. needed to avoid duplication in DataParms
 	double* pHistoryDataH, double pHistoryBaseValH,
 	double* pHistoryDataL, double pHistoryBaseValL,
 	double* pHistoryBW,
@@ -1396,7 +1409,7 @@ extern "C" __declspec(dllexport) int MTgetForecast(
 	double* pFutureBW,
 	double* oPredictedDataH, double* oPredictedDataL
 ) {
-
+	int ret;
 	//-- High and Low arrays are put together in double arrays, with High in 0, Low in 1. BarWidth is duplicated
 	double* vHistoryData[2];
 	double  vHistoryBaseVal[2];
@@ -1426,17 +1439,28 @@ extern "C" __declspec(dllexport) int MTgetForecast(
 
 	//-- a. set overrides from full string in paramOverride parameter
 	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, &fParms) <0) return -1;
+	if (CLProcess(paramCnt, param, &fParms) <0) return -3;
+	//-- b. process ini file
+	if (ForecastParamLoader(&fParms) <0) return -2;
 	//===
 	for (int p = 1; p<paramCnt; p++) fprintf(fp, "%d: %s = %s\n", p, fParms.CLparamName[p], fParms.CLparamVal[p]);
-	//===
-	//-- b. process ini file
-	//if (ForecastParamLoader(&fParms) <0) return -2;
-
-	return (getForecast(paramCnt, param, NULL, 0, vHistoryData, vHistoryBaseVal, vHistoryBW, vValidationData, vValidationBaseVal, 0, vFutureData, vFutureBW, vPredictedData));
-
 	fclose(fp);
+	//===
+
+	ret= OraConnect(&fParms.DebugParms, fParms.DebugParms.DebugDB);
+
+	LogWrite(&fParms.DebugParms, LOG_INFO, "BEFORE: oPredictedDataH[0]=%f \t oPredictedDataL[0]=%f \t vPredictedData[0][0]=%f \t vPredictedData[1][0]=%f\n", 4, oPredictedDataH[0], oPredictedDataL[0], vPredictedData[0][0], vPredictedData[1][0]);
+	if(ret==0) ret = getForecast(paramCnt, param, fParms.DebugParms.DebugDB->DBCtx, progId, vHistoryData, vHistoryBaseVal, vHistoryBW, vValidationData, vValidationBaseVal, 0, vFutureData, vFutureBW, vPredictedData);
+	LogWrite(&fParms.DebugParms, LOG_INFO, "AFTER : oPredictedDataH[0]=%f \t oPredictedDataL[0]=%f \t vPredictedData[0][0]=%f \t vPredictedData[1][0]=%f\n", 4, oPredictedDataH[0], oPredictedDataL[0], vPredictedData[0][0], vPredictedData[1][0]);
+
+	if (ret==0) OraDisconnect(fParms.DebugParms.DebugDB->DBCtx);
 
 	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
-	return 0;
+	return ret;
 }
+
+/*
+FILE* kfd = fopen("C:/temp/dioporco.log", "w");
+fprintf(kfd, "DatasetsCount=%d ; DebugLevel=%d\nDebugDest=%d\nDebugDB.DBCtx=%p\n---\n", fParms.DataParms.DatasetsCount, fParms.DebugParms.DebugLevel, fParms.DebugParms.DebugDest, fParms.DebugParms.DebugDB->DBCtx);
+fclose(kfd);
+*/

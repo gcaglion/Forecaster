@@ -139,8 +139,9 @@ __declspec(dllexport) void  __stdcall LogWrite(tDebugInfo* DebugParms, int LogTy
 	//-- Opens Log file only once
 	if (DebugParms->fIsOpen != 1) {
 		strcpy(DebugParms->FullfName, DebugParms->fPath); strcat(DebugParms->FullfName, "/"); strcat(DebugParms->FullfName, DebugParms->fName);
-		DebugParms->fHandle = fopen(DebugParms->FullfName, "w");
+		DebugParms->fHandle = fopen(DebugParms->FullfName, "a");
 		DebugParms->fIsOpen = 1;
+		fprintf(DebugParms->fHandle, "\n---------- Process %d Started New Log at %s ----------\n", GetCurrentProcessId(), timestamp());
 	}
 
 	va_start(arguments, argcount);
@@ -345,6 +346,8 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 		for (d = 0; d<pDataParms->DatasetsCount; d++) vBarData[d] = vFileData->FileDataSet[d];
 		break;
 	case SOURCE_DATA_FROM_MT:
+		strcpy(vDSFileName, "\0");
+		vIsFilled = 0;
 		vBarData[0] = HIGH;
 		vBarData[1] = LOW;
 		break;

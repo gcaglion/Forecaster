@@ -598,6 +598,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) printf("Ora_InsertCoreImage_SVM() could not connect to Log Database...\n");
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
+	LogWrite_C(DebugParms, LOG_INFO, "%s(): vInsertCount=%d\n", 2, __func__, vInsertCount);
 
 	vProcessId = (int*)malloc(vInsertCount * sizeof(int));
 	vThreadId = (int*)malloc(vInsertCount * sizeof(int));

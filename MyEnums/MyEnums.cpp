@@ -417,7 +417,24 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	char pname[100]; strcpy(pname, vparamName);
 	char** carr = MallocArray<char>(100, 100);
 	int ret;
-	int elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
+	char evals[100];
+	int elemCnt;
+	//--
+	for (int p = 1; p < iniParms->CLparamCount; p++) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
+			strcpy(evals, iniParms->CLparamVal[p]);
+			elemCnt = cslToArray(evals, ',', carr);
+			for (int i = 0; i < elemCnt; i++) {
+				ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], &(*oparamVal)[i]);
+				if (ret<0) break;
+			}
+			FreeArray(100, 100, carr);
+			free(vparamName);
+			return (ret<0) ? ret : elemCnt;
+		}
+	}
+	//--
+	elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
 	if (elemCnt < 0) return -1;
 	for (int i = 0; i < elemCnt; i++) {
 		ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], &(*oparamVal)[i]);
