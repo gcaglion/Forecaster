@@ -535,6 +535,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Forecaster.DebugFileName", ioParms->DebugParms.fName) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.DebugFilePath", ioParms->DebugParms.fPath) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.ThreadSafeLogging", &ioParms->DebugParms.ThreadSafeLogging) < 0)	return -1;
+	if (getParam(ioParms, "Results.SaveNothing", &ioParms->DebugParms.SaveNothing) < 0)					return -1;
 	if (getParam(ioParms, "Results.SaveMSE", &ioParms->DebugParms.SaveMSE) < 0)							return -1;
 	if (getParam(ioParms, "Results.SaveRUN", &ioParms->DebugParms.SaveRun) < 0)							return -1;
 	if (getParam(ioParms, "Results.SaveImages", &ioParms->DebugParms.SaveImages) < 0)					return -1;
@@ -1078,7 +1079,8 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		for (i = 0; i < pl ; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? NULL : fd_trs[d][i];
+		//for (i = 0; i < pl ; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? NULL : fd_trs[d][i];
+		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];
 
 		//-- Predicted_TRS
 		for (i = 0; i < sl0; i++) prd_trs[i]			= NULL;
@@ -1105,8 +1107,10 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
 		for (i = (sl0 + sc); i < rc; i++) {
-			err[i] = (pOOS == 0) ? 0 : fabs(prd[i] - act[i]);
-			err_trs[i] = (pOOS == 0) ? 0 : fabs(prd_trs[i] - act_trs[i]);
+			//err[i] = (pOOS == 0) ? 0 : fabs(prd[i] - act[i]);
+			//err_trs[i] = (pOOS == 0) ? 0 : fabs(prd_trs[i] - act_trs[i]);
+			err[i] = fabs(prd[i] - act[i]);
+			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
 
 		//-- fill runLog_o[d]
@@ -1128,7 +1132,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			runLog_o[d][i].Error_TRS = err_trs[i];
 
 			if(pOOS==1) runLog_o[d][i].BarWidth = wd_bw[d][i];
-			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0)?0:(runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
+			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0) ? 0 : (runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
 		}
 
 		//-- finally, set oPredictedData
@@ -1339,22 +1343,23 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	fclose(f);
 
 	//-- Save Logs
-	LogWrite(&fp.DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
-	if (pTestId == 0) {
-		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, (fp.Action==ADD_SAMPLES)?fp.SavedEngine.ProcessId:pid, &fp.EngineParms) != 0) return -1;
-	}
-	
-	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, fp.EngineParms.AdderCount, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+	if (fp.DebugParms.SaveNothing==0) {
+		LogWrite(&fp.DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
+		if (pTestId == 0) {
+			printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+			printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, (fp.Action==ADD_SAMPLES) ? fp.SavedEngine.ProcessId : pid, &fp.EngineParms) != 0) return -1;
+		}
 
-	if (fp.Action !=JUST_RUN) {
-		printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
-		printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, fp.EngineParms.AdderCount, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+
+		if (fp.Action !=JUST_RUN) {
+			printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
+			printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		}
+		if (fp.Action!=ADD_SAMPLES) {
+			printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
+		}
 	}
-	if (fp.Action!=ADD_SAMPLES) {
-		printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
-	}
-	//LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
 	FreeArray(dscnt, wlen, wd);

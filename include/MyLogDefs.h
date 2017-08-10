@@ -74,6 +74,7 @@ typedef struct sDebugInfo {
 	//char* DBConnString;
 	void* DBCtx;
 	int ThreadSafeLogging;
+	int SaveNothing;
 	int SaveMSE;
 	int SaveRun;
 	int SaveInternals;

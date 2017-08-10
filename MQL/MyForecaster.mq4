@@ -37,9 +37,9 @@ int  MTSaveClientInfo( int paramOverrideCnt, uchar &paramOverride[], uchar& pDBC
 //-- Parameters File
 input string ParametersFile="C:/temp/Forecaster.ini";
 //-- Data Shape
-input int HistoryLen    = 500;
+input int HistoryLen    = 1000;
 input int PredictionLen = 5;
-input int ValidationShift = -1000;
+input int ValidationShift = 0;
 input int Action        = 0;  // TRAIN_SAVE_RUN
 //-- Trade
 input double TradeSizeMin   = 0.01;
@@ -127,12 +127,13 @@ int OnInit()
    CtxS=CharArrayToString(vCtxS); Print("vCtxS=",CtxS);
 
   	//--- 2. Save Client Log (elapsedTime is 0)
-  	sCurrentBarTime=StringConcatenate(TimeToString(Time[0], TIME_DATE),TimeToString(Time[0], TIME_MINUTES));
-  	StringToCharArray(sCurrentBarTime, vCurrentBarTime);
-  	DllRetVal=MTSaveClientInfo(vParamOverrideCnt, vParamOverride, vCtxS, vCurrentBarTime, 1, 1);
-   Print("MTSaveClientInfo() returns ", DllRetVal);
-   if (DllRetVal!=0) ExpertRemove();
-
+   if(!IsTesting()) {
+     	sCurrentBarTime=StringConcatenate(TimeToString(Time[0], TIME_DATE),TimeToString(Time[0], TIME_MINUTES));
+     	StringToCharArray(sCurrentBarTime, vCurrentBarTime);
+     	DllRetVal=MTSaveClientInfo(vParamOverrideCnt, vParamOverride, vCtxS, vCurrentBarTime, 1, 1);
+      Print("MTSaveClientInfo() returns ", DllRetVal);
+      if (DllRetVal!=0) ExpertRemove();
+   }
 //---
    return(INIT_SUCCEEDED);
   }
@@ -147,7 +148,6 @@ void OnDeinit(const int reason)
    } else{
       MTOraDisconnect(vParamOverrideCnt, vParamOverride, vCtxS, 1);
    }
-   
   }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -244,7 +244,7 @@ int GetForecast()
  
       int retries=0;
 
-      printf("RunForecast() CheckPoint 0: BarId=%d ; Getting Forecast...", vBarId);
+      if(!IsTesting()) printf("RunForecast() CheckPoint 0: BarId=%d ; Getting Forecast...", vBarId);
       //-- First, Invert bars sequence
       for(int i=0; i<vHistoryLen; i++){    // (i=0 is the current bar)
          vHistoryTime[i]=StringConcatenate(TimeToStr(Time[vHistoryLen-i],TIME_DATE)," ",TimeToStr(Time[vHistoryLen-i],TIME_MINUTES));
@@ -262,14 +262,14 @@ int GetForecast()
       vHistoryBaseValH = High[vHistoryLen+1];
       vHistoryBaseValL = Low [vHistoryLen+1];
 
-      printf("RunForecast() CheckPoint 1: vBar[%d]: DateTime=%s, High=%f, Low=%f, vBar[%d]: DateTime=%s, High=%f, Low=%f", 0, vHistoryTime[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryLen-1, vHistoryTime[vHistoryLen-1], vHistoryDataH[vHistoryLen-1], vHistoryDataL[vHistoryLen-1]);     
-      printf("RunForecast() CheckPoint 1: vBar_V[%d]: DateTime=%s, High=%f, Low=%f, vBar_V[%d]: DateTime=%s, High=%f, Low=%f", 0, vValidationTime[0], vValidationDataH[0], vValidationDataL[0], vHistoryLen-1, vValidationTime[vHistoryLen-1], vValidationDataH[vHistoryLen-1], vValidationDataL[vHistoryLen-1]);     
+      if(!IsTesting()) printf("RunForecast() CheckPoint 1: vBar[%d]: DateTime=%s, High=%f, Low=%f, vBar[%d]: DateTime=%s, High=%f, Low=%f", 0, vHistoryTime[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryLen-1, vHistoryTime[vHistoryLen-1], vHistoryDataH[vHistoryLen-1], vHistoryDataL[vHistoryLen-1]);     
+      if(!IsTesting()) printf("RunForecast() CheckPoint 1: vBar_V[%d]: DateTime=%s, High=%f, Low=%f, vBar_V[%d]: DateTime=%s, High=%f, Low=%f", 0, vValidationTime[0], vValidationDataH[0], vValidationDataL[0], vHistoryLen-1, vValidationTime[vHistoryLen-1], vValidationDataH[vHistoryLen-1], vValidationDataL[vHistoryLen-1]);     
 
 
       if(vBarId>0){
          vPrevFH0=GlobalVariableGet("PrevFH0");
          vPrevFL0=GlobalVariableGet("PrevFL0");
-         printf("RunForecast() CheckPoint 2: Previous Forecast (H|L)=%f|%f ; Previous Actual (H|L)=%f|%f => Previous Error (H|L)=%f|%f", vPrevFH0, vPrevFL0, High[1],Low[1], MathAbs(vPrevFH0-High[1]),MathAbs(vPrevFL0-Low[1]) );
+         if(!IsTesting()) printf("RunForecast() CheckPoint 2: Previous Forecast (H|L)=%f|%f ; Previous Actual (H|L)=%f|%f => Previous Error (H|L)=%f|%f", vPrevFH0, vPrevFL0, High[1],Low[1], MathAbs(vPrevFH0-High[1]),MathAbs(vPrevFL0-Low[1]) );
       }
       /*
       StringToCharArray(vBarT[0], vNDTStart);
