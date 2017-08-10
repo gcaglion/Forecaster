@@ -19,8 +19,8 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms);
 //===
 
 //=== Log Write functions
-__declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun);
-__declspec(dllexport) int __stdcall UpdateTestLog_Duration(tDebugInfo* pDebugParms, int pid, double pElapsedS);
+__declspec(dllexport) int __stdcall SaveClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun);
+__declspec(dllexport) int __stdcall UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS);
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid);
 __declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, int basepid, tEngineDef* pEngineParms);
 __declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms);

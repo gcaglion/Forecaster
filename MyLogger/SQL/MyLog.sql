@@ -6,8 +6,8 @@
 
 --select table_name,constraint_name from user_constraints where constraint_type='R' order by 1,2;
 ----------------------------------------------------------------------------
---alter table Dataparms drop constraint DataParms_FK_TesterParms;
---alter table Engineparms drop constraint EngineParms_FK_TesterParms;
+alter table Dataparms drop constraint DataParms_FK_ClientInfo;
+alter table Engineparms drop constraint EngineParms_FK_ClientInfo;
 alter table EngineThreads drop constraint EngineThreads_FK_EngineParms;
 alter table EngineThreads drop constraint EngineThreads_FK_DataParms;
 alter table CoreImage_NN drop constraint CoreImage_NN_FK_EngineThreads;
@@ -26,17 +26,18 @@ alter table CoreLogs_SVM drop constraint CoreLogs_SVM_FK_EngineThreads;
 alter table CoreLogs_SOM drop constraint CoreLogs_SOM_FK_EngineThreads;
 ----------------------------------------------------------------------------
 
-drop table TesterParms purge;
-create table TesterParms(
+drop table ClientInfo purge;
+create table ClientInfo(
 	ProcessId number,
-	TesterStart date,
+	ClientName varchar2(60),
+	ClientStart date,
 	Duration number,
 	SimulationLen number,
 	SimulationStart date,
 	DoTraining number,
 	DoRun number
 );
-alter table TesterParms add constraint TesterParms_PK primary key( ProcessId ) using index tablespace LogIdx;
+alter table ClientInfo add constraint ClientInfo_PK primary key( ProcessId ) using index tablespace LogIdx;
 
 drop table DataParms purge;
 create table DataParms(
@@ -295,8 +296,8 @@ create table CoreLogs_SOM(
 alter table CoreLogs_SOM add constraint CoreLogs_SOM_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 -------------------------------------------------------------------------------------- Foreign Key Constraints --------------------------------------------------------------------------------------
---alter table Dataparms add constraint DataParms_FK_TesterParms foreign key(ProcessId) references TesterParms(ProcessId);
---alter table Engineparms add constraint EngineParms_FK_TesterParms foreign key(ProcessId) references TesterParms(ProcessId);
+alter table Dataparms add constraint DataParms_FK_ClientInfo foreign key(ProcessId) references ClientInfo(ProcessId);
+alter table Engineparms add constraint EngineParms_FK_ClientInfo foreign key(ProcessId) references ClientInfo(ProcessId);
 alter table EngineThreads add constraint EngineThreads_FK_EngineParms foreign key(BasePid) references EngineParms(ProcessId);
 alter table EngineThreads add constraint EngineThreads_FK_DataParms foreign key(ProcessId, DatasetId) references DataParms(ProcessId, DatasetId);
 alter table CoreImage_NN add constraint CoreImage_NN_FK_EngineThreads foreign key(ProcessId, ThreadId) references EngineThreads(ProcessId, ThreadId);

@@ -27,13 +27,13 @@ typedef void * sql_context;
 
 //=== DB common functions
 EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInfo);
-EXPORT void __stdcall OraDisconnect(sql_context pCtx);
+EXPORT void __stdcall OraDisconnect(sql_context pCtx, int Commit);
 EXPORT void __stdcall OraCommit(void* pCtx);
 //===
 
 //=== Basic Logs
-EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun);
-EXPORT int __stdcall Ora_UpdateTesterDuration(tDebugInfo* DebugParms, int pid, double pElapsedSecs);
+EXPORT int __stdcall Ora_InsertClientInfo(tDebugInfo* DebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun);
+EXPORT int __stdcall Ora_UpdateClientInfo(tDebugInfo* DebugParms, int pid, double pElapsedSecs);
 EXPORT int __stdcall Ora_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen);
 EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int basepid, int pEngineType, int pInputCount, int pOutputCount, int pAdderCount, int pWNNDecompLevel, char* pWNNWaveletType);
 EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* pDebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms);

@@ -543,7 +543,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Results.DBUser", ioParms->DebugParms.DebugDB->DBUser) < 0)					return -1;
 	if (getParam(ioParms, "Results.DBPassword", ioParms->DebugParms.DebugDB->DBPassword) < 0)			return -1;
 	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)		return -1;
-	ioParms->DebugParms.DebugDB->DBCtx = NULL;
+	//ioParms->DebugParms.DebugDB->DBCtx = NULL;
 
 	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
 	if (getParam(ioParms, "DataSource.SourceType", &ioParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
@@ -551,7 +551,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		if (getParam(ioParms, "DataSource.DBConn.DBUser", ioParms->FXDBInfo.FXDB->DBUser) < 0)				return -1;
 		if (getParam(ioParms, "DataSource.DBConn.DBPassword", ioParms->FXDBInfo.FXDB->DBPassword) < 0)		return -1;
 		if (getParam(ioParms, "DataSource.DBConn.DBConnString", ioParms->FXDBInfo.FXDB->DBConnString) < 0)	return -1;
-		ioParms->FXDBInfo.FXDB->DBCtx = NULL;
+		//ioParms->FXDBInfo.FXDB->DBCtx = NULL;
 		if (getParam(ioParms, "DataSource.Symbol", ioParms->FXDBInfo.Symbol) < 0)							return -1;
 		if (getParam(ioParms, "DataSource.TimeFrame", ioParms->FXDBInfo.TimeFrame) < 0)						return -1;
 		if (getParam(ioParms, "DataSource.IsFilled", &ioParms->FXDBInfo.IsFilled) < 0)						return -1;
@@ -1354,7 +1354,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (fp.Action!=ADD_SAMPLES) {
 		printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
 	}
-	LogCommit(&fp.DebugParms);
+	//LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
 	FreeArray(dscnt, wlen, wd);
@@ -1396,68 +1396,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 }
 
-extern "C" __declspec(dllexport) int MTgetForecast(
-	int paramCnt, char* paramOverride,
-	int progId,	//-- equivalent to Tester.cpp's testid. needed to avoid duplication in DataParms
-	double* pHistoryDataH, double pHistoryBaseValH,
-	double* pHistoryDataL, double pHistoryBaseValL,
-	double* pHistoryBW,
-	double* pValidationDataH, double pValidationBaseValH,
-	double* pValidationDataL, double pValidationBaseValL,
-	double* pFutureDataH,
-	double* pFutureDataL,
-	double* pFutureBW,
-	double* oPredictedDataH, double* oPredictedDataL
-) {
-	int ret;
-	//-- High and Low arrays are put together in double arrays, with High in 0, Low in 1. BarWidth is duplicated
-	double* vHistoryData[2];
-	double  vHistoryBaseVal[2];
-	double* vHistoryBW[2];
-	double* vValidationData[2];
-	double  vValidationBaseVal[2];
-	double* vFutureData[2];
-	double* vFutureBW[2];
-	double* vPredictedData[2];
-	//--
-	vHistoryData[0] = pHistoryDataH;				vHistoryData[1] = pHistoryDataL;
-	vHistoryBaseVal[0] = pHistoryBaseValH;			vHistoryBaseVal[1] = pHistoryBaseValL;
-	vHistoryBW[0] = pHistoryBW;						vHistoryBW[1] = pHistoryBW;
-	vValidationData[0] = pValidationDataH;			vValidationData[1] = pValidationDataL;
-	vValidationBaseVal[0] = pValidationBaseValH;	vValidationBaseVal[1] = pValidationBaseValL;
-	vFutureData[0] = pFutureDataH;					vFutureData[1] = pFutureDataL;
-	vFutureBW[0] = pFutureBW;						vFutureBW[1] = pFutureBW;
-	vPredictedData[0] = oPredictedDataH;			vPredictedData[1] = oPredictedDataL;
-
-	// Forecasting Parameters initialization. 
-	tForecastParms fParms;
-	char** param = (char**)malloc(ARRAY_PARAMETER_MAX_LEN * sizeof(char*)); for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) param[i] = (char*)malloc(256);
-
-	//-- parameters log
-	FILE* fp = fopen("C:/temp/MT4parms.txt", "w");
-	fprintf(fp, "%d\n%s\n", paramCnt, paramOverride);
-
-	//-- a. set overrides from full string in paramOverride parameter
-	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, &fParms) <0) return -3;
-	//-- b. process ini file
-	if (ForecastParamLoader(&fParms) <0) return -2;
-	//===
-	for (int p = 1; p<paramCnt; p++) fprintf(fp, "%d: %s = %s\n", p, fParms.CLparamName[p], fParms.CLparamVal[p]);
-	fclose(fp);
-	//===
-
-	ret= OraConnect(&fParms.DebugParms, fParms.DebugParms.DebugDB);
-
-	LogWrite(&fParms.DebugParms, LOG_INFO, "BEFORE: oPredictedDataH[0]=%f \t oPredictedDataL[0]=%f \t vPredictedData[0][0]=%f \t vPredictedData[1][0]=%f\n", 4, oPredictedDataH[0], oPredictedDataL[0], vPredictedData[0][0], vPredictedData[1][0]);
-	if(ret==0) ret = getForecast(paramCnt, param, fParms.DebugParms.DebugDB->DBCtx, progId, vHistoryData, vHistoryBaseVal, vHistoryBW, vValidationData, vValidationBaseVal, 0, vFutureData, vFutureBW, vPredictedData);
-	LogWrite(&fParms.DebugParms, LOG_INFO, "AFTER : oPredictedDataH[0]=%f \t oPredictedDataL[0]=%f \t vPredictedData[0][0]=%f \t vPredictedData[1][0]=%f\n", 4, oPredictedDataH[0], oPredictedDataL[0], vPredictedData[0][0], vPredictedData[1][0]);
-
-	if (ret==0) OraDisconnect(fParms.DebugParms.DebugDB->DBCtx);
-
-	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
-	return ret;
-}
 
 /*
 FILE* kfd = fopen("C:/temp/dioporco.log", "w");

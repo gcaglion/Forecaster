@@ -25,7 +25,6 @@
 #include <MyUtils.h>
 #include <MyMatrix.h>
 //-- libraries
-#include <MyOraUtils.h>	// only needed to call OraDisconnect() at the end of MTgetForecast()
 #include <MyTimeSeries.h>
 #include <MyLogger.h>
 #include <MyNN.h>

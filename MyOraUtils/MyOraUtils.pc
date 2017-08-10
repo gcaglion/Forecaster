@@ -145,13 +145,17 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 	}
 	return(sqlca.sqlcode);
 }
-EXPORT void __stdcall OraDisconnect(sql_context pCtx) {
+EXPORT void __stdcall OraDisconnect(sql_context pCtx, int Commit) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = pCtx;
 	EXEC SQL END   DECLARE SECTION;
 
 	EXEC SQL CONTEXT USE : vCtx;
-	EXEC SQL COMMIT WORK RELEASE;
+	if (Commit==0) {
+		EXEC SQL ROLLBACK RELEASE;
+	} else{
+		EXEC SQL COMMIT WORK RELEASE;
+	}
 }
 EXPORT void __stdcall OraCommit(void* pCtx) {
 	EXEC SQL BEGIN DECLARE SECTION;
@@ -164,7 +168,7 @@ EXPORT void __stdcall OraCommit(void* pCtx) {
 //===
 
 //=== Basic Logs
-EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun) {
+EXPORT int __stdcall Ora_InsertClientInfo(tDebugInfo* DebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -179,9 +183,7 @@ EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int 
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Insert statement
-	sprintf(&stmt[0], "insert into TesterParms(ProcessId, TesterStart,	SimulationLen,	Duration, 	  SimulationStart,					DoTraining, DoRun) \
-						values(					%d,			sysdate,	%d,				%f,			  to_date('%s','YYYYMMDDHH24MI'),	%d,			%d)",
-		pid, pSimulationLen, pElapsedSecs, pSimulationStart, pDoTraining, pDoRun);
+	sprintf(&stmt[0], "insert into ClientInfo(ProcessId, ClientName, ClientStart, SimulationLen, Duration, SimulationStart, DoTraining, DoRun) values(%d, '%s', sysdate, %d, %f, to_date('%s','YYYYMMDDHH24MI'), %d, %d)", pid, clientName, pSimulationLen, pElapsedSecs, pSimulationStart, pDoTraining, pDoRun);
 	//-- Executes Insert statement
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL EXECUTE IMMEDIATE : stmt;
@@ -191,7 +193,7 @@ EXPORT int __stdcall Ora_InsertTesterParms(tDebugInfo* DebugParms, int pid, int 
 	}
 	return 0;
 }
-EXPORT int __stdcall Ora_UpdateTesterDuration(tDebugInfo* DebugParms, int pid, double pElapsedSecs) {
+EXPORT int __stdcall Ora_UpdateClientInfo(tDebugInfo* DebugParms, int pid, double pElapsedSecs) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
@@ -206,7 +208,7 @@ EXPORT int __stdcall Ora_UpdateTesterDuration(tDebugInfo* DebugParms, int pid, d
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 	//-- Builds Update statement
-	sprintf(&stmt[0], "update TesterParms set Duration=%f where processid=%d", pElapsedSecs, pid);
+	sprintf(&stmt[0], "update ClientInfo set Duration=%f where processid=%d", pElapsedSecs, pid);
 	//-- Executes Update statement
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL EXECUTE IMMEDIATE : stmt;

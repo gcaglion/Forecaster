@@ -59,8 +59,8 @@ int main(int argc, char** argv) {
 		if (GetDates_CSV(&fParms.DebugParms, &fParms.DataSourceFileInfo, fParms.SimulationStart, fParms.SimulationLength, TrainingStart) != 0) return -1;
 	}
 
-	//-- 2. Save Tester Log (elapsedTime is 0)
-	if (SaveTestLog_TesterParms(&fParms.DebugParms, pid, fParms.SimulationLength, fParms.SimulationStart, elapsedTime, fParms.Action, fParms.HaveFutureData) != 0) return -1;
+	//-- 2. Save Client Log (elapsedTime is 0)
+	if (SaveClientInfo(&fParms.DebugParms, pid, "Tester", fParms.SimulationLength, fParms.SimulationStart, elapsedTime, fParms.Action, fParms.HaveFutureData) != 0) return -1;
 
 	//-- 3. Prepare, Train, Run for each Training_Start
 	for (i = 0; i < fParms.SimulationLength; i++) {
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 		printf("\nProcessId=%d ; TestId=%d, TrainingStart=%s ; Start Time: %s\n", pid, i, TrainingStart[i], timestamp());
 
 		if (getForecast(argc, argv, fParms.DebugParms.DebugDB->DBCtx, i, HistoryData, BaseValH, HistoryBarW, ValidationData, BaseValV, fParms.HaveFutureData, FutureData, FutureBarW, ForecastData) != 0) return -1;
-
+		LogCommit(&fParms.DebugParms);
 	}
 
 	//-- stop timer, compute the elapsed time
@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 	ms2ts(elapsedTime, elapsedTimeS);
 
 	//-- update elapsed time in test record, then commit
-	if (UpdateTestLog_Duration(&fParms.DebugParms, pid, elapsedTime) != 0) return -1;
+	if (UpdateClientInfo(&fParms.DebugParms, pid, elapsedTime) != 0) return -1;
 	LogCommit(&fParms.DebugParms);
 
 	//-- free(s)

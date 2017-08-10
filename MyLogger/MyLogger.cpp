@@ -199,10 +199,10 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms) {
 //===
 
 //=== Log Write functions, Text 
-int Txt_InsertTesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
+int Txt_InsertClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	return 0;
 }
-int Txt_UpdateTesterDuration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
+int Txt_UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
 	return 0;
 }
 int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
@@ -300,20 +300,20 @@ int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SV
 //===
 
 //=== Log Write functions, Generic 
-__declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
+__declspec(dllexport) int __stdcall SaveClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
+		return Ora_InsertClientInfo(pDebugParms, pid, clientName, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
 	}
 	else {
-		return Txt_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
+		return Txt_InsertClientInfo(pDebugParms, pid, clientName, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
 	}
 }
-__declspec(dllexport) int __stdcall UpdateTestLog_Duration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
+__declspec(dllexport) int __stdcall UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_UpdateTesterDuration(pDebugParms, pid, pElapsedS);
+		return Ora_UpdateClientInfo(pDebugParms, pid, pElapsedS);
 	}
 	else {
-		return Txt_UpdateTesterDuration(pDebugParms, pid, pElapsedS);
+		return Txt_UpdateClientInfo(pDebugParms, pid, pElapsedS);
 	}
 }
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid) {

@@ -674,12 +674,15 @@ void loadStaticData(double** hd, double** fd, double** bw) {
 
 }
 
-#include <MyForecast.h>
+extern "C" __declspec(dllexport) int MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun);
+extern "C" __declspec(dllexport) int MTOraConnect(int paramCnt, char* paramOverride, char* oCtxS);
+extern "C" __declspec(dllexport) void MTOraDisconnect(int paramCnt, char* paramOverride, char* pLogDBCtxS, int pCommit);
+
 int main(int argc, char* argv[]) {
-	double** hd = MallocArray<double>(2, 500);
-	double** fd = MallocArray<double>(2, 5);
-	double** bw = MallocArray<double>(2, 505);
-	double  bv[2] = { 0.9672, 0.96648 };
-	loadStaticData(hd, fd, bw);
-	
+	char sCtx[30];
+	char* vParams = "MT4 --IniFile=c:/temp/Forecaster.ini";
+	if (MTOraConnect(1, vParams, sCtx)<0) return -1;
+	int ret = MTSaveClientInfo(1, vParams, sCtx, "201708100700", 0, 0);
+	MTOraDisconnect(1, vParams, sCtx, 1);
+	return ret;
 }
