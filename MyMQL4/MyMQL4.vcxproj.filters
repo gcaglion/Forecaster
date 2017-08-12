@@ -15,8 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MyMtWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <None Include="MyForecaster.mq4" />
   </ItemGroup>
 </Project>

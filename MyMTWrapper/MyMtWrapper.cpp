@@ -14,14 +14,13 @@ extern "C" __declspec(dllexport) int  MTOraConnect(int paramCnt, char* paramOver
 
 	if( OraConnect(&fParms.DebugParms, fParms.DebugParms.DebugDB) !=0) return -1;
 
-	//(*oCtx) = (long)fParms.DebugParms.DebugDB->DBCtx;
-	//oCtx = (long*)fParms.DebugParms.DebugDB->DBCtx;
 	sprintf(oCtxS, "%p", fParms.DebugParms.DebugDB->DBCtx);
 
-	FILE* kfd = fopen("C:/temp/MTOraConnect.log", "w");
+/*	FILE* kfd = fopen("C:/temp/MTOraConnect.log", "w");
 	fprintf(kfd, "DBCtx=%p\noCtxS=---%p---\n", fParms.DebugParms.DebugDB->DBCtx, oCtxS);
 	fclose(kfd);
-	
+*/	
+
 	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
 	free(param);
 	return 0;

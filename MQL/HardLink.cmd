@@ -1,1 +1,0 @@
-mklink /H C:\Users\gcaglion\appdata\roaming\MetaQuotes\terminal\61007F75C6EC7CED9A269B292061D7A1\MQL4\Experts\MyForecaster.mq4 .\MyForecaster.mq4

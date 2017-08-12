@@ -1278,7 +1278,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 			for (int i = 0; i < flen; i++) fd_trs[d][i] = wd_trs[d][hlen + i];
 		}
 		// regardless of the engine, we slide base timeserie. If needed by specific engine, this will get overwritten
-		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 2);
+		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 0);
 		if (fp.DataParms.ValidationShift != 0) SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], 0);
 
 		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
