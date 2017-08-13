@@ -243,11 +243,11 @@ void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int 
 
 }
 EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, int pHistoryLen, int pFutureLen, char* pDate0, int pValidationShift, int pDatasetCount, double** oHistoryData, double** oHistoryBarW, double** oValidationData, double** oFutureData, double** oFutureBarW, double** oWholeData, double** oWholeBarW, double* oPrevValH, double* oPrevValV, double* oPrevBarW) {
-	//-- Data File must have no headers. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
+	//-- Data File must have no headers, and be sorted by datetime, ascending. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
 
 	char vLine[MaxLineSize]; strcpy(vLine, "0");
-	char prevLine[MaxLineSize];
-	char vLineBkp[MaxLineSize];
+	char prevLine[MaxLineSize]; strcpy(prevLine, "0");
+	char vLineBkp[MaxLineSize]; strcpy(vLineBkp, "0");
 	char vTimeStamp[12 + 1];
 	int d, i;
 	int l = 0;
@@ -330,7 +330,7 @@ EXPORT int __stdcall GetDates_FXDB(tDebugInfo* DebugParms, tFXData* SourceParms,
 	return 0;
 }
 
-EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
+EXPORT int __stdcall GetDates_CSV_OLD(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
 	// Retrieves plain ordered list of DateTime starting from StartDate onwards for <DatesCount> records
 
 	int vLinesCount = 0;
@@ -374,6 +374,37 @@ EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	//-- 5. free(s)
 	for (i = 0; i < vLinesCount; i++) free(tmpDate[i]);
 	free(tmpDate);
+
+	fclose(fData);
+	return 0;
+}
+
+EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
+	// Retrieves plain ordered list of DateTime starting from StartDate onwards for <DatesCount> records. CSV file MUST BE SORTED in ascending order!
+
+	char vLine[1024];
+	char vDateTime[12 + 1];
+	int i;
+	int retcnt = 0;
+
+	FILE* fData = fopen(pDataFile->FileName, "r");
+	if (fData == NULL) {
+		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
+		return -1;
+	}
+
+	//-- 3. Load un-sorted dates in temporary container
+	i = 0;
+	while (fgets(vLine, sizeof(vLine), fData)) {
+		memcpy(vDateTime, vLine, 12);
+		if (strcmp(vDateTime, StartDate) >=0) {
+			memcpy(oDate[retcnt], vDateTime, 12);
+			oDate[retcnt][12] = '\0';
+			retcnt++;
+			if (retcnt >= pDatesCount) break;
+		}
+		i++;
+	}
 
 	fclose(fData);
 	return 0;
