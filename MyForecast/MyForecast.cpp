@@ -562,9 +562,15 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		strcpy(ioParms->DataSourceFileInfo.FileName, "");
 		ioParms->DataParms.DataSource = &ioParms->FXDBInfo;
 	} else {
-		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)							return -1;
-		if (getParam(ioParms, "DataSource.TextFieldSeparator", &ioParms->DataSourceFileInfo.FieldSep, enumlist) < 0)	return -1;
+		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)										return -1;
+		if (getParam(ioParms, "DataSource.TextFieldSeparator", &ioParms->DataSourceFileInfo.FieldSep, enumlist) < 0)				return -1;
 		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.FileDatasets", &ioParms->DataSourceFileInfo.FileDataSet);
+		if (ioParms->DataParms.DatasetsCount<0)																						return -1;
+		if (getParam(ioParms, "DataSource.CalcFileDataBW", &ioParms->DataSourceFileInfo.CalcFileDataBW) < 0)						return -1;
+		if (ioParms->DataSourceFileInfo.CalcFileDataBW>0) {
+			int kaz = getParam(ioParms, "DataSource.DStoCalcBWFrom", &ioParms->DataSourceFileInfo.FileBWDataSet);
+			if(kaz<0)																												return -1;
+		}
 		strcpy(ioParms->FXDBInfo.Symbol, "");
 		strcpy(ioParms->FXDBInfo.TimeFrame, "");
 		ioParms->FXDBInfo.IsFilled = 0;

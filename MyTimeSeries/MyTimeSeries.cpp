@@ -222,14 +222,16 @@ void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int 
 		if (vals[c] == delimiter || vals[c] == '\n') {
 			val = atof(vals);
 			d = GetDataSetFromCol(col, pDataFile);
-			if (d != -1 && l>=0) oWholeData[d][l] = (double)val;
-			//-- BaseVal vs. History vs. Future
-			if (l < 0) {
-				if (d != -1) oBaseVal[d] = (double)val;
-			} else if (l<pHistoryLen) {
-				if (d != -1) oHistoryData[d][l] = (double)val;
-			} else {
-				if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
+			if (d != -1) {
+				if (l>=0) oWholeData[d][l] = (double)val;
+				//-- BaseVal vs. History vs. Future
+				if (l < 0) {
+					if (d != -1) oBaseVal[d] = (double)val;
+				} else if (l<pHistoryLen) {
+					if (d != -1) oHistoryData[d][l] = (double)val;
+				} else {
+					if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
+				}
 			}
 			col++;
 			//-- Remove retrieved column from pLine, by sliding chars starting at pos. (i+1) backwards
@@ -249,7 +251,7 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	char prevLine[MaxLineSize]; strcpy(prevLine, "0");
 	char vLineBkp[MaxLineSize]; strcpy(vLineBkp, "0");
 	char vTimeStamp[12 + 1];
-	int d, i;
+	int i;
 	int l = 0;
 	bool isBaseValSet = false;
 
@@ -259,18 +261,6 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
 		printf("Press any key..."); getchar();;
 		return -1;
-	}
-
-	//-- Barwidth is always 0 for File-based data
-	for (d = 0; d < pDatasetCount; d++) {
-		for (i = 0; i < (pHistoryLen); i++) {
-			oHistoryBarW[d][i] = 0;
-			oWholeBarW[d][i] = 0;
-		}
-		for (i = 0; i < (pFutureLen); i++) {
-			oFutureBarW[d][i] = 0;
-			oWholeBarW[d][pHistoryLen + i] = 0;
-		}
 	}
 
 	//-- Read Whole Data
@@ -299,6 +289,25 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 		LineParser(pDataFile, l, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
 
 		l++;
+	}
+
+	//-- calc Barwidth
+	int d, bwidxH, bwidxL;
+	if (pDataFile->CalcFileDataBW>0) {
+		for (d = 0; d<pDatasetCount; d++) {
+			if (pDataFile->FileDataSet[d]==pDataFile->FileBWDataSet[0]) bwidxH = d;
+			if (pDataFile->FileDataSet[d]==pDataFile->FileBWDataSet[1]) bwidxL = d;
+		}
+		for (d = 0; d<pDatasetCount; d++) {
+			for (i = 0; i < (pHistoryLen); i++) {
+				oHistoryBarW[d][i] = oHistoryData[bwidxH][i]-oHistoryData[bwidxL][i];
+				oWholeBarW[d][i] = oHistoryBarW[d][i];
+			}
+			for (i = 0; i < (pFutureLen); i++) {
+				oFutureBarW[d][i] = oFutureData[bwidxH][i]-oFutureData[bwidxL][i];
+				oWholeBarW[d][pHistoryLen + i] = oFutureBarW[d][i];
+			}
+		}
 	}
 
 	fclose(fData);
