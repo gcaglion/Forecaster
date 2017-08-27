@@ -226,11 +226,11 @@ void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int 
 				if (l>=0) oWholeData[d][l] = (double)val;
 				//-- BaseVal vs. History vs. Future
 				if (l < 0) {
-					if (d != -1) oBaseVal[d] = (double)val;
+					oBaseVal[d] = (double)val;
 				} else if (l<pHistoryLen) {
-					if (d != -1) oHistoryData[d][l] = (double)val;
+					oHistoryData[d][l] = (double)val;
 				} else {
-					if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
+					oFutureData[d][l - pHistoryLen] = (double)val;
 				}
 			}
 			col++;
@@ -253,15 +253,39 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	char vTimeStamp[12 + 1];
 	int i;
 	int l = 0;
+	int l0=0;
 	bool isBaseValSet = false;
 
 	//-- Open Data File
 	FILE* fData = fopen(pDataFile->FileName, "r");
 	if (fData == NULL) {
 		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
-		printf("Press any key..."); getchar();;
 		return -1;
 	}
+
+	//-- Find line number corresponding to pDate0, and out it into l0
+	while (!feof(fData)) {
+		if (fgets(vLine, MaxLineSize, fData) == NULL) {
+			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
+			return -1;
+		}
+
+		for (i = 0; i < 12; i++) vTimeStamp[i] = vLine[i];
+		vTimeStamp[12] = '\0';
+		if (atof(vTimeStamp) >= atof(pDate0)) break;
+
+		l0++;
+	}
+	//-- Rewind, then advance l0 lines
+	rewind(fData);
+	for (i = 0; i<(l0-pHistoryLen+1); i++) {
+		if (fgets(vLine, MaxLineSize, fData) == NULL) {
+			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
+			return -1;
+		}
+	}
+	//-- we are now on prevLine, so we set oPrevVal by sending l=-1
+	LineParser(pDataFile, -1, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
 
 	//-- Read Whole Data
 	while(!feof(fData) && l<(pHistoryLen+pFutureLen)){
@@ -277,15 +301,7 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 		//-- Read first column (datetime)
 		for (i = 0; i < 12; i++) vTimeStamp[i] = vLine[i];
 		vTimeStamp[12] = '\0';
-		if (atof(vTimeStamp) < atof(pDate0)) {
-			continue;
-		} else {
-			if (!isBaseValSet) {
-				LineParser(pDataFile, l-1, prevLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
-				isBaseValSet = true;
-			}
-		}
-		
+
 		LineParser(pDataFile, l, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
 
 		l++;
@@ -402,7 +418,6 @@ EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 		return -1;
 	}
 
-	//-- 3. Load un-sorted dates in temporary container
 	i = 0;
 	while (fgets(vLine, sizeof(vLine), fData)) {
 		memcpy(vDateTime, vLine, 12);
