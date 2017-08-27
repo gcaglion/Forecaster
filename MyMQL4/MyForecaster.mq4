@@ -42,6 +42,7 @@ input double TradeSizeDef   = 0.30;
 input double RiskRatio      = 0.20;
 input bool   CloseOpenTrades= TRUE;
 input int	 Default_Slippage = 8;
+input int    MinProfitPIPs	= 5;
 
 //--- local variables
 string vIniFile=ParametersFile;
@@ -127,8 +128,9 @@ int OnInit() {
 
 	//-- remove this!
 	GetForecast();
-	return(-1);
-	
+	//return(-1);
+	int TradeRet = DoTrade();
+
 	return(INIT_SUCCEEDED);
 }
 void OnDeinit(const int reason) {
@@ -162,9 +164,7 @@ int DoTrade(){
 	double RR             = RiskRatio;          // Risk Ratio (PIPS to SL / PIPS to TP)
 	double SL, TP;
 	double StopLevel=MarketInfo(Symbol(), MODE_STOPLEVEL)*MarketInfo(Symbol(), MODE_TICKSIZE);   
-	//int    Ferr           =5;            // Expected Forecast error (in PIPs)
-	int    MinProfitPIPs      =5;            // in PIPs
-	double MinProfit=MinProfitPIPs*MarketInfo(Symbol(), MODE_TICKSIZE)*10;
+	double MinProfit = MinProfitPIPs*MarketInfo(Symbol(), MODE_TICKSIZE)*10;
      
 	printf("1. Current Bar Ask=%5.4f ; Bid=%5.4f ; FH=%5.4f ; FL=%5.4f", Ask, Bid, FH, FL);
 	//-- Current price (Ask) is below   ForecastL                                     => BUY (1)
@@ -224,9 +224,11 @@ int DoTrade(){
 int GetForecast() {
 	int retries=0;
 
-	if(!IsTesting()) printf("RunForecast() CheckPoint 0: BarId=%d ; Getting Forecast...", vBarId);
-	printf("Bar[0] =%f|%f", High[0], Low[0]);
-	printf("Bar[99]=%f|%f", High[99], Low[99]);
+	if (!IsTesting()) {
+		printf("RunForecast() CheckPoint 0: BarId=%d ; Getting Forecast...", vBarId);
+		printf("Bar[0] =%f|%f", High[0], Low[0]);
+		printf("Bar[99]=%f|%f", High[99], Low[99]);
+	}
 	//-- First, Invert bars sequence
 	for (int i = 0; i<vHistoryLen; i++) {    // (i=0 is the current bar)
 		vHistoryTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen-i-1], TIME_DATE), " ", TimeToStr(Time[vHistoryLen-i-1], TIME_MINUTES));

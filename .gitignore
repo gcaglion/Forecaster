@@ -16,3 +16,7 @@ Win32/*
 .vs/*
 ipch/*
 *.VS*
+
+# MT4 stuff
+*.ex4
+*.utf8

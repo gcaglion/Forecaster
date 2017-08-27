@@ -1341,12 +1341,10 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	}
 
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
-	FILE* f = fopen("c:/temp/MyForecast.log", "w");
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
-	fclose(f);
 
 	//-- Save Logs
 	if (fp.DebugParms.SaveNothing==0) {
