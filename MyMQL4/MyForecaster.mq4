@@ -29,10 +29,11 @@ int  MTSaveClientInfo( int paramOverrideCnt, uchar &paramOverride[], uchar& pDBC
 //-- Parameters File
 input string ParametersFile="C:/temp/Forecaster.ini";
 //-- Data Shape
-input int HistoryLen    = 1000;
+input int HistoryLen    = 100;
 input int PredictionLen = 5;
 input int ValidationShift = 0;
-input int Action        = 0;  // TRAIN_SAVE_RUN
+input int Action        = 0;
+input int Max_Retries = 10;
 
 //-- Trade
 input double TradeSizeMin   = 0.01;
@@ -40,6 +41,7 @@ input double TradeSizeMax   = 2.00;
 input double TradeSizeDef   = 0.30;
 input double RiskRatio      = 0.20;
 input bool   CloseOpenTrades= TRUE;
+input int	 Default_Slippage = 8;
 
 //--- local variables
 string vIniFile=ParametersFile;
@@ -69,8 +71,6 @@ string vHistoryBaseTime, vValidationBaseTime;
 uchar vCtxS[];		// DBCtx in char* format
 int DllRetVal=0;	// used from OnDeinit() to determine whether to commit changes to DB
 string sParamOverride="MT4";
-int    Default_Slippage=8;     
-int    NN_Retries = 5;
 int    vBarId;
 double vPrevFH0, vPrevFL0;
 bool   fLog;
@@ -125,6 +125,10 @@ int OnInit() {
 		if (DllRetVal!=0) ExpertRemove();
 	}
 
+	//-- remove this!
+	GetForecast();
+	return(-1);
+	
 	return(INIT_SUCCEEDED);
 }
 void OnDeinit(const int reason) {
@@ -221,41 +225,35 @@ int GetForecast() {
 	int retries=0;
 
 	if(!IsTesting()) printf("RunForecast() CheckPoint 0: BarId=%d ; Getting Forecast...", vBarId);
-	
+	printf("Bar[0] =%f|%f", High[0], Low[0]);
+	printf("Bar[99]=%f|%f", High[99], Low[99]);
 	//-- First, Invert bars sequence
-	for(int i=0; i<vHistoryLen; i++){    // (i=0 is the current bar)
-		vHistoryTime[i]=StringConcatenate(TimeToStr(Time[vHistoryLen-i],TIME_DATE)," ",TimeToStr(Time[vHistoryLen-i],TIME_MINUTES));
-		vHistoryDataH[i]=High[vHistoryLen-i];
-		vHistoryDataL[i]=Low [vHistoryLen-i];
-		vHistoryBW[i]=vHistoryDataH[i]-vHistoryDataL[i];
-		vValidationTime[i]=StringConcatenate(TimeToStr(Time[vHistoryLen+vValidationShift-i],TIME_DATE)," ",TimeToStr(Time[vHistoryLen+vValidationShift-i],TIME_MINUTES));
-		vValidationDataH[i]=High[vHistoryLen+vValidationShift-i];
-		vValidationDataL[i]=Low [vHistoryLen+vValidationShift-i];
-		//printf("vBar[%d]: High=%f, Low=%f", i, vBarH[i], vBarL[i]);     
-		//printf("vKaz[%d]: High=%f, Low=%f", i, vKazH[i], vKazL[i]);     
+	for (int i = 0; i<vHistoryLen; i++) {    // (i=0 is the current bar)
+		vHistoryTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen-i-1], TIME_DATE), " ", TimeToStr(Time[vHistoryLen-i-1], TIME_MINUTES));
+		vHistoryDataH[i] = High[vHistoryLen-i-1];
+		vHistoryDataL[i] = Low[vHistoryLen-i-1];
+		vHistoryBW[i] = vHistoryDataH[i]-vHistoryDataL[i];
+		vValidationTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen+vValidationShift-i-1], TIME_DATE), " ", TimeToStr(Time[vHistoryLen+vValidationShift-i-1], TIME_MINUTES));
+		vValidationDataH[i] = High[vHistoryLen+vValidationShift-i-1];
+		vValidationDataL[i] = Low[vHistoryLen+vValidationShift-i-1];
 	}
 	//-- Add "Base" bar, needed for Delta Transformation
-	vHistoryBaseValH = High[vHistoryLen+1];
-	vHistoryBaseValL = Low [vHistoryLen+1];
-	// vHistoryBaseTime=StringConcatenate(TimeToStr(Time[vHistoryLen+1],TIME_DATE)," ",TimeToStr(Time[vHistoryLen+1],TIME_MINUTES));
+	vHistoryBaseValH = High[vHistoryLen];
+	vHistoryBaseValL = Low [vHistoryLen];
+	vHistoryBaseTime = StringConcatenate(TimeToStr(Time[vHistoryLen],TIME_DATE)," ",TimeToStr(Time[vHistoryLen],TIME_MINUTES));
 
-	if(!IsTesting()) printf("RunForecast() CheckPoint 1: vBar[%d]: DateTime=%s, High=%f, Low=%f, vBar[%d]: DateTime=%s, High=%f, Low=%f", 0, vHistoryTime[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryLen-1, vHistoryTime[vHistoryLen-1], vHistoryDataH[vHistoryLen-1], vHistoryDataL[vHistoryLen-1]);     
-	if(!IsTesting()) printf("RunForecast() CheckPoint 1: vBar_V[%d]: DateTime=%s, High=%f, Low=%f, vBar_V[%d]: DateTime=%s, High=%f, Low=%f", 0, vValidationTime[0], vValidationDataH[0], vValidationDataL[0], vHistoryLen-1, vValidationTime[vHistoryLen-1], vValidationDataH[vHistoryLen-1], vValidationDataL[vHistoryLen-1]);     
+	if (!IsTesting()) printf("RunForecast() CheckPoint 1: vBar[%d]: DateTime=%s, High=%f, Low=%f, vBar[%d]: DateTime=%s, High=%f, Low=%f", 0, vHistoryTime[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryLen-1, vHistoryTime[vHistoryLen-1], vHistoryDataH[vHistoryLen-1], vHistoryDataL[vHistoryLen-1]);
+	if (!IsTesting()) printf("RunForecast() CheckPoint 1: vBarBase: DateTime=%s, High=%f, Low=%f", vHistoryBaseTime, vHistoryBaseValH, vHistoryBaseValL);
+	if (!IsTesting()) printf("RunForecast() CheckPoint 1: vBar_V[%d]: DateTime=%s, High=%f, Low=%f, vBar_V[%d]: DateTime=%s, High=%f, Low=%f", 0, vValidationTime[0], vValidationDataH[0], vValidationDataL[0], vHistoryLen-1, vValidationTime[vHistoryLen-1], vValidationDataH[vHistoryLen-1], vValidationDataL[vHistoryLen-1]);
 
 	if(vBarId>0){
 		vPrevFH0=GlobalVariableGet("PrevFH0");
 		vPrevFL0=GlobalVariableGet("PrevFL0");
 		if(!IsTesting()) printf("RunForecast() CheckPoint 2: Previous Forecast (H|L)=%f|%f ; Previous Actual (H|L)=%f|%f => Previous Error (H|L)=%f|%f", vPrevFH0, vPrevFL0, High[1],Low[1], MathAbs(vPrevFH0-High[1]),MathAbs(vPrevFL0-Low[1]) );
 	}
-      /*
-      StringToCharArray(vBarT[0], vNDTStart);
-      StringToCharArray(vBarT[vHistoryLen-1], vNDTEnd);
-      StringToCharArray(vBarT_V[0], vNDTStart_V);
-      StringToCharArray(vBarT_V[vHistoryLen-1], vNDTEnd_V);
-      */
-      
+
 	//-- Then, Call DLL to get Next Bar H,L
-	while(retries<NN_Retries){
+	while(retries<Max_Retries){
 	int ret=MTgetForecast(
 		vParamOverrideCnt, vParamOverride,
 		vCtxS,
@@ -279,7 +277,7 @@ int GetForecast() {
 	if (vPredictedDataH[0]<vPredictedDataL[0]){
 		if(!IsTesting()) printf("Invalid Forecast: H=%5.4f , L=%5.4f . retries=%f", vPredictedDataH[0], vPredictedDataL[0], retries);
 		retries++;
-		if(retries>NN_Retries) return 0;
+		if(retries>Max_Retries) return 0;
 		} else {
 		break;
 		}
