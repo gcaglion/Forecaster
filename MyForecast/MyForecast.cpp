@@ -1085,7 +1085,6 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		//for (i = 0; i < pl ; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? NULL : fd_trs[d][i];
 		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];
 
 		//-- Predicted_TRS
