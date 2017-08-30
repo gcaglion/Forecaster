@@ -30,20 +30,21 @@ void MTLogClose(int paramOverrideCnt, uchar &paramOverride[]);
 //-- Parameters File
 input string ParametersFile="C:/temp/Forecaster.ini";
 //-- Data Shape
-input int HistoryLen    = 100;
-input int PredictionLen = 5;
-input int ValidationShift = 0;
-input int Action        = 0;
-input int Max_Retries = 3;
+input int  HistoryLen		= 100;
+input int  PredictionLen	= 5;
+input int  ValidationShift	= 0;
+input int  Action			= 0;
+input bool SaveLogs			= TRUE;
+input int  Max_Retries		= 3;
 
 //-- Trade
-input double TradeSizeMin   = 0.01;
-input double TradeSizeMax   = 2.00;
-input double TradeSizeDef   = 0.30;
-input double RiskRatio      = 0.20;
-input bool   CloseOpenTrades= TRUE;
-input int	 Default_Slippage = 8;
-input int    MinProfitPIPs	= 5;
+input double TradeSizeMin		= 0.01;
+input double TradeSizeMax		= 2.00;
+input double TradeSizeDef		= 0.30;
+input double RiskRatio			= 0.20;
+input bool   CloseOpenTrades	= TRUE;
+input int	 Default_Slippage	= 8;
+input int    MinProfitPIPs		= 5;
 
 //--- local variables
 string vIniFile=ParametersFile;
@@ -107,24 +108,29 @@ int OnInit() {
 	sParamOverride=sParamOverride+" --DataParms.HistoryLen="+IntegerToString(vHistoryLen);
 	sParamOverride=sParamOverride+" --DataParms.PredictionLen="+IntegerToString(vPredictionLen);
 	sParamOverride=sParamOverride+" --DataParms.ValidationShift="+IntegerToString(-vValidationShift);
-	vParamOverrideCnt=8;
+	sParamOverride=sParamOverride+" --Results.SaveNothing="+(SaveLogs ? "0": "1");
+	vParamOverrideCnt=9;
 	StringToCharArray(sParamOverride, vParamOverride);
 
-	//--- 1. Connect to DB and keep session Context
-	string CtxS="0000000000000000000000000000000000";
-	StringToCharArray(CtxS, vCtxS);
-	DllRetVal=MTOraConnect(vParamOverrideCnt, vParamOverride, vCtxS);
-	Print("MTOraConnect() returns ", DllRetVal);
-	if (DllRetVal!=0) return -1;   
-	CtxS=CharArrayToString(vCtxS); Print("vCtxS=",CtxS);
+	string CtxS;
+	
+	if (SaveLogs) {
+		//--- 1. Connect to DB and keep session Context		
+		CtxS = "0000000000000000000000000000000000"; StringToCharArray(CtxS, vCtxS);
+		DllRetVal = MTOraConnect(vParamOverrideCnt, vParamOverride, vCtxS);
+		Print("MTOraConnect() returns ", DllRetVal);
+		if (DllRetVal!=0) return -1;
+		CtxS = CharArrayToString(vCtxS); Print("vCtxS=", CtxS);
 
-	//--- 2. Save Client Log (elapsedTime is 0)
-	sCurrentBarTime=StringConcatenate(TimeToString(Time[0], TIME_DATE),TimeToString(Time[0], TIME_MINUTES));
-	StringToCharArray(sCurrentBarTime, vCurrentBarTime);
-	DllRetVal=MTSaveClientInfo(vParamOverrideCnt, vParamOverride, vCtxS, vCurrentBarTime, 1, 1);
-	Print("MTSaveClientInfo() returns ", DllRetVal);
-	if (DllRetVal!=0) return (INIT_FAILED);
-
+		//--- 2. Save Client Log (elapsedTime is 0)
+		sCurrentBarTime=StringConcatenate(TimeToString(Time[0], TIME_DATE),TimeToString(Time[0], TIME_MINUTES));
+		StringToCharArray(sCurrentBarTime, vCurrentBarTime);
+		DllRetVal=MTSaveClientInfo(vParamOverrideCnt, vParamOverride, vCtxS, vCurrentBarTime, 1, 1);
+		Print("MTSaveClientInfo() returns ", DllRetVal);
+		if (DllRetVal!=0) return (INIT_FAILED);
+	} else {
+		vCtxS = "";
+	}
 	//-- remove this!
 	//GetForecast();
 	//return(-1);

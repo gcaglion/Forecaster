@@ -138,3 +138,10 @@ fclose(fp);
 //===
 
 */
+
+/*
+FILE* f = fopen("c:/temp/sss.log", "w");
+fprintf(f, "%d: %s\n", paramCnt, paramOverride);
+fprintf(f, "%d\n", fParms.DebugParms.SaveNothing);
+
+*/
