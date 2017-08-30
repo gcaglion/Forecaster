@@ -1112,8 +1112,6 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
 		for (i = (sl0 + sc); i < rc; i++) {
-			//err[i] = (pOOS == 0) ? 0 : fabs(prd[i] - act[i]);
-			//err_trs[i] = (pOOS == 0) ? 0 : fabs(prd_trs[i] - act_trs[i]);
 			err[i] = fabs(prd[i] - act[i]);
 			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
@@ -1136,7 +1134,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			runLog_o[d][i].Error = err[i];
 			runLog_o[d][i].Error_TRS = err_trs[i];
 
-			if(pOOS==1) runLog_o[d][i].BarWidth = wd_bw[d][i];
+			runLog_o[d][i].BarWidth = wd_bw[d][i];
 			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0) ? 0 : (runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
 		}
 
@@ -1210,7 +1208,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	int rc = sampleLen0 + sampleCnt + flen;
 
 	//-- Transform and Scale History, Validation, Future Data
-	int wlen = hlen + ((fp.HaveFutureData==0)?0:flen);
+	//int wlen = hlen + ((fp.HaveFutureData==0)?0:flen);
+	int wlen = hlen + flen;
 
 	double** wd			= MallocArray<double>(dscnt, wlen);
 	double** wd_tr		= MallocArray<double>(dscnt, wlen);
@@ -1262,10 +1261,13 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 			wd[d][i] = hd[d][i];
 			wd_bw[d][i] = pHistoryBW[d][i];
 		}
-		if (fp.HaveFutureData==1) {
-			for (i = 0; i < flen; i++) {
+		for (i = 0; i < flen; i++) {
+			if (fp.HaveFutureData==1) {
 				wd[d][hlen + i] = fd[d][i];
 				wd_bw[d][hlen + i] = pFutureBW[d][i];
+			} else {
+				wd[d][hlen + i] = NULL;
+				wd_bw[d][hlen + i] = 0;
 			}
 		}
 		SetTSScaleRange(fp.EngineParms.EngineType, fp.EngineParms.Core[0][0].CoreSpecs, &scaleMin, &scaleMax);

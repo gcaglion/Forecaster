@@ -115,8 +115,8 @@ extern "C" __declspec(dllexport) int  MTgetForecast(
 	//-- set DBCtx
 	sscanf(pLogDBCtxS, "%p", &fParms.DebugParms.DebugDB->DBCtx);
 
-	DumpArrayD(fParms.DataParms.HistoryLen, vHistoryData[0], "c:/temp/hd0.txt");
-	DumpArrayD(fParms.DataParms.HistoryLen, vHistoryData[1], "c:/temp/hd1.txt");
+	//DumpArrayD(fParms.DataParms.HistoryLen, vHistoryData[0], "c:/temp/hd0.txt");
+	//DumpArrayD(fParms.DataParms.HistoryLen, vHistoryData[1], "c:/temp/hd1.txt");
 
 	LogWrite(&fParms.DebugParms, LOG_INFO, "BEFORE: oPredictedDataH[0]=%f \t oPredictedDataL[0]=%f \t vPredictedData[0][0]=%f \t vPredictedData[1][0]=%f\n", 4, oPredictedDataH[0], oPredictedDataL[0], vPredictedData[0][0], vPredictedData[1][0]);
 	ret= getForecast(paramCnt, param, fParms.DebugParms.DebugDB->DBCtx, progId, vHistoryData, vHistoryBaseVal, vHistoryBW, vValidationData, vValidationBaseVal, 0, vFutureData, vFutureBW, vPredictedData);

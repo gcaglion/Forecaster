@@ -22,7 +22,8 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
 PATH=$(ORACLE_HOME2)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_ExtLibs\fft\VisualStudio\$(Platform)\$(Configuration);$(SolutionDir)..\AAA_ExtLibs\vcomp120d\$(Platform)\$(Configuration)
 SystemRoot=C:\Windows</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>--Results.SaveNothing=1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='No_Orcl|Win32'">
     <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME2)
