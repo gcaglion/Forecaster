@@ -32,6 +32,7 @@ EXPORT void __stdcall OraCommit(void* pCtx);
 //===
 
 //=== Basic Logs
+EXPORT int __stdcall Ora_InsertTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL);
 EXPORT int __stdcall Ora_InsertClientInfo(tDebugInfo* DebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun);
 EXPORT int __stdcall Ora_UpdateClientInfo(tDebugInfo* DebugParms, int pid, double pElapsedSecs);
 EXPORT int __stdcall Ora_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen);

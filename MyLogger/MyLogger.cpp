@@ -199,6 +199,9 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms) {
 //===
 
 //=== Log Write functions, Text 
+int Txt_InsertTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
+	return 0;
+}
 int Txt_InsertClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	return 0;
 }
@@ -300,6 +303,13 @@ int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SV
 //===
 
 //=== Log Write functions, Generic 
+__declspec(dllexport) int __stdcall SaveTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertTradeInfo(pDebugParms, pid, pBarId, pLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC, pFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC, pPrevFH, pPrevFL, pCurrBid, pCurrAsk, pCurrFH, pCurrFL, pTradeType, pTradeSize, pTradeTP, pTradeSL);
+	} else {
+		return Txt_InsertTradeInfo(pDebugParms, pid, pBarId, pLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC, pFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC, pPrevFH, pPrevFL, pCurrBid, pCurrAsk, pCurrFH, pCurrFL, pTradeType, pTradeSize, pTradeTP, pTradeSL);
+	}
+}
 __declspec(dllexport) int __stdcall SaveClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
 		return Ora_InsertClientInfo(pDebugParms, pid, clientName, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);

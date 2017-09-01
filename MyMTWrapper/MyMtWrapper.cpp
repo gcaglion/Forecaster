@@ -1,28 +1,42 @@
 #include <MyForecast.h>
 #include <MyOraUtils.h>
 
-extern "C" __declspec(dllexport) int  MTOraConnect(int paramCnt, char* paramOverride, char* oCtxS) {
-	
-	tForecastParms fParms;
+void convertBarTime(char* iMT4Time, char* oMyTime) {
+	// strips '.' and ':' from MT4 time string
+	int j = 0;
+	for (unsigned int i = 0; i<strlen(iMT4Time); i++) {
+		if (iMT4Time[i]!=':' && iMT4Time[i]!='.') {
+			oMyTime[j] = iMT4Time[i];
+			j++;
+		}
+	}
+	oMyTime[j] = '\0';
+}
+
+int initfParms(int paramCnt, char* paramOverride, tForecastParms* fp) {
+
 	char** param = (char**)malloc(ARRAY_PARAMETER_MAX_LEN * sizeof(char*)); for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) param[i] = (char*)malloc(256);
 
 	//-- a. set overrides from full string in paramOverride parameter
 	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, &fParms) <0) return -4;
+	if (CLProcess(paramCnt, param, fp) <0) return -4;
 	//-- b. process ini file
-	if (ForecastParamLoader(&fParms) <0) return -3;
-
-	if( OraConnect(&fParms.DebugParms, fParms.DebugParms.DebugDB) !=0) return -1;
-
-	sprintf(oCtxS, "%p", fParms.DebugParms.DebugDB->DBCtx);
-
-/*	FILE* kfd = fopen("C:/temp/MTOraConnect.log", "w");
-	fprintf(kfd, "DBCtx=%p\noCtxS=---%p---\n", fParms.DebugParms.DebugDB->DBCtx, oCtxS);
-	fclose(kfd);
-*/	
+	if (ForecastParamLoader(fp) <0) return -3;
 
 	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
 	free(param);
+
+	return 0;
+}
+
+extern "C" __declspec(dllexport) int  MTOraConnect(int paramCnt, char* paramOverride, char* oCtxS) {
+
+	tForecastParms fParms; if (initfParms(paramCnt, paramOverride, &fParms) <0) return -1;
+
+	if (OraConnect(&fParms.DebugParms, fParms.DebugParms.DebugDB) !=0) return -1;
+
+	sprintf(oCtxS, "%p", fParms.DebugParms.DebugDB->DBCtx);
+
 	return 0;
 }
 extern "C" __declspec(dllexport) void MTOraDisconnect(int paramCnt, char* paramOverride, char* pLogDBCtxS, int pCommit) {
@@ -35,38 +49,56 @@ extern "C" __declspec(dllexport) void MTOraCommit(int paramCnt, char* paramOverr
 	sscanf(pLogDBCtxS, "%p", &ctx);
 	OraCommit(ctx);
 }
-extern "C" __declspec(dllexport) int  MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun) {
-	//=== We have to duplicate parameters handling, just to read debug parameters === 
-
-	tForecastParms fParms;
-	char** param = (char**)malloc(ARRAY_PARAMETER_MAX_LEN * sizeof(char*)); for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) param[i] = (char*)malloc(256);
-	char vCurrentBar[20+1];
+extern "C" __declspec(dllexport) int MTSaveTradeInfo(
+	int paramCnt, char* paramOverride, int pBarId, char* pDBCtx, 
+	char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, 
+	char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC,
+	double pPrevFH, double pPrevFL,
+	double pCurrBid, double pCurrAsk, 
+	double pCurrFH, double pCurrFL,
+	int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
+	char vFirstBarT[20+1];
+	char vLastBarT[20+1];
 	int ret = 0;
 
-	//-- a. set overrides from full string in paramOverride parameter
-	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, &fParms) <0) return -3;
-	//-- b. process ini file
-	if (ForecastParamLoader(&fParms) <0) return -2;
+	tForecastParms fParms; if (initfParms(paramCnt, paramOverride, &fParms) <0) return -1;
+
+	//-- set DBCtx
+	sscanf(pDBCtx, "%p", &fParms.DebugParms.DebugDB->DBCtx);
+
+	//-- convert Bars date format
+	convertBarTime(pLastBarT, vLastBarT);
+	convertBarTime(pFirstBarT, vFirstBarT);
+
+	//-- call SaveTradeInfo in MyLogger library
+	LogWrite(&fParms.DebugParms, LOG_INFO, "Calling SaveTradeInfo...\n", 0);
+	return(
+		SaveTradeInfo(
+			&fParms.DebugParms, GetCurrentProcessId(), pBarId, 
+			vLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC,
+			vFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC,
+			pPrevFH, pPrevFL,
+			pCurrBid, pCurrAsk,
+			pCurrFH, pCurrFL,
+			pTradeType, pTradeSize, pTradeTP, pTradeSL
+		)
+	);
+
+	return 0;
+}
+extern "C" __declspec(dllexport) int  MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun) {
+	char vCurrentBar[20+1];
+
+	tForecastParms fParms; if (initfParms(paramCnt, paramOverride, &fParms) <0) return -1;
 
 	//-- set DBCtx
 	sscanf(pDBCtx, "%p", &fParms.DebugParms.DebugDB->DBCtx);
 
 	//-- convert Bar date format
-	int j = 0;
-	for (unsigned int i = 0; i<strlen(pCurrentBar); i++) {
-		if (pCurrentBar[i]!=':' && pCurrentBar[i]!='.') {
-			vCurrentBar[j] = pCurrentBar[i];
-			j++;
-		}
-	}
-	vCurrentBar[j] = '\0';
+	convertBarTime(pCurrentBar, vCurrentBar);
 
-	ret = SaveClientInfo(&fParms.DebugParms, GetCurrentProcessId(), "MetaTrader", 1, vCurrentBar, 0, pDoTraining, pDoRun);
-
-	for (int i = 0; i<ARRAY_PARAMETER_MAX_LEN; i++) free(param[i]);
-	free(param);
-	return ret;
+	//-- call SaveClientInfo in MyLogger library
+	return ( SaveClientInfo(&fParms.DebugParms, GetCurrentProcessId(), "MetaTrader", 1, vCurrentBar, 0, pDoTraining, pDoRun) );
 }
 extern "C" __declspec(dllexport) int  MTgetForecast(
 	int paramCnt, char* paramOverride,

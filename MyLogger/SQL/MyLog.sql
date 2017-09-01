@@ -6,6 +6,7 @@
 
 --select table_name,constraint_name from user_constraints where constraint_type='R' order by 1,2;
 ----------------------------------------------------------------------------
+alter table TradeInfo drop constraint TradeInfo_FK_ClientInfo;
 alter table Dataparms drop constraint DataParms_FK_ClientInfo;
 alter table Engineparms drop constraint EngineParms_FK_ClientInfo;
 alter table EngineThreads drop constraint EngineThreads_FK_EngineParms;
@@ -38,6 +39,33 @@ create table ClientInfo(
 	DoRun number
 );
 alter table ClientInfo add constraint ClientInfo_PK primary key( ProcessId ) using index tablespace LogIdx;
+
+drop table TradeInfo purge;
+create table TradeInfo(
+	ProcessId number,
+	BarId number,
+	LastBarT date,
+	LastBarO number,
+	LastBarH number,
+	LastBarL number,
+	LastBarC number,
+	FirstBarT date,
+	FirstBarO number,
+	FirstBarH number,
+	FirstBarL number,
+	FirstBarC number,
+	PrevFH number,
+	PrevFL number,
+	CurrBid number,
+	CurrAsk number,
+	CurrFH number,
+	CurrFL number,
+	TradeType number,
+	TradeSize number,
+	TradeTP number,
+	TradeSL number
+);
+alter table TradeInfo add constraint TradeInfo_PK primary key(ProcessId, BarId) using index tablespace LogIdx;
 
 drop table DataParms purge;
 create table DataParms(
@@ -296,6 +324,7 @@ create table CoreLogs_SOM(
 alter table CoreLogs_SOM add constraint CoreLogs_SOM_PK primary key(ProcessId, ThreadId) using index tablespace LogIdx;
 
 -------------------------------------------------------------------------------------- Foreign Key Constraints --------------------------------------------------------------------------------------
+alter table TradeInfo add constraint TradeInfo_FK_ClientInfo foreign key(ProcessId) references ClientInfo(ProcessId);
 alter table Dataparms add constraint DataParms_FK_ClientInfo foreign key(ProcessId) references ClientInfo(ProcessId);
 alter table Engineparms add constraint EngineParms_FK_ClientInfo foreign key(ProcessId) references ClientInfo(ProcessId);
 alter table EngineThreads add constraint EngineThreads_FK_EngineParms foreign key(BasePid) references EngineParms(ProcessId);

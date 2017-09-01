@@ -22,6 +22,15 @@ int  MTOraConnect(int paramOverrideCnt, uchar &paramOverride[], uchar& oCtxS[]);
 void MTOraDisconnect(int paramOverrideCnt, uchar &paramOverride[], uchar& oCtxS[], int pCommit);
 void MTOraCommit(int paramOverrideCnt, uchar &paramOverride[], uchar& oCtxS[]);
 int  MTSaveClientInfo( int paramOverrideCnt, uchar &paramOverride[], uchar& pDBCtxS[], uchar &currentBar[], int pDoTraining, int pDoRun);
+int  MTSaveTradeInfo(
+	int paramCnt, uchar &paramOverride[], int pBarId, uchar &pDBCtx[], 
+	uchar &pLastBarT[], double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC,
+	uchar &pFirstBarT[], double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC,
+	double pPrevFH, double pPrevFL,
+	double pCurrBid, double pCurrAsk,
+	double pCurrFH, double pCurrFL,
+	int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL
+);
 void MTLogClose(int paramOverrideCnt, uchar &paramOverride[]);
 #import
 
@@ -55,8 +64,10 @@ int vValidationShift=-ValidationShift;
 //--- data variables to be passed in MTgetForecast() call
 int vParamOverrideCnt;
 uchar vParamOverride[];
+double vHistoryDataO[];
 double vHistoryDataH[], vHistoryBaseValH;
 double vHistoryDataL[], vHistoryBaseValL;
+double vHistoryDataC[];
 double vHistoryBW[];
 double vValidationDataH[], vValidationBaseValH;
 double vValidationDataL[], vValidationBaseValL;
@@ -75,15 +86,21 @@ uchar vCtxS[];		// DBCtx in char* format
 int DllRetVal=0;	// used from OnDeinit() to determine whether to commit changes to DB
 string sParamOverride="MT4";
 int    vBarId;
-double vPrevFH0, vPrevFL0;
+uchar vFirstBarT[]; uchar vLastBarT[];
+double vPrevFH0 = 0;
+double vPrevFL0 = 0;
+double vTradeSize=0;			// vTradeSize is global non-static. It is set by NewTrade(), and is needed by MTSaveTradeInfo()
+double vTradeTP=0, vTradeSL=0;	// these, too, are set in NewTrade()
 bool   fLog;
 
 int OnInit() {
 	//Print("Bar count is ",Bars(Symbol(), Period()));
 
 	//--- Resize History and Prediction arrays (+1 is for BaseVal)
-	ArrayResize(vHistoryDataH, vHistoryLen); 
+	ArrayResize(vHistoryDataO, vHistoryLen);
+	ArrayResize(vHistoryDataH, vHistoryLen);
 	ArrayResize(vHistoryDataL, vHistoryLen);
+	ArrayResize(vHistoryDataC, vHistoryLen);
 	ArrayResize(vHistoryBW, vHistoryLen);
 	ArrayResize(vValidationDataH, vHistoryLen); 
 	ArrayResize(vValidationDataL, vHistoryLen); 
@@ -129,7 +146,7 @@ int OnInit() {
 		Print("MTSaveClientInfo() returns ", DllRetVal);
 		if (DllRetVal!=0) return (INIT_FAILED);
 	} else {
-		vCtxS = "";
+		CtxS = ""; StringToCharArray(CtxS, vCtxS);
 	}
 	//-- remove this!
 	//GetForecast();
@@ -151,13 +168,45 @@ void OnTick() {
    // Only do this if there's a new bar
    static datetime Time0; if (Time0 == Time[0]) return; Time0 = Time[0];
 
+   int vTradeType;
+   int ret;
+
+   //-- load bars into arrrays
+   LoadBars();
+
+   //-- before GetForecast()
+   StringToCharArray(vHistoryTime[0], vFirstBarT);
+   StringToCharArray(vHistoryTime[vHistoryLen-1], vLastBarT);
+   if (vBarId>0) {
+	   /*if (!IsTesting())*/ printf("RunForecast() CheckPoint 2: Previous Forecast (H|L)=%f|%f ; Previous Actual (H|L)=%f|%f => Previous Error (H|L)=%f|%f", vPrevFH0, vPrevFL0, High[1], Low[1], MathAbs(vPrevFH0-High[1]), MathAbs(vPrevFL0-Low[1]));
+   }
+
    DllRetVal=GetForecast();
+
+   //-- after GetForecast()
    printf("DllRetVal=%d", DllRetVal);
    switch (DllRetVal) {
    case 0:
-	   MTOraCommit(vParamOverrideCnt, vParamOverride, vCtxS);
-	   DoTrade();
-	   break;
+	   vTradeType = DoTrade();
+	   printf("calling MTSaveTradeInfo with vTradeType=%d , vTradeSize=%f, vTradeTP=%f, vTradeSL=%f", vTradeType, vTradeSize, vTradeTP, vTradeSL);
+		ret=MTSaveTradeInfo(
+			vParamOverrideCnt, vParamOverride, vBarId, vCtxS, 
+			vLastBarT, vHistoryDataO[vHistoryLen-1], vHistoryDataH[vHistoryLen-1], vHistoryDataL[vHistoryLen-1], vHistoryDataC[vHistoryLen-1],
+			vFirstBarT,  vHistoryDataO[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryDataC[0],
+			vPrevFH0, vPrevFL0,
+			Bid, Ask,
+			vPredictedDataH[0], vPredictedDataL[0],
+			vTradeType, vTradeSize, vTradeTP, vTradeSL
+		);
+		printf("MTSaveTradeInfo() returned %d", ret);
+		if (ret!=0) {
+			ExpertRemove();
+			break;
+		}
+
+		vPrevFH0 = vPredictedDataH[0]; vPrevFL0 = vPredictedDataL[0];
+		MTOraCommit(vParamOverrideCnt, vParamOverride, vCtxS);
+		break;
    case -1:
 	   ExpertRemove();
 	   break;
@@ -168,7 +217,35 @@ void OnTick() {
 
 }
 
+void LoadBars() {
+	//-- This loads bar values into History and Base arrays
+
+	int TesterShift = (IsTesting()) ? 1 : 0;
+	//-- 1. Invert bars sequence
+	for (int i = 0; i<vHistoryLen; i++) {    // (i=0 is the current bar)
+		vHistoryTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen-i-1+TesterShift], TIME_DATE), " ", TimeToStr(Time[vHistoryLen-i-1+TesterShift], TIME_MINUTES));
+		vHistoryDataO[i] = Open[vHistoryLen-i-1+TesterShift];
+		vHistoryDataH[i] = High[vHistoryLen-i-1+TesterShift];
+		vHistoryDataL[i] = Low[vHistoryLen-i-1+TesterShift];
+		vHistoryDataC[i] = Close[vHistoryLen-i-1+TesterShift];
+		vHistoryBW[i] = vHistoryDataH[i]-vHistoryDataL[i];
+		vValidationTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen+vValidationShift-i-1+TesterShift], TIME_DATE), " ", TimeToStr(Time[vHistoryLen+vValidationShift-i-1+TesterShift], TIME_MINUTES));
+		vValidationDataH[i] = High[vHistoryLen+vValidationShift-i-1+TesterShift];
+		vValidationDataL[i] = Low[vHistoryLen+vValidationShift-i-1+TesterShift];
+	}
+	printf("vHistoryData[0] =%f|%f", vHistoryDataH[0], vHistoryDataL[0]);
+	printf("vHistoryData[899] =%f|%f", vHistoryDataH[899], vHistoryDataL[899]);
+
+	//-- 2. Add "Base" bar, needed for Delta Transformation
+	vHistoryBaseValH = High[vHistoryLen+TesterShift];
+	vHistoryBaseValL = Low[vHistoryLen+TesterShift];
+	vHistoryBaseTime = StringConcatenate(TimeToStr(Time[vHistoryLen+TesterShift], TIME_DATE), " ", TimeToStr(Time[vHistoryLen+TesterShift], TIME_MINUTES));
+
+}
+
 int DoTrade(){
+	int vTradeType=-1;
+
 	//-- Determine Trade
 	RefreshRates();
 	double FH             = vPredictedDataH[0];
@@ -181,10 +258,11 @@ int DoTrade(){
 	printf("1. Current Bar Ask=%5.4f ; Bid=%5.4f ; FH=%5.4f ; FL=%5.4f", Ask, Bid, FH, FL);
 	//-- Current price (Ask) is below   ForecastL                                     => BUY (1)
 	if(Ask<FL){
+		vTradeType = 1;
 		TP=FH; //printf("Original TP=%f", TP);  //-Ferr*MarketInfo(Symbol(),MODE_TICKSIZE)*10;
 		if( (TP-Ask)<MinProfit ){
 			printf("Profit too small. No Trade.");
-			return (1);
+			return (-vTradeType);
 		} 
 		SL=Bid-(TP-Ask)*RR; //printf("Original SL=%f", SL);
 		if( (Bid-SL)<StopLevel ) SL=Bid-StopLevel;
@@ -193,11 +271,12 @@ int DoTrade(){
 	}
 	//-- Current price is above   ForecastH                                     => SELL (2)
 	if(Bid>FH){
+		vTradeType = 2;
 		TP=FL; //printf("Original TP=%f", TP);   //+Ferr*MarketInfo(Symbol(),MODE_TICKSIZE)*10;
 		if( (Bid-TP)<MinProfit ){
 			printf("Profit too small. No Trade.");
-			return(1);
-		} 
+			return (-vTradeType);
+		}
 		SL=Ask+(Bid-TP)*RR; //printf("Original SL=%f", SL);
 		if( (SL-Ask)<StopLevel ) SL=Ask+StopLevel;
 		printf("Bid>FH (2) ; TP=%5.4f ; SL=%5.4f", TP, SL);
@@ -205,11 +284,12 @@ int DoTrade(){
 	}
 	//-- Current price is between ForecastL and ForecastH, closer to ForecastL  => BUY (3)
 	if( Ask<=FH && Bid>=FL &&(Bid-FL)<=(FH-Ask) ){
+		vTradeType = 3;
 		TP=FH; //printf("Original TP=%f", TP);   //-Ferr*MarketInfo(Symbol(),MODE_TICKSIZE)*10;
 		if( (TP-Ask)<MinProfit ){
 			printf("Profit too small. No Trade.");
-			return(1);
-		} 
+			return (-vTradeType);
+		}
 		SL=Bid-(TP-Ask)*RR; //printf("Original SL=%f", SL);
 		if( (Bid-SL)<StopLevel ) SL=Bid-StopLevel;
 		printf("(3)");
@@ -217,11 +297,12 @@ int DoTrade(){
 	}
 	//-- Current price is between ForecastL and ForecastH, closer to ForecastH  => SELL (4)
 	if( Ask<=FH && Bid>=FL && (FH-Ask)<=(Bid-FL) ){
+		vTradeType = 4;
 		TP=FL; //printf("Original TP=%f", TP);   //+Ferr*MarketInfo(Symbol(),MODE_TICKSIZE)*10;
 		if( (Bid-TP)<MinProfit ){
 			printf("Profit too small. No Trade.");
-			return(1);
-		} 
+			return (-vTradeType);
+		}
 		SL=Ask+(Bid-TP)*RR; //printf("Original SL=%f", SL);
 		if( (SL-Ask)<StopLevel ) SL=Ask+StopLevel;
 		printf("(4)");
@@ -230,41 +311,17 @@ int DoTrade(){
 	//-- Display Forecasts (only for the next bar)
 	DrawForecast(vPredictedDataH[0], vPredictedDataL[0]);
       
-	return 0;
+	return vTradeType;
 }
 
 int GetForecast() {
 	int retries=0;
 	int TesterShift = (IsTesting()) ? 1 : 0;
 
-	//-- First, Invert bars sequence
-	for (int i = 0; i<vHistoryLen; i++) {    // (i=0 is the current bar)
-		vHistoryTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen-i-1+TesterShift], TIME_DATE), " ", TimeToStr(Time[vHistoryLen-i-1+TesterShift], TIME_MINUTES));
-		vHistoryDataH[i] = High[vHistoryLen-i-1+TesterShift];
-		vHistoryDataL[i] = Low[vHistoryLen-i-1+TesterShift];
-		vHistoryBW[i] = vHistoryDataH[i]-vHistoryDataL[i];
-		vValidationTime[i] = StringConcatenate(TimeToStr(Time[vHistoryLen+vValidationShift-i-1+TesterShift], TIME_DATE), " ", TimeToStr(Time[vHistoryLen+vValidationShift-i-1+TesterShift], TIME_MINUTES));
-		vValidationDataH[i] = High[vHistoryLen+vValidationShift-i-1+TesterShift];
-		vValidationDataL[i] = Low[vHistoryLen+vValidationShift-i-1+TesterShift];
-	}
-	printf("vHistoryData[0] =%f|%f", vHistoryDataH[0], vHistoryDataL[0]);
-	printf("vHistoryData[899] =%f|%f", vHistoryDataH[899], vHistoryDataL[899]);
-
-	//-- Add "Base" bar, needed for Delta Transformation
-	vHistoryBaseValH = High[vHistoryLen+TesterShift];
-	vHistoryBaseValL = Low [vHistoryLen+TesterShift];
-	vHistoryBaseTime = StringConcatenate(TimeToStr(Time[vHistoryLen+TesterShift],TIME_DATE)," ",TimeToStr(Time[vHistoryLen+TesterShift],TIME_MINUTES));
-
 	if (!IsTesting()) {
 		printf("RunForecast() CheckPoint 1: vBar[%d]: DateTime=%s, High=%f, Low=%f, vBar[%d]: DateTime=%s, High=%f, Low=%f", 0, vHistoryTime[0], vHistoryDataH[0], vHistoryDataL[0], vHistoryLen-1+TesterShift, vHistoryTime[vHistoryLen-1+TesterShift], vHistoryDataH[vHistoryLen-1+TesterShift], vHistoryDataL[vHistoryLen-1+TesterShift]);
 		printf("RunForecast() CheckPoint 1: vBarBase: DateTime=%s, High=%f, Low=%f", vHistoryBaseTime, vHistoryBaseValH, vHistoryBaseValL);
 		printf("RunForecast() CheckPoint 1: vBar_V[%d]: DateTime=%s, High=%f, Low=%f, vBar_V[%d]: DateTime=%s, High=%f, Low=%f", 0, vValidationTime[0], vValidationDataH[0], vValidationDataL[0], vHistoryLen-1+TesterShift, vValidationTime[vHistoryLen-1+TesterShift], vValidationDataH[vHistoryLen-1+TesterShift], vValidationDataL[vHistoryLen-1+TesterShift]);
-	}
-
-	if(vBarId>0){
-		vPrevFH0=GlobalVariableGet("PrevFH0");
-		vPrevFL0=GlobalVariableGet("PrevFL0");
-		if(!IsTesting()) printf("RunForecast() CheckPoint 2: Previous Forecast (H|L)=%f|%f ; Previous Actual (H|L)=%f|%f => Previous Error (H|L)=%f|%f", vPrevFH0, vPrevFL0, High[1],Low[1], MathAbs(vPrevFH0-High[1]),MathAbs(vPrevFL0-Low[1]) );
 	}
 
 	//-- Then, Call DLL to get Next Bar H,L
@@ -351,7 +408,7 @@ int NewTrade(int cmd, double price, double stoploss, double takeprofit){
    
 	if(CloseOpenTrades) CloseOpenPos(vComment);       // Close Previous Position
 	prevPL=GetLastPL(vComment);                       // Get last closed position P/L
-	//printf("<NewTrade() volume=%f ; PrevPL=%f",volume, prevPL);
+
 	// Anti-Martingale: if last trade was at profit, double TradeSize, otherwise halve it.
 	if(prevPL>0) volume=volume*2; if(volume>TradeSizeMax) volume=volume/2;
 	if(prevPL<0) volume=volume/2; if(volume<TradeSizeMin) volume=volume*2;
@@ -360,6 +417,11 @@ int NewTrade(int cmd, double price, double stoploss, double takeprofit){
 	TktId=OrderSend(Symbol(), cmd, volume, price, Default_Slippage, stoploss, takeprofit, vComment, 15081970);
  
 	if (TktId==-1) Alert("NewTrade() failed with error: ",GetLastError());
+
+	vTradeSize = volume;	// vTradeSize is global non-static, and is needed by MTSaveTradeInfo()
+	vTradeTP = takeprofit;
+	vTradeSL = stoploss;
+
 	return TktId;
 }
 

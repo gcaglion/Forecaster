@@ -19,6 +19,7 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms);
 //===
 
 //=== Log Write functions
+__declspec(dllexport) int __stdcall SaveTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL);
 __declspec(dllexport) int __stdcall SaveClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun);
 __declspec(dllexport) int __stdcall UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS);
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid);

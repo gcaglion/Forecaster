@@ -168,6 +168,34 @@ EXPORT void __stdcall OraCommit(void* pCtx) {
 //===
 
 //=== Basic Logs
+EXPORT int __stdcall Ora_InsertTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
+	EXEC SQL BEGIN DECLARE SECTION;
+	sql_context vCtx = pDebugParms->DebugDB->DBCtx;
+	char stmt[1000];
+	EXEC SQL END DECLARE SECTION;
+
+	//-- Connects to DB only once
+	if (vCtx == NULL) {
+		if (OraConnect(pDebugParms, pDebugParms->DebugDB) != 0) {
+			printf("%s() could not connect to Log Database...\n", __func__);
+			return -1;
+		}
+		vCtx = pDebugParms->DebugDB->DBCtx;
+	}
+	//-- Builds Insert statement
+	sprintf(&stmt[0], "insert into TradeInfo(ProcessId, BarId, LastBarT, LastBarO, LastBarH, LastBarL, LastBarC, FirstBarT, FirstBarO, FirstBarH, FirstBarL, FirstBarC, PrevFH, PrevFL, CurrBid, CurrAsk, CurrFH, CurrFL, TradeType, TradeSize, TradeTP, TradeSL)\
+										 values(%d, %d, to_date('%s','YYYYMMDDHH24MI'), %f, %f, %f, %f, to_date('%s','YYYYMMDDHH24MI'), %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %d, %f, %f, %f)",\
+												pid, pBarId, pLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC, pFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC, pPrevFH, pPrevFL, pCurrBid, pCurrAsk, pCurrFH, pCurrFL, pTradeType, pTradeSize, pTradeTP, pTradeSL);
+	//-- Executes Insert statement
+	LogWrite_C(pDebugParms, LOG_INFO, "%s() executing stmt = %s\n", 2, __func__, stmt);
+	EXEC SQL CONTEXT USE : vCtx;
+	EXEC SQL EXECUTE IMMEDIATE : stmt;
+	if (sqlca.sqlcode != 0) {
+		if (sqlca.sqlcode != 1) LogWrite_C(pDebugParms, LOG_ERROR, "%s() failed. SQL Error %d ; stmt = %s\n", 3, __func__, sqlca.sqlcode, stmt);
+		return sqlca.sqlcode;
+	}
+	return 0;
+}
 EXPORT int __stdcall Ora_InsertClientInfo(tDebugInfo* DebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedSecs, int pDoTraining, int pDoRun) {
 	EXEC SQL BEGIN DECLARE SECTION;
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
