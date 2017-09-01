@@ -192,7 +192,7 @@ for (d = 0; d < pDatasetCount; d++) {
 int GetDataSetFromCol(int col, tFileData* pDataFile) {
 
 	for (int d = 0; d < pDataFile->FileDataSetsCount; d++) {
-		if (pDataFile->FileDataSet[d] == (col + 1)) return d;
+		if (pDataFile->FileDataSet[d] == (col)) return d;
 	}
 	return -1;
 }
