@@ -32,12 +32,6 @@ typedef struct {
 	double** Target;
 } tRunParams;
 
-/*char fPerfName[MAX_PATH];
-FILE* fPerf;
-LARGE_INTEGER frequency;			// ticks per second
-LARGE_INTEGER time_start, time_end; // ticks
-double elapsedTime = 0; char elapsedTimeS[30];
-*/
 void freeCoreParms(tForecastParms* ioParms) {
 	switch (ioParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
@@ -1174,10 +1168,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	int tid = GetCurrentThreadId();
 	HANDLE FMutex = CreateMutex(NULL, FALSE, NULL);
 
-/*	sprintf(fPerfName, "c:/temp/Perf%d.csv", pid);
-	fPerf = fopen(fPerfName, "a");	
-	QueryPerformanceFrequency(&frequency);		// get ticks per second
-*/	
 	// Forecasting Parameters initialization. 
 	tForecastParms fp;
 	//-- a. set overrides from Command Line 
@@ -1405,10 +1395,3 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	return 0;
 
 }
-
-
-/*
-FILE* kfd = fopen("C:/temp/dioporco.log", "w");
-fprintf(kfd, "DatasetsCount=%d ; DebugLevel=%d\nDebugDest=%d\nDebugDB.DBCtx=%p\n---\n", fParms.DataParms.DatasetsCount, fParms.DebugParms.DebugLevel, fParms.DebugParms.DebugDest, fParms.DebugParms.DebugDB->DBCtx);
-fclose(kfd);
-*/

@@ -29,6 +29,19 @@ int initfParms(int paramCnt, char* paramOverride, tForecastParms* fp) {
 	return 0;
 }
 
+extern "C" __declspec(dllexport) int  MTUpdateClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, unsigned int pElapsedms) {
+
+	tForecastParms fParms; if (initfParms(paramCnt, paramOverride, &fParms) <0) return -1;
+
+	//-- set DBCtx
+	sscanf(pDBCtx, "%p", &fParms.DebugParms.DebugDB->DBCtx);
+
+	//-- call UpdateClientInfo() in MyLogger library
+	return (
+		UpdateClientInfo(&fParms.DebugParms, GetCurrentProcessId(), (double) pElapsedms)
+	);
+	
+}
 extern "C" __declspec(dllexport) int  MTOraConnect(int paramCnt, char* paramOverride, char* oCtxS) {
 
 	tForecastParms fParms; if (initfParms(paramCnt, paramOverride, &fParms) <0) return -1;
@@ -71,7 +84,6 @@ extern "C" __declspec(dllexport) int MTSaveTradeInfo(
 	convertBarTime(pFirstBarT, vFirstBarT);
 
 	//-- call SaveTradeInfo in MyLogger library
-	LogWrite(&fParms.DebugParms, LOG_INFO, "Calling SaveTradeInfo...\n", 0);
 	return(
 		SaveTradeInfo(
 			&fParms.DebugParms, GetCurrentProcessId(), pBarId, 
@@ -84,7 +96,6 @@ extern "C" __declspec(dllexport) int MTSaveTradeInfo(
 		)
 	);
 
-	return 0;
 }
 extern "C" __declspec(dllexport) int  MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun) {
 	char vCurrentBar[20+1];

@@ -32,6 +32,7 @@ int  MTSaveTradeInfo(
 	int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL
 );
 void MTLogClose(int paramOverrideCnt, uchar &paramOverride[]);
+int  MTUpdateClientInfo(int paramOverrideCnt, uchar &paramOverride[], uchar& pDBCtxS[], unsigned int pElapsedms);
 #import
 
 //--- input parameters
@@ -92,9 +93,11 @@ double vPrevFL0 = 0;
 double vTradeSize=0;			// vTradeSize is global non-static. It is set by NewTrade(), and is needed by MTSaveTradeInfo()
 double vTradeTP=0, vTradeSL=0;	// these, too, are set in NewTrade()
 bool   fLog;
+uint t0, t1;						// Time counters. Used to calc elapsed
 
 int OnInit() {
 	//Print("Bar count is ",Bars(Symbol(), Period()));
+	t0 = GetTickCount();
 
 	//--- Resize History and Prediction arrays (+1 is for BaseVal)
 	ArrayResize(vHistoryDataO, vHistoryLen);
@@ -156,10 +159,18 @@ int OnInit() {
 	return(INIT_SUCCEEDED);
 }
 void OnDeinit(const int reason) {
-	//--- Disconnect from DB upon exiting
-	if(reason==REASON_INITFAILED || reason==REASON_PROGRAM) {
+
+	printf("OnDDeInit() reason=%d", reason);
+
+	//-- Disconnect from DB upon exiting
+	if(reason==REASON_INITFAILED /*|| reason==REASON_PROGRAM*/) {
 		MTOraDisconnect(vParamOverrideCnt, vParamOverride, vCtxS, 0);
 	} else{
+		//-- Before commit, save ElapsedTime in ClientInfo
+		t1 = GetTickCount();
+		printf("t0=%d ; t1=%d ; elapsed=%d", t0, t1, (t1-t0));
+		if (MTUpdateClientInfo(vParamOverrideCnt, vParamOverride, vCtxS, (t1-t0)) != 0) Alert("Failed to update Client duration!");
+
 		MTOraDisconnect(vParamOverrideCnt, vParamOverride, vCtxS, 1);
 	}
 }
