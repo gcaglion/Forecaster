@@ -1053,7 +1053,7 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 	}
 }
 
-void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId, double* scaleM, double* scaleP, double* baseVal, double* minVal, double** hd_trs, double** wd_bw, int pOOS, double** fd_trs, tLogRUN** runLog_o, double** oPredictedData) {
+void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId, double* scaleM, double* scaleP, double* baseVal, double* minVal, double** hd_trs, double** hd_bw, int pOOS, double** fd_trs, double** fd_bw, tLogRUN** runLog_o, double** oPredictedData) {
 	int d, i;
 
 	int sl0 = pDataParms->SampleLen;			// SampleLen from original data
@@ -1080,7 +1080,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];
+		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
 
 		//-- Predicted_TRS
 		for (i = 0; i < sl0; i++) prd_trs[i]			= NULL;
@@ -1129,7 +1129,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			runLog_o[d][i].Error = err[i];
 			runLog_o[d][i].Error_TRS = err_trs[i];
 
-			runLog_o[d][i].BarWidth = wd_bw[d][i];
+			runLog_o[d][i].BarWidth = (i<pDataParms->HistoryLen)?hd_bw[d][i]:fd_bw[d][i-pDataParms->HistoryLen];	// =====!!!=====
 			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0) ? 0 : (runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
 		}
 
@@ -1178,7 +1178,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//-- c. restore Ctx for LogDB, if the caller has already opened a session
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
-	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
@@ -1192,34 +1192,30 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	int layersCnt = fp.EngineParms.LayersCount;
 	int* coresCnt = fp.EngineParms.CoresCount;
 
-	int i, l, d;
+	int l, d;
 
 	int sampleCnt  = fp.DataParms.SampleCount;
 	int sampleLen0 = fp.DataParms.SampleLen;
 	int rc = sampleLen0 + sampleCnt + flen;
 
-	//-- Transform and Scale History, Validation, Future Data
-	//int wlen = hlen + ((fp.HaveFutureData==0)?0:flen);
-	int wlen = hlen + flen;
-
-	double** wd			= MallocArray<double>(dscnt, wlen);
-	double** wd_tr		= MallocArray<double>(dscnt, wlen);
-	double** wd_trs		= MallocArray<double>(dscnt, wlen);
-	double** wd_bw		= MallocArray<double>(dscnt, wlen);
-	double** hd_trs		= MallocArray<double>(dscnt, hlen);
-	double** vd_tr		= MallocArray<double>(dscnt, hlen);
-	double** vd_trs		= MallocArray<double>(dscnt, hlen);
-	double** fd_trs		= MallocArray<double>(dscnt, flen);
+	double** hd_tr	= MallocArray<double>(dscnt, hlen);
+	double** hd_trs	= MallocArray<double>(dscnt, hlen);
+	double** vd_tr	= MallocArray<double>(dscnt, hlen);
+	double** vd_trs	= MallocArray<double>(dscnt, hlen);
+	double** fd_tr	= MallocArray<double>(dscnt, flen);
+	double** fd_trs	= MallocArray<double>(dscnt, flen);
 
 	double* hd_min = MallocArray<double>(dscnt);
 	double* vd_min = MallocArray<double>(dscnt);
-	double* wd_min = MallocArray<double>(dscnt);
+	double* fd_min = MallocArray<double>(dscnt);
 
 	double scaleMin, scaleMax;
-	double*  wd_scaleM = MallocArray<double>(dscnt);
-	double*  wd_scaleP = MallocArray<double>(dscnt);
+	double*  hd_scaleM = MallocArray<double>(dscnt);
+	double*  hd_scaleP = MallocArray<double>(dscnt);
 	double*  vd_scaleM = MallocArray<double>(dscnt);
 	double*  vd_scaleP = MallocArray<double>(dscnt);
+	double*  fd_scaleM = MallocArray<double>(dscnt);
+	double*  fd_scaleP = MallocArray<double>(dscnt);
 	double** hd_tsf		= MallocArray<double>(dscnt, fp.EngineParms.TSFcnt);
 	double** vd_tsf		= MallocArray<double>(dscnt, fp.EngineParms.TSFcnt);
 
@@ -1247,34 +1243,19 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//----- Base TimeSerie s-----------------------------------------------------------
 	for (d = 0; d < dscnt; d++) {
 
-		//-- build wd from hd, fd
-		for (i = 0; i < hlen; i++) {
-			wd[d][i] = hd[d][i];
-			wd_bw[d][i] = pHistoryBW[d][i];
-		}
-		for (i = 0; i < flen; i++) {
-			if (fp.HaveFutureData==1) {
-				wd[d][hlen + i] = fd[d][i];
-				wd_bw[d][hlen + i] = pFutureBW[d][i];
-			} else {
-				wd[d][hlen + i] = NULL;
-				wd_bw[d][hlen + i] = 0;
-			}
-		}
 		SetTSScaleRange(fp.EngineParms.EngineType, fp.EngineParms.Core[0][0].CoreSpecs, &scaleMin, &scaleMax);
-		//-- transform/scale wd
-		dataTransform(fp.DataParms.DataTransformation, wlen, wd[d], pHistoryBaseVal[d], &wd_min[d], wd_tr[d]);
-		DataScale(wlen, wd_tr[d], scaleMin, scaleMax, wd_trs[d], &wd_scaleM[d], &wd_scaleP[d]);
+		//-- transform/scale hd
+		dataTransform(fp.DataParms.DataTransformation, hlen, hd[d], pHistoryBaseVal[d], &hd_min[d], hd_tr[d]);
+		DataScale(hlen, hd_tr[d], scaleMin, scaleMax, hd_trs[d], &hd_scaleM[d], &hd_scaleP[d]);
 		//-- transform/scale vd
 		if (fp.DataParms.ValidationShift != 0) {
 			dataTransform(fp.DataParms.DataTransformation, hlen, vd[d], pValidationBaseVal[d], &vd_min[d], vd_tr[d]);
 			DataScale(hlen, vd_tr[d], scaleMin, scaleMax, vd_trs[d], &vd_scaleM[d], &vd_scaleP[d]);
 		}
-		//-- derive hd_trs, fd_trs from wd_trs
-		for (int i = 0; i < hlen; i++) hd_trs[d][i] = wd_trs[d][i];
-		if (fp.HaveFutureData==1) {
-			for (int i = 0; i < flen; i++) fd_trs[d][i] = wd_trs[d][hlen + i];
-		}
+		//-- fill fd_trs
+		dataTransform(fp.DataParms.DataTransformation, flen, pFutureData[d], hd[d][hlen-1], &fd_min[d], fd_tr[d]);	//-- Transformation of FutureData uses the last element of HistoryData as Base Val
+		DataScale(flen, fd_tr[d], scaleMin, scaleMax, fd_trs[d], &fd_scaleM[d], &fd_scaleP[d]);						//-- fd_scaleM/P are not used, as we should unscale FD using M/P from HD
+
 		// regardless of the engine, we slide base timeserie. If needed by specific engine, this will get overwritten
 		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], fp.DebugParms.DumpSampleData);
 		if (fp.DataParms.ValidationShift != 0) SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], fp.DebugParms.DumpSampleData);
@@ -1332,7 +1313,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 
 	}
 
-	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
+	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, hd_scaleM, hd_scaleP, pHistoryBaseVal, hd_min, hd_trs, pHistoryBW, haveActualFuture, fd_trs, pFutureBW, runLog, oPredictedData);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
@@ -1358,26 +1339,20 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	}
 
 	//-- free(s) 
-	FreeArray(dscnt, wlen, wd);
-	FreeArray(dscnt, wlen, wd_tr);
-	FreeArray(dscnt, wlen, wd_trs);
-	FreeArray(dscnt, wlen, wd_bw);
+	FreeArray(dscnt, hlen, hd_tr);
 	FreeArray(dscnt, hlen, hd_trs);
 	FreeArray(dscnt, hlen, vd_tr);
 	FreeArray(dscnt, hlen, vd_trs);
 	FreeArray(dscnt, flen, fd_trs);
 	FreeArray(dscnt, hd_min);
 	FreeArray(dscnt, vd_min);
-	FreeArray(dscnt, wd_min);
-	FreeArray(dscnt, wd_scaleM);
-	FreeArray(dscnt, wd_scaleP);
 	FreeArray(dscnt, vd_scaleM);
 	FreeArray(dscnt, vd_scaleP);
 	FreeArray(dscnt, fp.EngineParms.TSFcnt, hd_tsf);
 	FreeArray(dscnt, fp.EngineParms.TSFcnt, vd_tsf);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts_tr);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts_trs);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts_tr);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts_trs);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), ts_scaleM);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), ts_scaleP);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), bv);
