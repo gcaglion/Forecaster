@@ -355,7 +355,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	char LogFileName[MAX_PATH];
 	FILE* LogFile=NULL;
 
-	if (pWriteLog>1){
+	if (pWriteLog>0){
 		//strcpy(LogFileName, MyGetCurrentDirectory()); strcat(LogFileName, "\\SlideArray.log");
 		strcpy(LogFileName, "C:/temp/SlideArray.log");
 		LogFile = fopen(LogFileName, "w");
@@ -364,7 +364,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	for (s = 0; s<iSampleCount; s++){
 		for (i = 0; i<iSampleLen; i++){
 			oSample[s][i] = iWholeSet[s + i];
-			if (pWriteLog>1) fprintf(LogFile, "%f ", oSample[s][i]);
+			if (pWriteLog>0) fprintf(LogFile, "%f ", oSample[s][i]);
 		}
 		for (i = 0; i<iTargetLen; i++){
 			if ((s + iSampleLen + i) >= iWholeSetLen){
@@ -373,12 +373,12 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 			else {
 				oTarget[s][i] = iWholeSet[s + iSampleLen + i];
 			}
-			if (pWriteLog>1) fprintf(LogFile, "%f ", oTarget[s][i]);
+			if (pWriteLog>0) fprintf(LogFile, "%f ", oTarget[s][i]);
 		}
-		if (pWriteLog>1) fprintf(LogFile, "\n");
+		if (pWriteLog>0) fprintf(LogFile, "\n");
 	}
 
-	if (pWriteLog>1) fclose(LogFile);
+	if (pWriteLog>0) fclose(LogFile);
 }
 
  EXPORT void __stdcall SlideArrayNew(int dlen, double* idata, int iSampleLen, int iTargetLen, double** oSample, double** oTarget, int pWriteLog) {
@@ -386,7 +386,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 char LogFileName[MAX_PATH];
 	 FILE* LogFile = NULL;
 
-	 if (pWriteLog > 1) {
+	 if (pWriteLog > 0) {
 		 //strcpy(LogFileName, MyGetCurrentDirectory()); strcat(LogFileName, "\\SlideArray.log");
 		 strcpy(LogFileName, "C:/temp/SlideArray.log");
 		 LogFile = fopen(LogFileName, "w");
@@ -396,7 +396,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 for (s = 0; s < SampleCount; s++) {
 		 for (i = 0; i < iSampleLen; i++) {
 			 oSample[s][i] = idata[s + i];
-			 if (pWriteLog > 1) fprintf(LogFile, "%f ", oSample[s][i]);
+			 if (pWriteLog > 0) fprintf(LogFile, "%f ", oSample[s][i]);
 		 }
 		 for (i = 0; i < iTargetLen; i++) {
 			 if ((s + iSampleLen + i) >= dlen) {
@@ -405,12 +405,12 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 			 else {
 				 oTarget[s][i] = idata[s + iSampleLen + i];
 			 }
-			 if (pWriteLog > 1) fprintf(LogFile, "%f ", oTarget[s][i]);
+			 if (pWriteLog > 0) fprintf(LogFile, "%f ", oTarget[s][i]);
 		 }
-		 if (pWriteLog > 1) fprintf(LogFile, "\n");
+		 if (pWriteLog > 0) fprintf(LogFile, "\n");
 	 }
 
-	 if (pWriteLog > 1) fclose(LogFile);
+	 if (pWriteLog > 0) fclose(LogFile);
  }
 
  EXPORT void __stdcall UnSlideArray(int pRowsCnt, int pSampleLen, int pTargetLen, double** pSample, double** pTarget, double* oArr) {

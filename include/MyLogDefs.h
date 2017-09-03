@@ -79,6 +79,7 @@ typedef struct sDebugInfo {
 	int SaveRun;
 	int SaveInternals;
 	int SaveImages;
+	int DumpSampleData;
 	HANDLE Mtx;		// Mutex handle used by LogWrite()
 #ifdef __cplusplus
 	sDebugInfo() {
