@@ -278,6 +278,10 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	}
 	//-- Rewind, then advance l0 lines
 	rewind(fData);
+	if (l0<pHistoryLen) {
+		LogWrite(DebugParms, LOG_ERROR, "Not enough History Data in Source File (Date0 found at line %d ; HistoryLen=%d). Exiting...\n", 2, l0+1, pHistoryLen);
+		return -1;
+	}
 	for (i = 0; i<(l0-pHistoryLen+1); i++) {
 		if (fgets(vLine, MaxLineSize, fData) == NULL) {
 			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);

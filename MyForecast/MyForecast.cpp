@@ -1080,7 +1080,8 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
+		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? EMPTY_VALUE : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as 0, so here we simply overwrite it if we have Future Data
+		//for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
 
 		//-- Predicted_TRS
 		for (i = 0; i < sl0; i++) prd_trs[i]			= NULL;
@@ -1088,8 +1089,9 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		for (i = 0; i < pl ; i++) prd_trs[sl0 + sc + i]	= runLog_i[sl1 + sc + i].Predicted_TRS;
 
 		//-- UnScale/UnTransform act
-		DataUnScale(rc, 0, rc, act_trs, scaleM[d], scaleP[d], act_tr);
-		dataUnTransform(pDataParms->DataTransformation, 0, rc, act_tr, baseVal[d], minVal[d], act, act);
+		DataUnScale(rc, 0, (pOOS>0)?rc:(sl0+sc), act_trs, scaleM[d], scaleP[d], act_tr);
+		dataUnTransform(pDataParms->DataTransformation, 0, (pOOS>0)?rc:(sl0+sc), act_tr, baseVal[d], minVal[d], act, act);
+
 		//-- UnScale/UnTransform prd
 		DataUnScale(rc, sl0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
 		dataUnTransform(pDataParms->DataTransformation, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
@@ -1178,7 +1180,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//-- c. restore Ctx for LogDB, if the caller has already opened a session
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
-	dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
@@ -1254,7 +1256,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		}
 		//-- fill fd_trs
 		dataTransform(fp.DataParms.DataTransformation, flen, pFutureData[d], hd[d][hlen-1], &fd_min[d], fd_tr[d]);	//-- Transformation of FutureData uses the last element of HistoryData as Base Val
-		DataScale(flen, fd_tr[d], scaleMin, scaleMax, fd_trs[d], &fd_scaleM[d], &fd_scaleP[d]);						//-- fd_scaleM/P are not used, as we should unscale FD using M/P from HD
+		DataScale(flen, fd_tr[d], scaleMin, scaleMax, fd_trs[d], hd_scaleM[d], hd_scaleP[d]);						//-- scaling FD using M/P from HD
 
 		// regardless of the engine, we slide base timeserie. If needed by specific engine, this will get overwritten
 		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], fp.DebugParms.DumpSampleData);

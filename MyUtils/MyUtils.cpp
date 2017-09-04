@@ -425,26 +425,47 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 oArr[pRowsCnt + pSampleLen - 1] = pTarget[pRowsCnt - 1][0];
  }
  
- EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP){
-	int i;
-	double OrigMin, OrigMax;
+ EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP) {
+	 int i;
+	 double OrigMin, OrigMax;
 
-	//FILE* fk = fopen("C:/temp/DataScale.log", "w");
+	 //FILE* fk = fopen("C:/temp/DataScale.log", "w");
 
-	FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
-	(*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
-	(*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
+	 FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
+	 (*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
+	 (*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
 
-	for (i = 0; i < iDataLen; i++){
-		if (iOrigData[i] == EMPTY_VALUE){
-			oScaledData[i] = iOrigData[i];
-		} else{
-			oScaledData[i] = iOrigData[i] * (*oScaleM) + (*oScaleP);
-		}
-		//fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
-	}
-	//fclose(fk);
-}
+	 for (i = 0; i < iDataLen; i++) {
+		 if (iOrigData[i] == EMPTY_VALUE) {
+			 oScaledData[i] = iOrigData[i];
+		 } else {
+			 oScaledData[i] = iOrigData[i] * (*oScaleM) + (*oScaleP);
+		 }
+		 //fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
+	 }
+	 //fclose(fk);
+ }
+ EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double iScaleM, double iScaleP) {
+	 //-- overloaded version used to scale an array using existing M/P
+	 int i;
+	 double OrigMin, OrigMax;
+
+	 //FILE* fk = fopen("C:/temp/DataScale.log", "w");
+
+	 FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
+	 //(*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
+	 //(*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
+
+	 for (i = 0; i < iDataLen; i++) {
+		 if (iOrigData[i] == EMPTY_VALUE) {
+			 oScaledData[i] = iOrigData[i];
+		 } else {
+			 oScaledData[i] = iOrigData[i] * iScaleM + iScaleP;
+		 }
+		 //fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
+	 }
+	 //fclose(fk);
+ }
 
 /*EXPORT void __stdcall  DataUnScale(int iDataLen, double* InOutData, double iScaleM, double iScaleP){
 	for (int i = 0; i < iDataLen; i++) InOutData[i] = (InOutData[i] - iScaleP) / iScaleM;
