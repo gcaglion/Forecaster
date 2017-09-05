@@ -341,17 +341,13 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 
 	//-- 2.2 out-of-sample
 	for (s = 0; s < pInputData->PredictionLen; s++) {
-
-		// Target[s] only exist while s<SampleCount. Beyond that, Actual is prediction from previous step
-		vActual = MyPrediction;
-
-		//-- Sample beyond SampleCount must be build, regardless of pOOS
 		ShiftArray(SHIFT_BACKWARD, SVMParms->InputCount, tmpSample, vActual);
-
+		//--
 		buildSVMsample(vSampleLen, tmpSample, pTarget[s], SVMsample);
 		MyPrediction = SVMPredict(SVMsample, SVMParms->KernelType, vSampleLen, Mymodel, words);
-
-		SaveRunData(SVMLogs, pid, tid, (s + pSampleCount + SVMParms->InputCount), vActual, &MyPrediction);
+		//--
+		SaveRunData(SVMLogs, pid, tid, (s + pSampleCount+SVMParms->InputCount), NULL, &MyPrediction);
+		vActual = MyPrediction;
 	}
 
 	if (Mymodel->kernel_parm.kernel_type == 0) free(Mymodel->lin_weights);

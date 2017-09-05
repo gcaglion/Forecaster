@@ -15,7 +15,7 @@ __declspec(dllexport) void __stdcall SaveRunData(tCoreLog* coreLog, DWORD pid, D
 	coreLog->RunOutput[pPos].ThreadId = tid;
 	coreLog->RunOutput[pPos].Pos = pPos;
 	coreLog->RunOutput[pPos].Actual_TRS = pActual;
-	coreLog->RunOutput[pPos].Predicted_TRS = (pPredicted == NULL) ? 0 : pPredicted[0];
+	coreLog->RunOutput[pPos].Predicted_TRS = (pPredicted == NULL) ? EMPTY_VALUE : pPredicted[0];
 }
 //--
 

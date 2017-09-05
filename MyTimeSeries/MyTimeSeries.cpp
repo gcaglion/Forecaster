@@ -625,7 +625,7 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 	case DT_DELTA:
 		for (i = from_i; i < to_i; i++) {
 			if (i > from_i) {
-				prev = iActual[i - 1];
+				prev = odata[i-1];	// iActual[i - 1];
 			}
 			else {
 				if (from_i > 0) {
@@ -652,7 +652,7 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 
 			//-- 2. unDELTA
 			if (i > from_i) {
-				prev = iActual[i - 1];
+				prev = odata[i-1];	// iActual[i - 1];
 			} else {
 				if (from_i > 0) {
 					prev = iActual[i - 1];

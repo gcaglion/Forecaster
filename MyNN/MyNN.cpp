@@ -1504,14 +1504,16 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 	//-- 4.2 Out-of-Sample
 	for (s = 0; s < pInputData->PredictionLen; s++) {
 		ShiftArray(SHIFT_BACKWARD, NNParms->NodesCount[0], tmpSample, vActual);
+		//--
 		for (i = 0; i < NNParms->NodesCount[0]; i++) MxData.NN.F[0][t0][i] = tmpSample[i];	//-- Present each sample to input neurons
 		FF(NNParms, &MxData);																//-- Feed-Forward the network;
 		vPrediction = MxData.NN.F[NNParms->LevelsCount-1][t0];								//-- Predicted  Data. All steps
+		//--
 		SaveRunData(NNLogs, pid, tid, (s + pSampleCount+NNParms->NodesCount[0]), NULL, vPrediction);
 		vActual = vPrediction[0];
 	}
-
-	/*	for (s = 0; s < pInputData->PredictionLen; s++) {
+/*
+		for (s = 0; s < pInputData->PredictionLen; s++) {
 
 		// Target[s] only exist while s<SampleCount. Beyond that, Actual is prediction from previous step
 		vActual = vPrediction[0];

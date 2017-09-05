@@ -356,8 +356,8 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	FILE* LogFile=NULL;
 
 	if (pWriteLog>0){
-		//strcpy(LogFileName, MyGetCurrentDirectory()); strcat(LogFileName, "\\SlideArray.log");
-		strcpy(LogFileName, "C:/temp/SlideArray.log");
+		//sprintf(LogFileName, "C:/temp/SlideArray_%d-%d.log", GetCurrentProcessId(), GetCurrentThreadId());
+		sprintf(LogFileName, "C:/temp/SlideArray.log");
 		LogFile = fopen(LogFileName, "w");
 	}
 

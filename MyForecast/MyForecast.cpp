@@ -1095,8 +1095,6 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- UnScale/UnTransform prd
 		DataUnScale(rc, sl0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
 		dataUnTransform(pDataParms->DataTransformation, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
-		//-- prd elements need to be shifted back...
-		//--.....
 
 		//-- calc err, err_trs
 		for (i = 0; i < sl0; i++) {
@@ -1181,6 +1179,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
 	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	DumpArrayD(fp.DataParms.HistoryLen, pHistoryData[0], "c:/temp/High.csv");
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
@@ -1265,6 +1264,8 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
 		if (fp.DataParms.ValidationShift != 0) CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
 	}
+	DumpArrayD(hlen, hd_tr[0], "C:/temp/HD_TR0.csv");
+	DumpArrayD(hlen, hd_trs[0], "C:/temp/HD_TRS0.csv");
 
 	for (l = 0; l < fp.EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
@@ -1318,9 +1319,10 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, hd_scaleM, hd_scaleP, pHistoryBaseVal, hd_min, hd_trs, pHistoryBW, haveActualFuture, fd_trs, pFutureBW, runLog, oPredictedData);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
-	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
-	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
-
+	if (fp.DataParms.DatasetsCount>1) {
+		LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
+		LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
+	}
 	//-- Save Logs
 	if (fp.DebugParms.SaveNothing==0) {
 		LogWrite(&fp.DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
