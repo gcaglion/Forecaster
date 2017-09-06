@@ -1037,14 +1037,15 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 		//-- indicators
 		//strcpy(&stmt[0], "update MyLog_Run set Predicted=NULL, Error=NULL, PredictedC=NULL, ErrorC=NULL, BarWidth=NULL, ErrorP=NULL where Predicted=0");
 		iPredicted[i] = (vPredicted[i]==0) ? -1 : 0;
-		iError[i] = (vPredicted[i]==0 || vActual[i]==0) ? -1 : 0;
+		iError[i] = (vPredicted[i]==0 || vActual[i]==0 || vActual_TRS[i]==EMPTY_VALUE) ? -1 : 0;
 		iErrorP[i] = (vPredicted[i]==0 || vActual[i]==0) ? -1 : 0;
 		iPredicted_TRS[i] = (vPredicted[i]==0) ? -1 : 0;
-		iError_TRS[i] = (vPredicted[i]==0) ? -1 : 0;
+		iError_TRS[i] = (vPredicted[i]==0 || vActual_TRS[i]==EMPTY_VALUE) ? -1 : 0;
 		iBarWidth[i] = (vPredicted[i]==0) ? -1 : 0;
 		//strcpy(&stmt[0], "update MyLog_Run set Actual=NULL, ActualC=NULL, Error=NULL, ErrorP=NULL where Actual=0");
-		iActual[i] = (vActual[i]==0) ? -1 : 0;
-		iActual_TRS[i] = (vActual[i]==0) ? -1 : 0;
+		//strcpy(&stmt[0], "update MyLog_Run set Actual=NULL, ActualC=NULL, Error=NULL, ErrorP=NULL where ActualC=EMPTY_VALUE");
+		iActual[i] = (vActual_TRS[i]==EMPTY_VALUE) ? -1 : 0;
+		iActual_TRS[i] = (vActual_TRS[i]==EMPTY_VALUE) ? -1 : 0;
 
 		//LogWrite_C(DebugParms, LOG_INFO, "vProcessId[%d][%d][%d]=%d , vThreadId[%d][%d][%d]=%d , vTestId[%d][%d][%d]=%d , vNetId[%d][%d][%d]=%d, vPos[%d][%d][%d]=%d \n", 20, d, n, i, vProcessId[n][i], d, n, i, vThreadId[n][i], d, n, i, vTestId[n][i], d, n, i, vNetId[n][i], d, n, i, vPos[n][i]);
 	}
