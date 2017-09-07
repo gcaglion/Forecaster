@@ -589,7 +589,7 @@ EXPORT void __stdcall DataUnTransform(int Transformation, int iFromItem, int iTo
 }
 */
 //-- newest version ---------------------------------------------------------------------------------------------------
-EXPORT void __stdcall dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata) {
+EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata) {
 	double maxval;
 
 	FindMinMax(dlen, idata, oMinVal, &maxval);
@@ -616,7 +616,7 @@ EXPORT void __stdcall dataTransform(int dt, int dlen, double* idata, double base
 
 }
 
-EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata) {
+EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata) {
 	double prev;
 	int i;
 
@@ -625,11 +625,11 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 	case DT_DELTA:
 		for (i = from_i; i < to_i; i++) {
 			if (i > from_i) {
-				prev = odata[i-1];	// iActual[i - 1];
+				prev = (iActual[i-1]!=EMPTY_VALUE)?iActual[i-1]:odata[i-1];
 			}
 			else {
 				if (from_i > 0) {
-					prev = iActual[i - 1];
+					prev = iActual[i-1];
 				}
 				else {
 					prev = baseVal;
@@ -652,10 +652,10 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 
 			//-- 2. unDELTA
 			if (i > from_i) {
-				prev = odata[i-1];	// iActual[i - 1];
+				prev = iActual[i-1];
 			} else {
 				if (from_i > 0) {
-					prev = iActual[i - 1];
+					prev = iActual[i-1];
 				} else {
 					prev = baseVal;
 				}
@@ -669,6 +669,9 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 		for (i = from_i; i < to_i; i++) odata[i] = idata[i];
 		break;
 	}
+
+	for (i = 0; i < from_i; i++) odata[i] = EMPTY_VALUE;
+	for (i = to_i; i < dlen; i++) odata[i] = EMPTY_VALUE;
 
 }
 //--------------------------------------------------------------------------------------------------------------------------

@@ -1084,19 +1084,19 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
 
 		//-- Predicted_TRS
-		for (i = 0; i < sl0; i++) prd_trs[i]			= NULL;
+		for (i = 0; i < sl0; i++) prd_trs[i]			= EMPTY_VALUE;
 		for (i = 0; i < sc ; i++) prd_trs[sl0 + i]		= runLog_i[sl1 + i].Predicted_TRS;
 		for (i = 0; i < pl ; i++) prd_trs[sl0 + sc + i]	= runLog_i[sl1 + sc + i].Predicted_TRS;
 
 		//-- UnScale/UnTransform act
 		DataUnScale(rc, 0, (pOOS>0)?rc:(sl0+sc), act_trs, scaleM[d], scaleP[d], act_tr);
-		dataUnTransform(pDataParms->DataTransformation, 0, (pOOS>0)?rc:(sl0+sc), act_tr, baseVal[d], minVal[d], act, act);
+		dataUnTransform(pDataParms->DataTransformation, rc, 0, (pOOS>0)?rc:(sl0+sc), act_tr, baseVal[d], minVal[d], act, act);
 
 		//-- UnScale/UnTransform prd
-		DataUnScale(rc, sl0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
-		dataUnTransform(pDataParms->DataTransformation, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
+		DataUnScale(rc, 0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
+		dataUnTransform(pDataParms->DataTransformation, rc, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
 
-		//-- calc err, err_trs
+			//-- calc err, err_trs
 		for (i = 0; i < sl0; i++) {
 			prd[i]		= 0;
 			err[i]		= 0;

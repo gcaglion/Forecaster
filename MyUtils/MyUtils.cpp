@@ -476,7 +476,7 @@ EXPORT void __stdcall  DataUnScale(int iDataLen, double* iScaledData, double iSc
 */
 EXPORT void __stdcall  DataUnScale(int iDataLen, int iFromItem, int iToItem, double* iScaledData, double iScaleM, double iScaleP, double* oUnScaledData){
 	int i;
-	for (i = iFromItem; i < iToItem; i++) oUnScaledData[i] = (iScaledData[i] - iScaleP) / iScaleM;
+	for (i = iFromItem; i < iToItem; i++) oUnScaledData[i] = (iScaledData[i]==EMPTY_VALUE) ? EMPTY_VALUE: ((iScaledData[i]-iScaleP)/iScaleM);
 	for (i = 0; i < iFromItem; i++) oUnScaledData[i] = EMPTY_VALUE;
 	for (i = iToItem; i < iDataLen; i++) oUnScaledData[i] = EMPTY_VALUE;
 }
