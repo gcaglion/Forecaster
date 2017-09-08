@@ -192,7 +192,7 @@ for (d = 0; d < pDatasetCount; d++) {
 int GetDataSetFromCol(int col, tFileData* pDataFile) {
 
 	for (int d = 0; d < pDataFile->FileDataSetsCount; d++) {
-		if (pDataFile->FileDataSet[d] == (col + 1)) return d;
+		if (pDataFile->FileDataSet[d] == (col)) return d;
 	}
 	return -1;
 }
@@ -222,14 +222,16 @@ void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int 
 		if (vals[c] == delimiter || vals[c] == '\n') {
 			val = atof(vals);
 			d = GetDataSetFromCol(col, pDataFile);
-			if (d != -1 && l>=0) oWholeData[d][l] = (double)val;
-			//-- BaseVal vs. History vs. Future
-			if (l < 0) {
-				if (d != -1) oBaseVal[d] = (double)val;
-			} else if (l<pHistoryLen) {
-				if (d != -1) oHistoryData[d][l] = (double)val;
-			} else {
-				if (d != -1) oFutureData[d][l - pHistoryLen] = (double)val;
+			if (d != -1) {
+				if (l>=0) oWholeData[d][l] = (double)val;
+				//-- BaseVal vs. History vs. Future
+				if (l < 0) {
+					oBaseVal[d] = (double)val;
+				} else if (l<pHistoryLen) {
+					oHistoryData[d][l] = (double)val;
+				} else {
+					oFutureData[d][l - pHistoryLen] = (double)val;
+				}
 			}
 			col++;
 			//-- Remove retrieved column from pLine, by sliding chars starting at pos. (i+1) backwards
@@ -243,35 +245,51 @@ void LineParser(tFileData* pDataFile, int l, char* pLine, char* pTimeStamp, int 
 
 }
 EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, int pHistoryLen, int pFutureLen, char* pDate0, int pValidationShift, int pDatasetCount, double** oHistoryData, double** oHistoryBarW, double** oValidationData, double** oFutureData, double** oFutureBarW, double** oWholeData, double** oWholeBarW, double* oPrevValH, double* oPrevValV, double* oPrevBarW) {
-	//-- Data File must have no headers. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
+	//-- Data File must have no headers, and be sorted by datetime, ascending. First column should be a date in YYYYMMDDHH24MI format, then one column for each dataset
 
 	char vLine[MaxLineSize]; strcpy(vLine, "0");
-	char prevLine[MaxLineSize];
-	char vLineBkp[MaxLineSize];
+	char prevLine[MaxLineSize]; strcpy(prevLine, "0");
+	char vLineBkp[MaxLineSize]; strcpy(vLineBkp, "0");
 	char vTimeStamp[12 + 1];
-	int d, i;
+	int i;
 	int l = 0;
+	int l0=0;
 	bool isBaseValSet = false;
 
 	//-- Open Data File
 	FILE* fData = fopen(pDataFile->FileName, "r");
 	if (fData == NULL) {
 		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
-		printf("Press any key..."); getchar();;
 		return -1;
 	}
 
-	//-- Barwidth is always 0 for File-based data
-	for (d = 0; d < pDatasetCount; d++) {
-		for (i = 0; i < (pHistoryLen); i++) {
-			oHistoryBarW[d][i] = 0;
-			oWholeBarW[d][i] = 0;
+	//-- Find line number corresponding to pDate0, and out it into l0
+	while (!feof(fData)) {
+		if (fgets(vLine, MaxLineSize, fData) == NULL) {
+			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
+			return -1;
 		}
-		for (i = 0; i < (pFutureLen); i++) {
-			oFutureBarW[d][i] = 0;
-			oWholeBarW[d][pHistoryLen + i] = 0;
+
+		for (i = 0; i < 12; i++) vTimeStamp[i] = vLine[i];
+		vTimeStamp[12] = '\0';
+		if (atof(vTimeStamp) >= atof(pDate0)) break;
+
+		l0++;
+	}
+	//-- Rewind, then advance l0 lines
+	rewind(fData);
+	if (l0<pHistoryLen) {
+		LogWrite(DebugParms, LOG_ERROR, "Not enough History Data in Source File (Date0 found at line %d ; HistoryLen=%d). Exiting...\n", 2, l0+1, pHistoryLen);
+		return -1;
+	}
+	for (i = 0; i<(l0-pHistoryLen+1); i++) {
+		if (fgets(vLine, MaxLineSize, fData) == NULL) {
+			LogWrite(DebugParms, LOG_ERROR, "Unexpected end of History Data in Source File at %d. Exiting...\n", 1, l);
+			return -1;
 		}
 	}
+	//-- we are now on prevLine, so we set oPrevVal by sending l=-1
+	LineParser(pDataFile, -1, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
 
 	//-- Read Whole Data
 	while(!feof(fData) && l<(pHistoryLen+pFutureLen)){
@@ -287,18 +305,29 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 		//-- Read first column (datetime)
 		for (i = 0; i < 12; i++) vTimeStamp[i] = vLine[i];
 		vTimeStamp[12] = '\0';
-		if (atof(vTimeStamp) < atof(pDate0)) {
-			continue;
-		} else {
-			if (!isBaseValSet) {
-				LineParser(pDataFile, l-1, prevLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
-				isBaseValSet = true;
-			}
-		}
-		
+
 		LineParser(pDataFile, l, vLine, vTimeStamp, pHistoryLen, oHistoryData, oFutureData, oWholeData, oPrevValH);
 
 		l++;
+	}
+
+	//-- calc Barwidth
+	int d, bwidxH, bwidxL;
+	if (pDataFile->CalcFileDataBW>0) {
+		for (d = 0; d<pDatasetCount; d++) {
+			if (pDataFile->FileDataSet[d]==pDataFile->FileBWDataSet[0]) bwidxH = d;
+			if (pDataFile->FileDataSet[d]==pDataFile->FileBWDataSet[1]) bwidxL = d;
+		}
+		for (d = 0; d<pDatasetCount; d++) {
+			for (i = 0; i < (pHistoryLen); i++) {
+				oHistoryBarW[d][i] = oHistoryData[bwidxH][i]-oHistoryData[bwidxL][i];
+				oWholeBarW[d][i] = oHistoryBarW[d][i];
+			}
+			for (i = 0; i < (pFutureLen); i++) {
+				oFutureBarW[d][i] = oFutureData[bwidxH][i]-oFutureData[bwidxL][i];
+				oWholeBarW[d][pHistoryLen + i] = oFutureBarW[d][i];
+			}
+		}
 	}
 
 	fclose(fData);
@@ -330,7 +359,7 @@ EXPORT int __stdcall GetDates_FXDB(tDebugInfo* DebugParms, tFXData* SourceParms,
 	return 0;
 }
 
-EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
+EXPORT int __stdcall GetDates_CSV_OLD(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
 	// Retrieves plain ordered list of DateTime starting from StartDate onwards for <DatesCount> records
 
 	int vLinesCount = 0;
@@ -374,6 +403,36 @@ EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	//-- 5. free(s)
 	for (i = 0; i < vLinesCount; i++) free(tmpDate[i]);
 	free(tmpDate);
+
+	fclose(fData);
+	return 0;
+}
+
+EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int pDatesCount, char** oDate) {
+	// Retrieves plain ordered list of DateTime starting from StartDate onwards for <DatesCount> records. CSV file MUST BE SORTED in ascending order!
+
+	char vLine[1024];
+	char vDateTime[12 + 1];
+	int i;
+	int retcnt = 0;
+
+	FILE* fData = fopen(pDataFile->FileName, "r");
+	if (fData == NULL) {
+		LogWrite(DebugParms, LOG_ERROR, "Could not open Source Data File. Exiting...\n", 0);
+		return -1;
+	}
+
+	i = 0;
+	while (fgets(vLine, sizeof(vLine), fData)) {
+		memcpy(vDateTime, vLine, 12);
+		if (strcmp(vDateTime, StartDate) >=0) {
+			memcpy(oDate[retcnt], vDateTime, 12);
+			oDate[retcnt][12] = '\0';
+			retcnt++;
+			if (retcnt >= pDatesCount) break;
+		}
+		i++;
+	}
 
 	fclose(fData);
 	return 0;
@@ -530,7 +589,7 @@ EXPORT void __stdcall DataUnTransform(int Transformation, int iFromItem, int iTo
 }
 */
 //-- newest version ---------------------------------------------------------------------------------------------------
-EXPORT void __stdcall dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata) {
+EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata) {
 	double maxval;
 
 	FindMinMax(dlen, idata, oMinVal, &maxval);
@@ -557,7 +616,7 @@ EXPORT void __stdcall dataTransform(int dt, int dlen, double* idata, double base
 
 }
 
-EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata) {
+EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata) {
 	double prev;
 	int i;
 
@@ -566,11 +625,11 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 	case DT_DELTA:
 		for (i = from_i; i < to_i; i++) {
 			if (i > from_i) {
-				prev = iActual[i - 1];
+				prev = (iActual[i-1]!=EMPTY_VALUE)?iActual[i-1]:odata[i-1];
 			}
 			else {
 				if (from_i > 0) {
-					prev = iActual[i - 1];
+					prev = iActual[i-1];
 				}
 				else {
 					prev = baseVal;
@@ -593,10 +652,10 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 
 			//-- 2. unDELTA
 			if (i > from_i) {
-				prev = iActual[i - 1];
+				prev = iActual[i-1];
 			} else {
 				if (from_i > 0) {
-					prev = iActual[i - 1];
+					prev = iActual[i-1];
 				} else {
 					prev = baseVal;
 				}
@@ -610,6 +669,9 @@ EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idat
 		for (i = from_i; i < to_i; i++) odata[i] = idata[i];
 		break;
 	}
+
+	for (i = 0; i < from_i; i++) odata[i] = EMPTY_VALUE;
+	for (i = to_i; i < dlen; i++) odata[i] = EMPTY_VALUE;
 
 }
 //--------------------------------------------------------------------------------------------------------------------------

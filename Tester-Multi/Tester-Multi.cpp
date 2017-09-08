@@ -31,7 +31,7 @@ string getVarVal(vector<tParm> parm, int parmid, int varid) {
 string buildCmd(vector<tParm> parm, int* varIdx) {
 	string s;
 
-	for (int p = 0; p<parm.size(); p++) {
+	for (unsigned int p = 0; p<parm.size(); p++) {
 		s = s+" --"+parm[p].name+"="+getVarVal(parm, p, varIdx[p]);
 	}
 
@@ -44,7 +44,7 @@ void getCmd(vector<tParm> parm, int* varCnt, int* varIdx, int parmid, vector<str
 		parmid--; if (parmid<0) return;
 		varIdx[parmid]++;
 		if (varIdx[parmid]==varCnt[parmid]) getCmd(parm, varCnt, varIdx, parmid, cmd);
-		for (int p = parmid+1; p<parm.size(); p++) varIdx[p] = 0;	// reset down
+		for (unsigned int p = parmid+1; p<parm.size(); p++) varIdx[p] = 0;	// reset down
 		parmid = (int)parm.size()-1;
 	}
 	else {
@@ -131,7 +131,7 @@ vector<string> getCmdList() {
 	int* varCnt = (int*)malloc(parm.size()*sizeof(int));
 	int* varIdx = (int*)malloc(parm.size()*sizeof(int));
 
-	for (int p = 0; p<parm.size(); p++) {
+	for (unsigned int p = 0; p<parm.size(); p++) {
 		varCnt[p] = getVarCnt(parm, p);
 		varIdx[p] = 0;
 	}

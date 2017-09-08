@@ -25,8 +25,8 @@ EXPORT int __stdcall LoadHistoryData(int pHistoryLen, char* pDate0, int pBarData
 //EXPORT void __stdcall DataTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* oMinVal, double pBaseVal);
 //EXPORT void __stdcall DataUnTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* ActualData, double oMinVal, double pBaseVal);
 // newest version -------------------------------------------------------------------------------------------------------------------
-EXPORT void __stdcall dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata);
-EXPORT void __stdcall dataUnTransform(int dt, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata);
+EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata);
+EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata);
 //-----------------------------------------------------------------------------------------------------------------------------------
 EXPORT void __stdcall TSfromSamples(int sampleCnt, int sampleLen, double** iSample, double* oTS);
 EXPORT int __stdcall FXDataCompact(char* INfilename, int INtimeframe, char* OUTfilename, int OUTtimeframe);

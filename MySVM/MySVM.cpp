@@ -216,7 +216,7 @@ double SVMPredict(char* sample, int ktype, long max_words_doc, MODEL* model, svm
 	return pred;
 }
 
-__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
+__declspec(dllexport) int Train_SVM(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, SVM_Parms* pSVMParms, tCoreLog* pSVMLogs, bool loadW, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
 
 	int i;
 	//--
@@ -341,17 +341,13 @@ __declspec(dllexport) int Run_SVM(tDebugInfo* pDebugParms, SVM_Parms* SVMParms, 
 
 	//-- 2.2 out-of-sample
 	for (s = 0; s < pInputData->PredictionLen; s++) {
-
-		// Target[s] only exist while s<SampleCount. Beyond that, Actual is prediction from previous step
-		vActual = MyPrediction;
-
-		//-- Sample beyond SampleCount must be build, regardless of pOOS
 		ShiftArray(SHIFT_BACKWARD, SVMParms->InputCount, tmpSample, vActual);
-
+		//--
 		buildSVMsample(vSampleLen, tmpSample, pTarget[s], SVMsample);
 		MyPrediction = SVMPredict(SVMsample, SVMParms->KernelType, vSampleLen, Mymodel, words);
-
-		SaveRunData(SVMLogs, pid, tid, (s + pSampleCount + SVMParms->InputCount), vActual, &MyPrediction);
+		//--
+		SaveRunData(SVMLogs, pid, tid, (s + pSampleCount+SVMParms->InputCount), NULL, &MyPrediction);
+		vActual = MyPrediction;
 	}
 
 	if (Mymodel->kernel_parm.kernel_type == 0) free(Mymodel->lin_weights);

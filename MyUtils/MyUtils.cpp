@@ -355,16 +355,16 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	char LogFileName[MAX_PATH];
 	FILE* LogFile=NULL;
 
-	if (pWriteLog>1){
-		//strcpy(LogFileName, MyGetCurrentDirectory()); strcat(LogFileName, "\\SlideArray.log");
-		strcpy(LogFileName, "C:/temp/SlideArray.log");
+	if (pWriteLog>0){
+		//sprintf(LogFileName, "C:/temp/SlideArray_%d-%d.log", GetCurrentProcessId(), GetCurrentThreadId());
+		sprintf(LogFileName, "C:/temp/SlideArray.log");
 		LogFile = fopen(LogFileName, "w");
 	}
 
 	for (s = 0; s<iSampleCount; s++){
 		for (i = 0; i<iSampleLen; i++){
 			oSample[s][i] = iWholeSet[s + i];
-			if (pWriteLog>1) fprintf(LogFile, "%f ", oSample[s][i]);
+			if (pWriteLog>0) fprintf(LogFile, "%f ", oSample[s][i]);
 		}
 		for (i = 0; i<iTargetLen; i++){
 			if ((s + iSampleLen + i) >= iWholeSetLen){
@@ -373,12 +373,12 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 			else {
 				oTarget[s][i] = iWholeSet[s + iSampleLen + i];
 			}
-			if (pWriteLog>1) fprintf(LogFile, "%f ", oTarget[s][i]);
+			if (pWriteLog>0) fprintf(LogFile, "%f ", oTarget[s][i]);
 		}
-		if (pWriteLog>1) fprintf(LogFile, "\n");
+		if (pWriteLog>0) fprintf(LogFile, "\n");
 	}
 
-	if (pWriteLog>1) fclose(LogFile);
+	if (pWriteLog>0) fclose(LogFile);
 }
 
  EXPORT void __stdcall SlideArrayNew(int dlen, double* idata, int iSampleLen, int iTargetLen, double** oSample, double** oTarget, int pWriteLog) {
@@ -386,7 +386,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 char LogFileName[MAX_PATH];
 	 FILE* LogFile = NULL;
 
-	 if (pWriteLog > 1) {
+	 if (pWriteLog > 0) {
 		 //strcpy(LogFileName, MyGetCurrentDirectory()); strcat(LogFileName, "\\SlideArray.log");
 		 strcpy(LogFileName, "C:/temp/SlideArray.log");
 		 LogFile = fopen(LogFileName, "w");
@@ -396,7 +396,7 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 for (s = 0; s < SampleCount; s++) {
 		 for (i = 0; i < iSampleLen; i++) {
 			 oSample[s][i] = idata[s + i];
-			 if (pWriteLog > 1) fprintf(LogFile, "%f ", oSample[s][i]);
+			 if (pWriteLog > 0) fprintf(LogFile, "%f ", oSample[s][i]);
 		 }
 		 for (i = 0; i < iTargetLen; i++) {
 			 if ((s + iSampleLen + i) >= dlen) {
@@ -405,12 +405,12 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 			 else {
 				 oTarget[s][i] = idata[s + iSampleLen + i];
 			 }
-			 if (pWriteLog > 1) fprintf(LogFile, "%f ", oTarget[s][i]);
+			 if (pWriteLog > 0) fprintf(LogFile, "%f ", oTarget[s][i]);
 		 }
-		 if (pWriteLog > 1) fprintf(LogFile, "\n");
+		 if (pWriteLog > 0) fprintf(LogFile, "\n");
 	 }
 
-	 if (pWriteLog > 1) fclose(LogFile);
+	 if (pWriteLog > 0) fclose(LogFile);
  }
 
  EXPORT void __stdcall UnSlideArray(int pRowsCnt, int pSampleLen, int pTargetLen, double** pSample, double** pTarget, double* oArr) {
@@ -425,26 +425,47 @@ EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampl
 	 oArr[pRowsCnt + pSampleLen - 1] = pTarget[pRowsCnt - 1][0];
  }
  
- EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP){
-	int i;
-	double OrigMin, OrigMax;
+ EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP) {
+	 int i;
+	 double OrigMin, OrigMax;
 
-	//FILE* fk = fopen("C:/temp/DataScale.log", "w");
+	 //FILE* fk = fopen("C:/temp/DataScale.log", "w");
 
-	FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
-	(*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
-	(*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
+	 FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
+	 (*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
+	 (*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
 
-	for (i = 0; i < iDataLen; i++){
-		if (iOrigData[i] == EMPTY_VALUE){
-			oScaledData[i] = iOrigData[i];
-		} else{
-			oScaledData[i] = iOrigData[i] * (*oScaleM) + (*oScaleP);
-		}
-		//fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
-	}
-	//fclose(fk);
-}
+	 for (i = 0; i < iDataLen; i++) {
+		 if (iOrigData[i] == EMPTY_VALUE) {
+			 oScaledData[i] = iOrigData[i];
+		 } else {
+			 oScaledData[i] = iOrigData[i] * (*oScaleM) + (*oScaleP);
+		 }
+		 //fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
+	 }
+	 //fclose(fk);
+ }
+ EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double iScaleM, double iScaleP) {
+	 //-- overloaded version used to scale an array using existing M/P
+	 int i;
+	 double OrigMin, OrigMax;
+
+	 //FILE* fk = fopen("C:/temp/DataScale.log", "w");
+
+	 FindMinMax(iDataLen, iOrigData, &OrigMin, &OrigMax);
+	 //(*oScaleM) = (iScaleMax - iScaleMin) / (OrigMax - OrigMin);
+	 //(*oScaleP) = iScaleMin - OrigMin * (*oScaleM);
+
+	 for (i = 0; i < iDataLen; i++) {
+		 if (iOrigData[i] == EMPTY_VALUE) {
+			 oScaledData[i] = iOrigData[i];
+		 } else {
+			 oScaledData[i] = iOrigData[i] * iScaleM + iScaleP;
+		 }
+		 //fprintf(fk, "iOrigData[%d]=%f ; oScaledData[%d]=%f\n", i, iOrigData[i], i, oScaledData[i]);
+	 }
+	 //fclose(fk);
+ }
 
 /*EXPORT void __stdcall  DataUnScale(int iDataLen, double* InOutData, double iScaleM, double iScaleP){
 	for (int i = 0; i < iDataLen; i++) InOutData[i] = (InOutData[i] - iScaleP) / iScaleM;
@@ -455,7 +476,7 @@ EXPORT void __stdcall  DataUnScale(int iDataLen, double* iScaledData, double iSc
 */
 EXPORT void __stdcall  DataUnScale(int iDataLen, int iFromItem, int iToItem, double* iScaledData, double iScaleM, double iScaleP, double* oUnScaledData){
 	int i;
-	for (i = iFromItem; i < iToItem; i++) oUnScaledData[i] = (iScaledData[i] - iScaleP) / iScaleM;
+	for (i = iFromItem; i < iToItem; i++) oUnScaledData[i] = (iScaledData[i]==EMPTY_VALUE) ? EMPTY_VALUE: ((iScaledData[i]-iScaleP)/iScaleM);
 	for (i = 0; i < iFromItem; i++) oUnScaledData[i] = EMPTY_VALUE;
 	for (i = iToItem; i < iDataLen; i++) oUnScaledData[i] = EMPTY_VALUE;
 }

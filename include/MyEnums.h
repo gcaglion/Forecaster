@@ -15,14 +15,10 @@
 
 #define enumlist true
 
-#define PARAM_TYPE_INT		0
-#define PARAM_TYPE_DOUBLE	1
-#define PARAM_TYPE_STRING	2
-#define PARAM_TYPE_ENUM		3
-#define PARAM_TYPE_INTp		4
-#define PARAM_TYPE_DOUBLEp	5
-#define PARAM_TYPE_STRINGp	6
-#define PARAM_TYPE_ENUMp	7
+//-- Forecaster Actions
+#define TRAIN_SAVE_RUN 0
+#define ADD_SAMPLES 1
+#define JUST_RUN 2
 
 //-- Data Tranformations
 #define DT_NONE		 0
@@ -44,9 +40,10 @@ typedef struct sForecastParms {
 
 	int SimulationLength;
 	char SimulationStart[12 + 1];
-	int DoTraining;
+	//int DoTraining;
 	int HaveFutureData;
-
+	int Action;		// TRAIN_SAVE_RUN | ADD_SAMPLES | JUST_RUN
+	
 	tEngineDef EngineParms;
 	tDebugInfo DebugParms;
 	tDataShape DataParms;

@@ -3,126 +3,119 @@
 #include <MyEnums.h>
 
 //=============== ENUMS ============================
-__declspec(dllexport) int __stdcall getEnumVal(char* edesc, char* eval) {
+__declspec(dllexport) int __stdcall getEnumVal(tDebugInfo* pDebugParms, char* edesc, char* eVal, int* oVal) {
+	int ret=-1;
+
 	UpperCase(edesc);
 
-	if (strcmp(edesc, "FORECASTER.ENGINE") == 0) {
-		if (strcmp(eval, "ENGINE_NN") == 0) return ENGINE_NN;
-		if (strcmp(eval, "ENGINE_GA") == 0) return ENGINE_GA;
-		if (strcmp(eval, "ENGINE_SVM") == 0) return ENGINE_SVM;
-		if (strcmp(eval, "ENGINE_SOM") == 0) return ENGINE_SOM;
-		if (strcmp(eval, "ENGINE_WNN") == 0) return ENGINE_WNN;
-		if (strcmp(eval, "ENGINE_XIE") == 0) return ENGINE_XIE;
-		return -1;
+	if(strcmp(edesc, "FORECASTER.ACTION")==0){
+		if (strcmp(eVal, "TRAIN_SAVE_RUN")==0) { (*oVal)=TRAIN_SAVE_RUN; ret=0;}
+		if (strcmp(eVal, "ADD_SAMPLES")==0) { (*oVal)=ADD_SAMPLES; ret=0;}
+		if (strcmp(eVal, "JUST_RUN")==0) { (*oVal)=JUST_RUN; ret=0;}
+	}
+	else if (strcmp(edesc, "FORECASTER.ENGINE") == 0) {
+		if (strcmp(eVal, "ENGINE_NN") == 0) { (*oVal)=ENGINE_NN; ret=0;}
+		if (strcmp(eVal, "ENGINE_GA") == 0) { (*oVal)=ENGINE_GA; ret=0;}
+		if (strcmp(eVal, "ENGINE_SVM") == 0) { (*oVal)=ENGINE_SVM; ret=0;}
+		if (strcmp(eVal, "ENGINE_SOM") == 0) { (*oVal)=ENGINE_SOM; ret=0;}
+		if (strcmp(eVal, "ENGINE_WNN") == 0) { (*oVal)=ENGINE_WNN; ret=0;}
+		if (strcmp(eVal, "ENGINE_XIE") == 0) { (*oVal)=ENGINE_XIE; ret=0;}
 	}
 	else if (strcmp(edesc, "RESULTS.DESTINATION") == 0) {
-		if (strcmp(eval, "LOG_TO_TEXT") == 0) return LOG_TO_TEXT;
-		if (strcmp(eval, "LOG_TO_ORCL") == 0) return LOG_TO_ORCL;
-		return -1;
+		if (strcmp(eVal, "LOG_TO_TEXT") == 0) { (*oVal)=LOG_TO_TEXT; ret=0;}
+		if (strcmp(eVal, "LOG_TO_ORCL") == 0) { (*oVal)=LOG_TO_ORCL; ret=0;}
 	}
 	else if (strcmp(edesc, "DATASOURCE.SOURCETYPE") == 0) {
-		if (strcmp(eval, "SOURCE_DATA_FROM_FXDB") == 0) return SOURCE_DATA_FROM_FXDB;
-		if (strcmp(eval, "SOURCE_DATA_FROM_FILE") == 0) return SOURCE_DATA_FROM_FILE;
-		if (strcmp(eval, "SOURCE_DATA_FROM_MT") == 0) return SOURCE_DATA_FROM_MT;
-		return -1;
+		if (strcmp(eVal, "SOURCE_DATA_FROM_FXDB") == 0) { (*oVal)=SOURCE_DATA_FROM_FXDB; ret=0;}
+		if (strcmp(eVal, "SOURCE_DATA_FROM_FILE") == 0) { (*oVal)=SOURCE_DATA_FROM_FILE; ret=0;}
+		if (strcmp(eVal, "SOURCE_DATA_FROM_MT") == 0) { (*oVal)=SOURCE_DATA_FROM_MT; ret=0;}
 	}
 	else if (strcmp(edesc, "DATASOURCE.SOURCETYPE") == 0) {
 	}
 	else if (strcmp(edesc, "DATASOURCE.TEXTFIELDSEPARATOR") == 0) {
-		if (strcmp(eval, "COMMA") == 0) return (int)COMMA;
-		if (strcmp(eval, "TAB") == 0) return (int)TAB;
-		if (strcmp(eval, "SPACE") == 0) return (int)SPACE;
-		return -1;
+		if (strcmp(eVal, "COMMA") == 0) { (*oVal)=(int)COMMA; ret=0;}
+		if (strcmp(eVal, "TAB") == 0) { (*oVal)=(int)TAB; ret=0;}
+		if (strcmp(eVal, "SPACE") == 0) { (*oVal)=(int)SPACE; ret=0;}
 	}
 	else if (strcmp(edesc, "DATAPARMS.DATATRANSFORMATION") == 0) {
-		if (strcmp(eval, "DT_NONE") == 0) return DT_NONE;
-		if (strcmp(eval, "DT_DELTA") == 0) return DT_DELTA;
-		if (strcmp(eval, "DT_LOG") == 0) return DT_LOG;
-		if (strcmp(eval, "DT_DELTALOG") == 0) return DT_DELTALOG;
-		return -1;
+		if (strcmp(eVal, "DT_NONE") == 0) { (*oVal)=DT_NONE; ret=0;}
+		if (strcmp(eVal, "DT_DELTA") == 0) { (*oVal)=DT_DELTA; ret=0;}
+		if (strcmp(eVal, "DT_LOG") == 0) { (*oVal)=DT_LOG; ret=0;}
+		if (strcmp(eVal, "DT_DELTALOG") == 0) { (*oVal)=DT_DELTALOG; ret=0;}
 	}
 	else if (strcmp(edesc, "DATASOURCE.BARDATATYPES") == 0) {
-		if (strcmp(eval, "OPEN") == 0) return OPEN;
-		if (strcmp(eval, "HIGH") == 0) return HIGH;
-		if (strcmp(eval, "LOW") == 0) return LOW;
-		if (strcmp(eval, "CLOSE") == 0) return CLOSE;
-		if (strcmp(eval, "VOLUME") == 0) return VOLUME;
-		if (strcmp(eval, "OTHER") == 0) return OTHER;
+		if (strcmp(eVal, "OPEN") == 0) { (*oVal)=OPEN; ret=0;}
+		if (strcmp(eVal, "HIGH") == 0) { (*oVal)=HIGH; ret=0;}
+		if (strcmp(eVal, "LOW") == 0) { (*oVal)=LOW; ret=0;}
+		if (strcmp(eVal, "CLOSE") == 0) { (*oVal)=CLOSE; ret=0;}
+		if (strcmp(eVal, "VOLUME") == 0) { (*oVal)=VOLUME; ret=0;}
+		if (strcmp(eVal, "OTHER") == 0) { (*oVal)=OTHER; ret=0;}
 	}
 	else if (strcmp(edesc, "DATAPARMS.TSFEATURES") == 0) {
-		if (strcmp(eval, "TSF_MEAN") == 0) return TSF_MEAN;
-		if (strcmp(eval, "TSF_MAD") == 0) return TSF_MAD;
-		if (strcmp(eval, "TSF_VARIANCE") == 0) return TSF_VARIANCE;
-		if (strcmp(eval, "TSF_SKEWNESS") == 0) return TSF_SKEWNESS;
-		if (strcmp(eval, "TSF_KURTOSIS") == 0) return TSF_KURTOSIS;
-		if (strcmp(eval, "TSF_TURNINGPOINTS") == 0) return TSF_TURNINGPOINTS;
-		if (strcmp(eval, "TSF_SHE") == 0) return TSF_SHE;
-		if (strcmp(eval, "TSF_HISTVOL") == 0) return TSF_HISTVOL;
-		return -1;
+		if (strcmp(eVal, "TSF_MEAN") == 0) { (*oVal)=TSF_MEAN; ret=0;}
+		if (strcmp(eVal, "TSF_MAD") == 0) { (*oVal)=TSF_MAD; ret=0;}
+		if (strcmp(eVal, "TSF_VARIANCE") == 0) { (*oVal)=TSF_VARIANCE; ret=0;}
+		if (strcmp(eVal, "TSF_SKEWNESS") == 0) { (*oVal)=TSF_SKEWNESS; ret=0;}
+		if (strcmp(eVal, "TSF_KURTOSIS") == 0) { (*oVal)=TSF_KURTOSIS; ret=0;}
+		if (strcmp(eVal, "TSF_TURNINGPOINTS") == 0) { (*oVal)=TSF_TURNINGPOINTS; ret=0;}
+		if (strcmp(eVal, "TSF_SHE") == 0) { (*oVal)=TSF_SHE; ret=0;}
+		if (strcmp(eVal, "TSF_HISTVOL") == 0) { (*oVal)=TSF_HISTVOL; ret=0;}
 	}
 	else if (strcmp(right(edesc, 7), "BP_ALGO") == 0) {
-		if (strcmp(eval, "BP_STD") == 0) return BP_STD;
-		if (strcmp(eval, "BP_QING") == 0) return BP_QING;
-		if (strcmp(eval, "BP_SCGD") == 0) return BP_SCGD;
-		if (strcmp(eval, "BP_QUICKPROP") == 0) return BP_QUICKPROP;
-		return -1;
+		if (strcmp(eVal, "BP_STD") == 0) { (*oVal)=BP_STD; ret=0;}
+		if (strcmp(eVal, "BP_QING") == 0) { (*oVal)=BP_QING; ret=0;}
+		if (strcmp(eVal, "BP_SCGD") == 0) { (*oVal)=BP_SCGD; ret=0;}
+		if (strcmp(eVal, "BP_QUICKPROP") == 0) { (*oVal)=BP_QUICKPROP; ret=0;}
 	}
 	else if (strcmp(right(edesc, 16), "TRAININGPROTOCOL") == 0) {
-		if (strcmp(eval, "TP_STOCHASTIC") == 0) return TP_STOCHASTIC;
-		if (strcmp(eval, "TP_BATCH") == 0) return TP_BATCH;
-		if (strcmp(eval, "TP_ONLINE") == 0) return TP_ONLINE;
-		return -1;
+		if (strcmp(eVal, "TP_STOCHASTIC") == 0) { (*oVal)=TP_STOCHASTIC; ret=0;}
+		if (strcmp(eVal, "TP_BATCH") == 0) { (*oVal)=TP_BATCH; ret=0;}
 	}
 	else if (strcmp(right(edesc, 18), "ACTIVATIONFUNCTION") == 0) {
-		if (strcmp(eval, "NN_ACTIVATION_TANH") == 0) return NN_ACTIVATION_TANH;
-		if (strcmp(eval, "NN_ACTIVATION_EXP4") == 0) return NN_ACTIVATION_EXP4;
+		if (strcmp(eVal, "NN_ACTIVATION_TANH") == 0) { (*oVal)=NN_ACTIVATION_TANH; ret=0;}
+		if (strcmp(eVal, "NN_ACTIVATION_EXP4") == 0) { (*oVal)=NN_ACTIVATION_EXP4; ret=0;}
 	}
 	else if (strcmp(edesc, "SOMINFO.TDFUNCTION") == 0) {
-		if (strcmp(eval, "TD_DECAY_CONSTANT") == 0) return TD_DECAY_CONSTANT;
-		if (strcmp(eval, "TD_DECAY_LINEAR") == 0) return TD_DECAY_LINEAR;
-		if (strcmp(eval, "TD_DECAY_STEPPED") == 0) return TD_DECAY_STEPPED;
-		if (strcmp(eval, "TD_DECAY_EXP") == 0) return TD_DECAY_EXP;
-		return -1;
+		if (strcmp(eVal, "TD_DECAY_CONSTANT") == 0) { (*oVal)=TD_DECAY_CONSTANT; ret=0;}
+		if (strcmp(eVal, "TD_DECAY_LINEAR") == 0) { (*oVal)=TD_DECAY_LINEAR; ret=0;}
+		if (strcmp(eVal, "TD_DECAY_STEPPED") == 0) { (*oVal)=TD_DECAY_STEPPED; ret=0;}
+		if (strcmp(eVal, "TD_DECAY_EXP") == 0) { (*oVal)=TD_DECAY_EXP; ret=0;}
 	}
 	else if (strcmp(edesc, "SOMINFO.LRFUNCTION") == 0) {
-		if (strcmp(eval, "LR_DECAY_CONSTANT") == 0) return LR_DECAY_CONSTANT;
-		if (strcmp(eval, "LR_DECAY_LINEAR") == 0) return LR_DECAY_LINEAR;
-		if (strcmp(eval, "LR_DECAY_STEPPED") == 0) return LR_DECAY_STEPPED;
-		if (strcmp(eval, "LR_DECAY_EXP") == 0) return LR_DECAY_EXP;
-		return -1;
+		if (strcmp(eVal, "LR_DECAY_CONSTANT") == 0) { (*oVal)=LR_DECAY_CONSTANT; ret=0;}
+		if (strcmp(eVal, "LR_DECAY_LINEAR") == 0) { (*oVal)=LR_DECAY_LINEAR; ret=0;}
+		if (strcmp(eVal, "LR_DECAY_STEPPED") == 0) { (*oVal)=LR_DECAY_STEPPED; ret=0;}
+		if (strcmp(eVal, "LR_DECAY_EXP") == 0) { (*oVal)=LR_DECAY_EXP; ret=0;}
 	}
 	else if (strcmp(right(edesc, 10), "KERNELTYPE") == 0) {
-		if (strcmp(eval, "KERNEL_TYPE_LINEAR") == 0) return KERNEL_TYPE_LINEAR;
-		if (strcmp(eval, "KERNEL_TYPE_POLY") == 0) return KERNEL_TYPE_POLY;
-		if (strcmp(eval, "KERNEL_TYPE_RBF") == 0) return KERNEL_TYPE_RBF;
-		if (strcmp(eval, "KERNEL_TYPE_TANH") == 0) return KERNEL_TYPE_TANH;
-		if (strcmp(eval, "KERNEL_TYPE_CUSTOM") == 0) return KERNEL_TYPE_CUSTOM;
-		return -1;
+		if (strcmp(eVal, "KERNEL_TYPE_LINEAR") == 0) { (*oVal)=KERNEL_TYPE_LINEAR; ret=0;}
+		if (strcmp(eVal, "KERNEL_TYPE_POLY") == 0) { (*oVal)=KERNEL_TYPE_POLY; ret=0;}
+		if (strcmp(eVal, "KERNEL_TYPE_RBF") == 0) { (*oVal)=KERNEL_TYPE_RBF; ret=0;}
+		if (strcmp(eVal, "KERNEL_TYPE_TANH") == 0) { (*oVal)=KERNEL_TYPE_TANH; ret=0;}
+		if (strcmp(eVal, "KERNEL_TYPE_CUSTOM") == 0) { (*oVal)=KERNEL_TYPE_CUSTOM; ret=0;}
 	}
 	else if (strcmp(right(edesc, 9), "SLACKNORM") == 0) {
-		if (strcmp(eval, "SLACK_NORM_L1") == 0) return SLACK_NORM_L1;
-		if (strcmp(eval, "SLACK_NORM_SQUARED") == 0) return SLACK_NORM_SQUARED;
-		return -1;
+		if (strcmp(eVal, "SLACK_NORM_L1") == 0) { (*oVal)=SLACK_NORM_L1; ret=0;}
+		if (strcmp(eVal, "SLACK_NORM_SQUARED") == 0) { (*oVal)=SLACK_NORM_SQUARED; ret=0;}
 	}
 	else if (strcmp(right(edesc, 15), "RESCALINGMETHOD") == 0) {
-		if (strcmp(eval, "RESCALING_METHOD_SLACK") == 0) return RESCALING_METHOD_SLACK;
-		if (strcmp(eval, "RESCALING_METHOD_MARGIN") == 0) return RESCALING_METHOD_MARGIN;
-		return -1;
+		if (strcmp(eVal, "RESCALING_METHOD_SLACK") == 0) { (*oVal)=RESCALING_METHOD_SLACK; ret=0;}
+		if (strcmp(eVal, "RESCALING_METHOD_MARGIN") == 0) { (*oVal)=RESCALING_METHOD_MARGIN; ret=0;}
 	}
 	else if (strcmp(right(edesc, 12), "LOSSFUNCTION") == 0) {
-		if (strcmp(eval, "LOSS_FUNCTION_ZEROONE") == 0) return LOSS_FUNCTION_ZEROONE;
-		return -1;
+		if (strcmp(eVal, "LOSS_FUNCTION_ZEROONE") == 0) { (*oVal)=LOSS_FUNCTION_ZEROONE; ret=0;}
 	}
 	else if (strcmp(right(edesc, 12), "LEARNINGALGO") == 0) {
-		if (strcmp(eval, "LEARNING_ALGO_NSLACK") == 0) return LEARNING_ALGO_NSLACK;
-		if (strcmp(eval, "LEARNING_ALGO_NSLACK_SHRINK") == 0) return LEARNING_ALGO_NSLACK_SHRINK;
-		if (strcmp(eval, "LEARNING_ALGO_1SLACK_PRIMAL") == 0) return LEARNING_ALGO_1SLACK_PRIMAL;
-		if (strcmp(eval, "LEARNING_ALGO_1SLACK_DUAL") == 0) return LEARNING_ALGO_1SLACK_DUAL;
-		if (strcmp(eval, "LEARNING_ALGO_1SLACK_DUAL_CONSTR") == 0) return LEARNING_ALGO_1SLACK_DUAL_CONSTR;
-		if (strcmp(eval, "LEARNING_ALGO_CUSTOM") == 0) return LEARNING_ALGO_CUSTOM;
-		return -1;
+		if (strcmp(eVal, "LEARNING_ALGO_NSLACK") == 0) { (*oVal)=LEARNING_ALGO_NSLACK; ret=0;}
+		if (strcmp(eVal, "LEARNING_ALGO_NSLACK_SHRINK") == 0) { (*oVal)=LEARNING_ALGO_NSLACK_SHRINK; ret=0;}
+		if (strcmp(eVal, "LEARNING_ALGO_1SLACK_PRIMAL") == 0) { (*oVal)=LEARNING_ALGO_1SLACK_PRIMAL; ret=0;}
+		if (strcmp(eVal, "LEARNING_ALGO_1SLACK_DUAL") == 0) { (*oVal)=LEARNING_ALGO_1SLACK_DUAL; ret=0;}
+		if (strcmp(eVal, "LEARNING_ALGO_1SLACK_DUAL_CONSTR") == 0) { (*oVal)=LEARNING_ALGO_1SLACK_DUAL_CONSTR; ret=0;}
+		if (strcmp(eVal, "LEARNING_ALGO_CUSTOM") == 0) { (*oVal)=LEARNING_ALGO_CUSTOM; ret=0;}
 	}
-	return 0;
+
+	if(ret<0) LogWrite(pDebugParms, LOG_ERROR, "Invalid %s value: %s\n", 2, edesc, eVal);
+	return ret;
 }
 //==================================================
 
@@ -385,18 +378,19 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* paramName, int* oparamVal, bool isenum) {
 	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	char evals[100];
+	int ret = 0;
 	for (int p = 1; p < iniParms->CLparamCount; p++) {
 		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
 			strcpy(evals, iniParms->CLparamVal[p]);
-			(*oparamVal) = getEnumVal(vparamName, evals);
+			ret = getEnumVal(&iniParms->DebugParms, vparamName, evals, oparamVal);
 			free(vparamName);
-			return 0;
+			return ret;
 		}
 	}
 	if (ReadParamFromFile(iniParms->IniFileName, vparamName, evals) != 0) return -1;
-	(*oparamVal) = getEnumVal(vparamName, evals);
+	ret = getEnumVal(&iniParms->DebugParms, vparamName, evals, oparamVal);
 	free(vparamName);
-	return 0;
+	return ret;
 }
 
 //-- array value (int[], double[], char**, enum
@@ -422,13 +416,31 @@ __declspec(dllexport) int __stdcall getParam(tForecastParms* iniParms, char* par
 	char* vparamName = _strdup(paramName); UpperCase(vparamName);
 	char pname[100]; strcpy(pname, vparamName);
 	char** carr = MallocArray<char>(100, 100);
-	int elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
+	int ret;
+	char evals[100];
+	int elemCnt;
+	//--
+	for (int p = 1; p < iniParms->CLparamCount; p++) {
+		if (strcmp(iniParms->CLparamName[p], vparamName) == 0) {
+			strcpy(evals, iniParms->CLparamVal[p]);
+			elemCnt = cslToArray(evals, ',', carr);
+			for (int i = 0; i < elemCnt; i++) {
+				ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], &(*oparamVal)[i]);
+				if (ret<0) break;
+			}
+			FreeArray(100, 100, carr);
+			free(vparamName);
+			return (ret<0) ? ret : elemCnt;
+		}
+	}
+	//--
+	elemCnt = ReadParamFromFile(iniParms->IniFileName, pname, &carr);
 	if (elemCnt < 0) return -1;
 	for (int i = 0; i < elemCnt; i++) {
-		(*oparamVal)[i] = getEnumVal(pname, carr[i]);
+		ret = getEnumVal(&iniParms->DebugParms, pname, carr[i], &(*oparamVal)[i]);
+		if (ret<0) break;
 	}
 	FreeArray(100, 100, carr);
 	free(vparamName);
-	return elemCnt;
+	return (ret<0)?ret:elemCnt;
 }
-

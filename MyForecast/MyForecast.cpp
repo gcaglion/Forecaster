@@ -11,6 +11,7 @@ typedef struct {
 	int LayerId; int CoreId; int DatasetId;
 	int CorePos; int TotCores; HANDLE ScreenMutex;
 	int useValidation;
+	bool useExistingW;
 	int SampleCount; double** SampleT; double** TargetT; double** SampleV; double** TargetV;
 	tEngineHandle TrainInfo;
 	int TrainSuccess;
@@ -31,12 +32,6 @@ typedef struct {
 	double** Target;
 } tRunParams;
 
-/*char fPerfName[MAX_PATH];
-FILE* fPerf;
-LARGE_INTEGER frequency;			// ticks per second
-LARGE_INTEGER time_start, time_end; // ticks
-double elapsedTime = 0; char elapsedTimeS[30];
-*/
 void freeCoreParms(tForecastParms* ioParms) {
 	switch (ioParms->EngineParms.EngineType) {
 	case ENGINE_WNN:
@@ -255,7 +250,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 	//-- 3. save cores logs       into CoreLogs_<XXX>
 
 	tCore* core;
-	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight = nullptr;
+	NN_Parms* NNParms = nullptr;	tNNWeight*** NNWeight0 = nullptr; tNNWeight*** NNWeight1 = nullptr;
 	SOM_Parms* SOMParms = nullptr;	tSOMWeight** SOMWeight = nullptr;
 	GA_Parms* GAParms = nullptr;	//tGAWeight*** GAWeight=nullptr;
 	SVM_Parms* SVMParms = nullptr;
@@ -268,12 +263,13 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				NNParms = (NN_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
 				if (pTestId == 0) {
-					if (InsertCoreParms_NN(pDebugParms, pid, l, n, NNParms) != 0) return -1;
+					if (InsertCoreParms_NN(pDebugParms, pEngineParms->AdderCount, pid, l, n, NNParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
-					//-- 2. save final image (weights) , for each dataset
-					NNWeight = core->CoreLog[d].NNFinalW;
-					if (InsertCoreImage_NN(pDebugParms, NNParms, NNWeight) != 0) return -1;
+					//-- 2. save initial and final image (weights) , for each dataset
+					NNWeight0 = core->CoreLog[d].NNInitW;
+					NNWeight1 = core->CoreLog[d].NNFinalW;
+					if (InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1) != 0) return -1;
 					if (InsertCoreLogs_NN(pDebugParms, (NN_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 				}
 				break;
@@ -283,7 +279,7 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				SOMParms = (SOM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters
 				if (pTestId == 0) {
-					if (InsertCoreParms_SOM(pDebugParms, pid, l, n, SOMParms) != 0) return -1;
+					if (InsertCoreParms_SOM(pDebugParms, pEngineParms->AdderCount, pid, l, n, SOMParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					//-- 2. save final image (weights) , for each dataset
@@ -295,13 +291,14 @@ int LogSave_Cores(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape*
 				SVMParms = (SVM_Parms*)core->CoreSpecs;
 				//-- 1. save engine parameters. We save it once for dataset even if it's useless, just because we need a threadid for the cores
 				if (pTestId == 0) {
-					if (InsertCoreParms_SVM(pDebugParms, pid, l,n, SVMParms) != 0) return -1;
+					if (InsertCoreParms_SVM(pDebugParms, pEngineParms->AdderCount, pid, l,n, SVMParms) != 0) return -1;
 				}
 				for (int d = 0; d < pDataParms->DatasetsCount; d++) {
 					//-- 2. save final image (weights) , for each dataset
 					if (InsertCoreLogs_SVM(pDebugParms, (SVM_Parms*)core->CoreSpecs, &core->CoreLog[d]) != 0) return -1;
 					if (pDebugParms->SaveImages>0) {
-						//QueryPerformanceCounter(&time_start);																															// start timer
+						//QueryPerformanceCounter(&time_start);		// start timer
+						LogWrite(pDebugParms, LOG_INFO, "%s(): SVCount=%d\n", 3, __func__, core->CoreLog[d].SVMResult.SVcount);
 						if (InsertCoreImage_SVM(pDebugParms, SVMParms, &core->CoreLog[d].SVMResult, core->CoreLog[d].SVMFinalW) != 0) return -1;										//===== THIS IS CREATING SYSTEM-WIDE CONTENTION / WAIT !!! ====					
 						//QueryPerformanceCounter(&time_end); elapsedTime = (time_end.QuadPart - time_start.QuadPart) * 1000.0 / frequency.QuadPart; ms2ts(elapsedTime, elapsedTimeS);	//-- stop timer, compute the elapsed time
 						//fprintf(fPerf, "InsertCoreImage_SVM(), %d, %f, %s\n", core->CoreLog[d].SVMResult.SVcount*pDataParms->SampleLen, elapsedTime, elapsedTimeS);											//-- print elapsed time in perf file
@@ -532,6 +529,8 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Forecaster.DebugFileName", ioParms->DebugParms.fName) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.DebugFilePath", ioParms->DebugParms.fPath) < 0)					return -1;
 	if (getParam(ioParms, "Forecaster.ThreadSafeLogging", &ioParms->DebugParms.ThreadSafeLogging) < 0)	return -1;
+	if (getParam(ioParms, "Forecaster.DumpSampleData", &ioParms->DebugParms.DumpSampleData) < 0)		return -1;
+	if (getParam(ioParms, "Results.SaveNothing", &ioParms->DebugParms.SaveNothing) < 0)					return -1;
 	if (getParam(ioParms, "Results.SaveMSE", &ioParms->DebugParms.SaveMSE) < 0)							return -1;
 	if (getParam(ioParms, "Results.SaveRUN", &ioParms->DebugParms.SaveRun) < 0)							return -1;
 	if (getParam(ioParms, "Results.SaveImages", &ioParms->DebugParms.SaveImages) < 0)					return -1;
@@ -540,7 +539,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	if (getParam(ioParms, "Results.DBUser", ioParms->DebugParms.DebugDB->DBUser) < 0)					return -1;
 	if (getParam(ioParms, "Results.DBPassword", ioParms->DebugParms.DebugDB->DBPassword) < 0)			return -1;
 	if (getParam(ioParms, "Results.DBConnString", ioParms->DebugParms.DebugDB->DBConnString) < 0)		return -1;
-	ioParms->DebugParms.DebugDB->DBCtx = NULL;
+	//ioParms->DebugParms.DebugDB->DBCtx = NULL;
 
 	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
 	if (getParam(ioParms, "DataSource.SourceType", &ioParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
@@ -548,7 +547,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		if (getParam(ioParms, "DataSource.DBConn.DBUser", ioParms->FXDBInfo.FXDB->DBUser) < 0)				return -1;
 		if (getParam(ioParms, "DataSource.DBConn.DBPassword", ioParms->FXDBInfo.FXDB->DBPassword) < 0)		return -1;
 		if (getParam(ioParms, "DataSource.DBConn.DBConnString", ioParms->FXDBInfo.FXDB->DBConnString) < 0)	return -1;
-		ioParms->FXDBInfo.FXDB->DBCtx = NULL;
+		//ioParms->FXDBInfo.FXDB->DBCtx = NULL;
 		if (getParam(ioParms, "DataSource.Symbol", ioParms->FXDBInfo.Symbol) < 0)							return -1;
 		if (getParam(ioParms, "DataSource.TimeFrame", ioParms->FXDBInfo.TimeFrame) < 0)						return -1;
 		if (getParam(ioParms, "DataSource.IsFilled", &ioParms->FXDBInfo.IsFilled) < 0)						return -1;
@@ -558,9 +557,15 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		strcpy(ioParms->DataSourceFileInfo.FileName, "");
 		ioParms->DataParms.DataSource = &ioParms->FXDBInfo;
 	} else {
-		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)							return -1;
-		if (getParam(ioParms, "DataSource.TextFieldSeparator", &ioParms->DataSourceFileInfo.FieldSep, enumlist) < 0)	return -1;
+		if (getParam(ioParms, "DataSource.FileName", ioParms->DataSourceFileInfo.FileName) < 0)										return -1;
+		if (getParam(ioParms, "DataSource.TextFieldSeparator", &ioParms->DataSourceFileInfo.FieldSep, enumlist) < 0)				return -1;
 		ioParms->DataParms.DatasetsCount = getParam(ioParms, "DataSource.FileDatasets", &ioParms->DataSourceFileInfo.FileDataSet);
+		if (ioParms->DataParms.DatasetsCount<0)																						return -1;
+		if (getParam(ioParms, "DataSource.CalcFileDataBW", &ioParms->DataSourceFileInfo.CalcFileDataBW) < 0)						return -1;
+		if (ioParms->DataSourceFileInfo.CalcFileDataBW>0) {
+			int kaz = getParam(ioParms, "DataSource.DStoCalcBWFrom", &ioParms->DataSourceFileInfo.FileBWDataSet);
+			if(kaz<0)																												return -1;
+		}
 		strcpy(ioParms->FXDBInfo.Symbol, "");
 		strcpy(ioParms->FXDBInfo.TimeFrame, "");
 		ioParms->FXDBInfo.IsFilled = 0;
@@ -580,19 +585,33 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	}
 
 	//-- 4. DoTraining and HaveFutureData
-	if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
+
+	//if (getParam(ioParms, "Forecaster.DoTraining", &ioParms->DoTraining) < 0)					return -1;
+	if (getParam(ioParms, "Forecaster.Action", &ioParms->Action, enumlist) <0)					return -1;
 	if (getParam(ioParms, "Forecaster.HaveFutureData", &ioParms->HaveFutureData) < 0)			return -1;
 
 	//-- 5a. if using a saved engine, get EngineParms and DataShape here
-	if (ioParms->DoTraining == 0) {
+	if (ioParms->Action != TRAIN_SAVE_RUN) {
 		if (getParam(ioParms, "SavedEngine.ProcessId", &ioParms->SavedEngine.ProcessId) < 0)	return -1;
 		if (getParam(ioParms, "SavedEngine.TestId", &ioParms->SavedEngine.TestId) < 0)			return -1;
 		if (getParam(ioParms, "SavedEngine.DatasetId", &ioParms->SavedEngine.DatasetId) < 0)	return -1;
 		ioParms->DataParms.ValidationShift = 0;
-		
+
+		int dscnt_from_file=ioParms->DataParms.DatasetsCount;
 		if (LoadDataParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->DataParms) != 0) return -1;
 		ioParms->DataParms.SampleCount = ioParms->DataParms.HistoryLen - ioParms->DataParms.SampleLen;
 		if (LoadEngineParms(&ioParms->DebugParms, ioParms->SavedEngine.ProcessId, &ioParms->EngineParms) != 0) return -1;
+
+		if (ioParms->Action==ADD_SAMPLES) {
+			// if ADD_SAMPLES, we must have the same DatasetsCount of the original Training (we could do otherwise, this is the simplest way...)
+			if (ioParms->DataParms.DatasetsCount!=dscnt_from_file) {
+				LogWrite(&ioParms->DebugParms, LOG_ERROR, "When adding samples to an existing engine, DatasetsCount must be the same. We have %d in original engine, and %d from parameter file...\n", 2, ioParms->DataParms.DatasetsCount, dscnt_from_file);
+				return -1;
+			}
+			 // we also need ro retrieve the last AdderId from, to increase it
+			ioParms->EngineParms.AdderCount++;
+		}
+
 		//-- before loading cores, we need to set layout based on EngineType just loaded
 		if (setEngineLayout(ioParms) != 0) return -1;
 		setCoreInfo_Pre(&ioParms->EngineParms, &ioParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
@@ -606,6 +625,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 	} else {
 		//-- 5b
 		if (getParam(ioParms, "Forecaster.Engine", &ioParms->EngineParms.EngineType, enumlist) < 0)	return -1;
+		ioParms->EngineParms.AdderCount = 0;
 		if (setEngineLayout(ioParms) != 0) return -1;
 
 		//-- Data Shape parameters 		
@@ -870,7 +890,7 @@ void Train_XXX(tTrainParams* tp) {
 	switch (tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreType) {
 	case ENGINE_NN:
 		NNParms = (NN_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
+		tp->TrainSuccess = Train_NN(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, NNParms, coreLog, tp->useExistingW, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
 	case ENGINE_GA:
@@ -885,7 +905,7 @@ void Train_XXX(tTrainParams* tp) {
 		break;
 	case ENGINE_SVM:
 		SVMParms = (SVM_Parms*)tp->EngineParms->Core[tp->LayerId][tp->CoreId].CoreSpecs;
-		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
+		tp->TrainSuccess = Train_SVM(tp->CorePos, tp->TotCores, tp->ScreenMutex, tp->DebugParms, SVMParms, coreLog, tp->useExistingW, tp->SampleCount, tp->SampleT, tp->TargetT, tp->useValidation, tp->SampleV, tp->TargetV);
 		tp->ActualEpochs = coreLog->ActualEpochs;
 		break;
 	}
@@ -909,7 +929,7 @@ void Run_XXX(tRunParams* rp) {
 		//-- other engine core types ...
 	}
 }
-void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
+void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, bool loadW, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
 	int t;
 	int ThreadCount = pDataParms->DatasetsCount*pEngineParms->TotalCoresCount;
 	HANDLE* HTrain = (HANDLE*)malloc(ThreadCount * sizeof(HANDLE));
@@ -931,6 +951,7 @@ void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* 
 			tp[t].EngineParms = pEngineParms;
 			tp[t].SampleCount = pDataParms->SampleCount;
 			tp[t].useValidation = (pDataParms->ValidationShift != 0)?1:0;
+			tp[t].useExistingW = loadW;
 
 			//-- SampleData, TargetData
 			tp[t].SampleT = pSampleData[HD][d][pLayer][n];
@@ -993,13 +1014,13 @@ void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pD
 }
 //--
 
-void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int pDoTraining, tEngineHandle* pSavedEngine) {
+void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int pAction, int pAdderId, tEngineHandle* pSavedEngine) {
 	//-- from pSavedEngine we need pid and ONE tid.
 	//-- from pTrainParms we get an array of threads from current training session
 	int n, d, i, j;
 
-	tLogMSE* MSELog = nullptr;
-	tLogRUN* RunLog = nullptr;
+	tLogMSE* MSELog;
+	tLogRUN* RunLog;
 
 	i = 0;
 	for (n = 0; n<pEngineParms->CoresCount[pLayer]; n++) {
@@ -1008,14 +1029,23 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 			MSELog = pEngineParms->Core[pLayer][n].CoreLog[d].MSEOutput;
 			RunLog = pEngineParms->Core[pLayer][n].CoreLog[d].RunOutput;
 
+			
+			//-- MSE: we kee the same pid,tid from original Training session,
+			for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
+				MSELog[j].BaseProcessId = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
+				MSELog[j].BaseThreadId  = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
+				MSELog[j].AdderId = pAdderId;
+			}
+
+			//-- Run
 			for (j = 0; j<pEngineParms->Core[pLayer][n].RunCount; j++) {
-				if (pDoTraining>0) {
-					RunLog[j].NetProcessId = RunLog[j].ProcessId;
-					RunLog[j].NetThreadId = RunLog[j].ThreadId;
-				}
-				else {
+				if (pAction==JUST_RUN) {
 					RunLog[j].NetProcessId = pSavedEngine->ProcessId;
 					RunLog[j].NetThreadId = pSavedEngine->ThreadId + i;
+				}
+				else {
+					RunLog[j].NetProcessId = RunLog[j].ProcessId;
+					RunLog[j].NetThreadId = RunLog[j].ThreadId;
 				}
 			}
 		}
@@ -1023,7 +1053,7 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 	}
 }
 
-void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId, double* scaleM, double* scaleP, double* baseVal, double* minVal, double** hd_trs, double** wd_bw, int pOOS, double** fd_trs, tLogRUN** runLog_o, double** oPredictedData) {
+void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataParms, int pTestId, double* scaleM, double* scaleP, double* baseVal, double* minVal, double** hd_trs, double** hd_bw, int pOOS, double** fd_trs, double** fd_bw, tLogRUN** runLog_o, double** oPredictedData) {
 	int d, i;
 
 	int sl0 = pDataParms->SampleLen;			// SampleLen from original data
@@ -1050,23 +1080,23 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		for (i = 0; i < pl ; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? NULL : fd_trs[d][i];
+		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? EMPTY_VALUE : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as 0, so here we simply overwrite it if we have Future Data
+		//for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
 
 		//-- Predicted_TRS
-		for (i = 0; i < sl0; i++) prd_trs[i]			= NULL;
+		for (i = 0; i < sl0; i++) prd_trs[i]			= EMPTY_VALUE;
 		for (i = 0; i < sc ; i++) prd_trs[sl0 + i]		= runLog_i[sl1 + i].Predicted_TRS;
 		for (i = 0; i < pl ; i++) prd_trs[sl0 + sc + i]	= runLog_i[sl1 + sc + i].Predicted_TRS;
 
 		//-- UnScale/UnTransform act
-		DataUnScale(rc, 0, rc, act_trs, scaleM[d], scaleP[d], act_tr);
-		dataUnTransform(pDataParms->DataTransformation, 0, rc, act_tr, baseVal[d], minVal[d], act, act);
-		//-- UnScale/UnTransform prd
-		DataUnScale(rc, sl0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
-		dataUnTransform(pDataParms->DataTransformation, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
-		//-- prd elements need to be shifted back...
-		//--.....
+		DataUnScale(rc, 0, (pOOS>0)?rc:(sl0+sc), act_trs, scaleM[d], scaleP[d], act_tr);
+		dataUnTransform(pDataParms->DataTransformation, rc, 0, (pOOS>0)?rc:(sl0+sc), act_tr, baseVal[d], minVal[d], act, act);
 
-		//-- calc err, err_trs
+		//-- UnScale/UnTransform prd
+		DataUnScale(rc, 0, rc, prd_trs, scaleM[d], scaleP[d], prd_tr);
+		dataUnTransform(pDataParms->DataTransformation, rc, sl0, rc, prd_tr, act[sl0-1], minVal[d], act, prd);	// baseVal should be actual[sampleLen-1], and we skip the first <sampleLen> elements
+
+			//-- calc err, err_trs
 		for (i = 0; i < sl0; i++) {
 			prd[i]		= 0;
 			err[i]		= 0;
@@ -1077,8 +1107,8 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
 		for (i = (sl0 + sc); i < rc; i++) {
-			err[i] = (pOOS == 0) ? 0 : fabs(prd[i] - act[i]);
-			err_trs[i] = (pOOS == 0) ? 0 : fabs(prd_trs[i] - act_trs[i]);
+			err[i] = fabs(prd[i] - act[i]);
+			err_trs[i] = fabs(prd_trs[i] - act_trs[i]);
 		}
 
 		//-- fill runLog_o[d]
@@ -1099,8 +1129,8 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 			runLog_o[d][i].Error = err[i];
 			runLog_o[d][i].Error_TRS = err_trs[i];
 
-			runLog_o[d][i].BarWidth = wd_bw[d][i];
-			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0)?0:(runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
+			runLog_o[d][i].BarWidth = (i<pDataParms->HistoryLen)?hd_bw[d][i]:fd_bw[d][i-pDataParms->HistoryLen];	// =====!!!=====
+			runLog_o[d][i].ErrorP = (runLog_o[d][i].BarWidth==0) ? 0 : (runLog_o[d][i].Error / runLog_o[d][i].BarWidth);
 		}
 
 		//-- finally, set oPredictedData
@@ -1118,15 +1148,27 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 
 }
 
+void dataDump(int pHistoryLen, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int pFutureLen, double** pFutureData, double** pFutureBW) {
+	//-- data log
+	FILE* fd = fopen("C:/temp/MT4data.csv", "w");
+	fprintf(fd, "High, Low, BarWidth \n");
+	//--- BaseVal
+	fprintf(fd, "%f, %f, %f \n", pHistoryBaseVal[0], pHistoryBaseVal[1], 0.0);
+	//---HistoryData
+	for (int i = 0; i<pHistoryLen; i++) fprintf(fd, "%f, %f, %f \n", pHistoryData[0][i], pHistoryData[1][i], pHistoryBW[0][i]);
+	//---
+	//--- FutureData
+	for (int i = 0; i<pFutureLen; i++) fprintf(fd, "%f, %f, %f \n", pFutureData[0][i], pFutureData[1][i], pFutureBW[0][i]);
+	//---
+	fclose(fd);
+
+}
 __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCtx, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
 
 	int pid = GetCurrentProcessId();
+	int tid = GetCurrentThreadId();
 	HANDLE FMutex = CreateMutex(NULL, FALSE, NULL);
 
-/*	sprintf(fPerfName, "c:/temp/Perf%d.csv", pid);
-	fPerf = fopen(fPerfName, "a");	
-	QueryPerformanceFrequency(&frequency);		// get ticks per second
-*/	
 	// Forecasting Parameters initialization. 
 	tForecastParms fp;
 	//-- a. set overrides from Command Line 
@@ -1135,6 +1177,10 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (ForecastParamLoader(&fp) <0) return -1;
 	//-- c. restore Ctx for LogDB, if the caller has already opened a session
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
+
+	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
+	DumpArrayD(fp.DataParms.HistoryLen, pHistoryData[0], "c:/temp/High.csv");
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
 
@@ -1147,33 +1193,30 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	int layersCnt = fp.EngineParms.LayersCount;
 	int* coresCnt = fp.EngineParms.CoresCount;
 
-	int i, l, d;
+	int l, d;
 
 	int sampleCnt  = fp.DataParms.SampleCount;
 	int sampleLen0 = fp.DataParms.SampleLen;
 	int rc = sampleLen0 + sampleCnt + flen;
 
-	//-- Transform and Scale History, Validation, Future Data
-	int wlen = hlen + flen;
-
-	double** wd			= MallocArray<double>(dscnt, wlen);
-	double** wd_tr		= MallocArray<double>(dscnt, wlen);
-	double** wd_trs		= MallocArray<double>(dscnt, wlen);
-	double** wd_bw		= MallocArray<double>(dscnt, wlen);
-	double** hd_trs		= MallocArray<double>(dscnt, hlen);
-	double** vd_tr		= MallocArray<double>(dscnt, hlen);
-	double** vd_trs		= MallocArray<double>(dscnt, hlen);
-	double** fd_trs		= MallocArray<double>(dscnt, flen);
+	double** hd_tr	= MallocArray<double>(dscnt, hlen);
+	double** hd_trs	= MallocArray<double>(dscnt, hlen);
+	double** vd_tr	= MallocArray<double>(dscnt, hlen);
+	double** vd_trs	= MallocArray<double>(dscnt, hlen);
+	double** fd_tr	= MallocArray<double>(dscnt, flen);
+	double** fd_trs	= MallocArray<double>(dscnt, flen);
 
 	double* hd_min = MallocArray<double>(dscnt);
 	double* vd_min = MallocArray<double>(dscnt);
-	double* wd_min = MallocArray<double>(dscnt);
+	double* fd_min = MallocArray<double>(dscnt);
 
 	double scaleMin, scaleMax;
-	double*  wd_scaleM = MallocArray<double>(dscnt);
-	double*  wd_scaleP = MallocArray<double>(dscnt);
+	double*  hd_scaleM = MallocArray<double>(dscnt);
+	double*  hd_scaleP = MallocArray<double>(dscnt);
 	double*  vd_scaleM = MallocArray<double>(dscnt);
 	double*  vd_scaleP = MallocArray<double>(dscnt);
+	double*  fd_scaleM = MallocArray<double>(dscnt);
+	double*  fd_scaleP = MallocArray<double>(dscnt);
 	double** hd_tsf		= MallocArray<double>(dscnt, fp.EngineParms.TSFcnt);
 	double** vd_tsf		= MallocArray<double>(dscnt, fp.EngineParms.TSFcnt);
 
@@ -1191,6 +1234,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	double****** Sample = mallocSample(&fp.EngineParms, &fp.DataParms);
 	double****** Target = mallocTarget(&fp.EngineParms, &fp.DataParms);
 
+
 	/*
 		ts		[HD/VD][Dataset][Layer][Core][item]
 		Sample	[HD/VD][Dataset][Layer][Core][Sample][item]
@@ -1200,35 +1244,28 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	//----- Base TimeSerie s-----------------------------------------------------------
 	for (d = 0; d < dscnt; d++) {
 
-		//-- build wd from hd, fd
-		for (i = 0; i < hlen; i++) {
-			wd[d][i] = hd[d][i];
-			wd_bw[d][i] = pHistoryBW[d][i];
-		}
-		for (i = 0; i < flen; i++) {
-			wd[d][hlen + i] = fd[d][i];
-			wd_bw[d][hlen + i] = pFutureBW[d][i];
-		}
 		SetTSScaleRange(fp.EngineParms.EngineType, fp.EngineParms.Core[0][0].CoreSpecs, &scaleMin, &scaleMax);
-		//-- transform/scale wd
-		dataTransform(fp.DataParms.DataTransformation, wlen, wd[d], pHistoryBaseVal[d], &wd_min[d], wd_tr[d]);
-		DataScale(wlen, wd_tr[d], scaleMin, scaleMax, wd_trs[d], &wd_scaleM[d], &wd_scaleP[d]);
+		//-- transform/scale hd
+		dataTransform(fp.DataParms.DataTransformation, hlen, hd[d], pHistoryBaseVal[d], &hd_min[d], hd_tr[d]);
+		DataScale(hlen, hd_tr[d], scaleMin, scaleMax, hd_trs[d], &hd_scaleM[d], &hd_scaleP[d]);
 		//-- transform/scale vd
 		if (fp.DataParms.ValidationShift != 0) {
 			dataTransform(fp.DataParms.DataTransformation, hlen, vd[d], pValidationBaseVal[d], &vd_min[d], vd_tr[d]);
 			DataScale(hlen, vd_tr[d], scaleMin, scaleMax, vd_trs[d], &vd_scaleM[d], &vd_scaleP[d]);
 		}
-		//-- derive hd_trs, fd_trs from wd_trs
-		for (int i = 0; i < hlen; i++) hd_trs[d][i] = wd_trs[d][i];
-		for (int i = 0; i < flen; i++) fd_trs[d][i] = wd_trs[d][hlen + i];
+		//-- fill fd_trs
+		dataTransform(fp.DataParms.DataTransformation, flen, pFutureData[d], hd[d][hlen-1], &fd_min[d], fd_tr[d]);	//-- Transformation of FutureData uses the last element of HistoryData as Base Val
+		DataScale(flen, fd_tr[d], scaleMin, scaleMax, fd_trs[d], hd_scaleM[d], hd_scaleP[d]);						//-- scaling FD using M/P from HD
 
 		// regardless of the engine, we slide base timeserie. If needed by specific engine, this will get overwritten
-		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], 0);
-		if (fp.DataParms.ValidationShift != 0) SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], 0);
+		SlideArray(hlen, hd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[HD][d][0][0], flen, Target[HD][d][0][0], fp.DebugParms.DumpSampleData);
+		if (fp.DataParms.ValidationShift != 0) SlideArray(hlen, vd_trs[d], sampleCnt, fp.EngineParms.Core[0][0].SampleLen, Sample[VD][d][0][0], flen, Target[VD][d][0][0], fp.DebugParms.DumpSampleData);
 
 		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
 		if (fp.DataParms.ValidationShift != 0) CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
 	}
+	DumpArrayD(hlen, hd_tr[0], "C:/temp/HD_TR0.csv");
+	DumpArrayD(hlen, hd_trs[0], "C:/temp/HD_TRS0.csv");
 
 	for (l = 0; l < fp.EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
@@ -1243,12 +1280,12 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 						// HD
 						dataTransform(fp.DataParms.DataTransformation, hlen, ts[HD][d][l][n], bv[HD][d][l][n], &mv[HD][d][l][n], ts_tr[HD][d][l][n]);
 						DataScale(hlen, ts_tr[HD][d][l][n], scaleMin, scaleMax, ts_trs[HD][d][l][n], &ts_scaleM[HD][d][l][n], &ts_scaleP[HD][d][l][n]);
-						SlideArray(hlen, ts_trs[HD][d][l][n], sampleCnt, fp.EngineParms.Core[l][0].SampleLen, Sample[HD][d][l][n], flen, Target[HD][d][l][n], 0);
+						SlideArray(hlen, ts_trs[HD][d][l][n], sampleCnt, fp.EngineParms.Core[l][0].SampleLen, Sample[HD][d][l][n], flen, Target[HD][d][l][n], fp.DebugParms.DumpSampleData);
 						// VD
 						if (fp.DataParms.ValidationShift != 0) {
 							dataTransform(fp.DataParms.DataTransformation, hlen, ts[VD][d][l][n], bv[VD][d][l][n], &mv[HD][d][l][n], ts_tr[VD][d][l][n]);
 							DataScale(hlen, ts_tr[VD][d][l][n], scaleMin, scaleMax, ts_trs[VD][d][l][n], &ts_scaleM[VD][d][l][n], &ts_scaleP[VD][d][l][n]);
-							SlideArray(hlen, ts_trs[VD][d][l][n], sampleCnt, fp.EngineParms.Core[l][0].SampleLen, Sample[VD][d][l][n], flen, Target[VD][d][l][n], 0);
+							SlideArray(hlen, ts_trs[VD][d][l][n], sampleCnt, fp.EngineParms.Core[l][0].SampleLen, Sample[VD][d][l][n], flen, Target[VD][d][l][n], fp.DebugParms.DumpSampleData);
 						}
 					}
 				}
@@ -1261,53 +1298,65 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 				break;
 			}
 		}
-		//-- Train and Run
-		if(fp.DoTraining) Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, tp, Sample, Target);
-		Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, fp.DoTraining, l, pid, tp, rp, Sample, Target);
-		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.DoTraining, &fp.SavedEngine);
+		switch (fp.Action) {
+		case TRAIN_SAVE_RUN:
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, false, tp, Sample, Target);
+			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 1, l, pid, tp, rp, Sample, Target);
+			break;
+		case ADD_SAMPLES:
+			//-- LoadEngine has already been done
+			Train_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId, l, true, tp, Sample, Target);
+			break;
+		case JUST_RUN:
+			//-- LoadEngine has already been done
+			Run_Layer(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, 0, l, pid, tp, rp, Sample, Target);
+			break;
+		}
+		SetNetPidTid(&fp.EngineParms, l, dscnt, fp.Action, fp.EngineParms.AdderCount, &fp.SavedEngine);
+
 	}
 
-	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, wd_scaleM, wd_scaleP, pHistoryBaseVal, wd_min, hd_trs, wd_bw, haveActualFuture, fd_trs, runLog, oPredictedData);
-
+	CalcForecastFromEngineOutput(&fp.EngineParms, &fp.DataParms, pTestId, hd_scaleM, hd_scaleP, pHistoryBaseVal, hd_min, hd_trs, pHistoryBW, haveActualFuture, fd_trs, pFutureBW, runLog, oPredictedData);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
+	if (fp.DataParms.DatasetsCount>1) {
+		LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
+		LogWrite(&fp.DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
+	}
 	//-- Save Logs
-	//printf("Saving Logs...\n");
-	if (pTestId == 0) {
-		printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
-		printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, &fp.EngineParms) != 0) return -1;
-	}
-	
-	printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+	if (fp.DebugParms.SaveNothing==0) {
+		LogWrite(&fp.DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
+		if (pTestId == 0) {
+			printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp.DebugParms, &fp.DataParms, pid) != 0) return -1;
+			printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp.DebugParms, pid, (fp.Action==ADD_SAMPLES) ? fp.SavedEngine.ProcessId : pid, &fp.EngineParms) != 0) return -1;
+		}
 
-	if (fp.DoTraining == 1) {
-		printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
-		printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp.DebugParms, fp.EngineParms.AdderCount, pid, pTestId, &fp.EngineParms, &fp.DataParms) != 0) return -1;
+
+		if (fp.Action !=JUST_RUN) {
+			printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId) != 0) return -1;
+			printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pid, pTestId) != 0) return -1;
+		}
+		if (fp.Action!=ADD_SAMPLES) {
+			printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
+		}
 	}
-	printf("LogSave_Run()...\n"); if (LogSave_Run(&fp.DebugParms, &fp.EngineParms, &fp.DataParms, pTestId, runLog) != 0) return -1;
-	LogCommit(&fp.DebugParms);
 
 	//-- free(s) 
-	//fclose(fPerf);
-
-	FreeArray(dscnt, wlen, wd);
-	FreeArray(dscnt, wlen, wd_tr);
-	FreeArray(dscnt, wlen, wd_trs);
-	FreeArray(dscnt, wlen, wd_bw);
+	FreeArray(dscnt, hlen, hd_tr);
 	FreeArray(dscnt, hlen, hd_trs);
 	FreeArray(dscnt, hlen, vd_tr);
 	FreeArray(dscnt, hlen, vd_trs);
 	FreeArray(dscnt, flen, fd_trs);
 	FreeArray(dscnt, hd_min);
 	FreeArray(dscnt, vd_min);
-	FreeArray(dscnt, wd_min);
-	FreeArray(dscnt, wd_scaleM);
-	FreeArray(dscnt, wd_scaleP);
 	FreeArray(dscnt, vd_scaleM);
 	FreeArray(dscnt, vd_scaleP);
 	FreeArray(dscnt, fp.EngineParms.TSFcnt, hd_tsf);
 	FreeArray(dscnt, fp.EngineParms.TSFcnt, vd_tsf);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts_tr);
-	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), wlen, ts_trs);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts_tr);
+	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), hlen, ts_trs);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), ts_scaleM);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), ts_scaleP);
 	FreeArray(2, dscnt, layersCnt, ArrayMax<int>(layersCnt, coresCnt), bv);
@@ -1317,16 +1366,12 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	FreeArray(dscnt, rc, runLog);
 
 	freeSampleTarget(&fp.EngineParms, &fp.DataParms, Sample, Target);
+	ForecastParamFree(&fp);
+
+	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s completed.\n", 2, timestamp(), __func__);
 
 	LogClose(&fp.DebugParms);
 
-	ForecastParamFree(&fp);
-
 	return 0;
 
-}
-
-extern "C" __declspec(dllexport) int MTgetForecast(int paramOverrideCnt, char** paramOverride, int pTestId, double** pHistoryData, double* pHistoryBaseVal, double** pHistoryBW, double** pValidationData, double* pValidationBaseVal, int haveActualFuture, double** pFutureData, double** pFutureBW, double** oPredictedData) {
-	
-	return (getForecast(paramOverrideCnt, paramOverride, NULL, pTestId, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, haveActualFuture, pFutureData, pFutureBW, oPredictedData));
 }

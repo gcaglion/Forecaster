@@ -15,7 +15,8 @@
 //-- NN Weights Logging parameters
 typedef struct {
 	int ProcessId; int ThreadId;  int TimeStep;
-	int NeuronLevel; int FromNeuron; int ToNeuron; double Weight; double CtxValue;
+	int NeuronLevel; int FromNeuron; int ToNeuron; 
+	double Weight; double dW; double dJdW; double CtxValue;
 } tNNWeight;
 
 //-- Internals Logging parameters
@@ -73,10 +74,12 @@ typedef struct sDebugInfo {
 	//char* DBConnString;
 	void* DBCtx;
 	int ThreadSafeLogging;
+	int SaveNothing;
 	int SaveMSE;
 	int SaveRun;
 	int SaveInternals;
 	int SaveImages;
+	int DumpSampleData;
 	HANDLE Mtx;		// Mutex handle used by LogWrite()
 #ifdef __cplusplus
 	sDebugInfo() {
@@ -92,9 +95,12 @@ typedef struct sDebugInfo {
 typedef struct{
 	int ProcessId;
 	int ThreadId;
+	int BaseProcessId;	// used when ADD_SAMPLE
+	int BaseThreadId;	// used when ADD_SAMPLE
 	int TestId;
 	int LayerId;
 	int CoreId;
+	int AdderId;
 	int Epoch; 
 	double MSE_T;
 	double MSE_V;
@@ -126,6 +132,7 @@ typedef struct sCoreLog {
 	int ThreadId;
 
 	//-- NN-specific
+	tNNWeight***	NNInitW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the beginning of the training
 	tNNWeight***	NNFinalW;	// [NeuronLevel][FromNeuron][ToNeuron] -- this is saved only once at the end of the training
 	int				IntCnt;	// number of IntP elements
 	tLogInt*		IntP;	// [TimeStep]

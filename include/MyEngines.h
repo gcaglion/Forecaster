@@ -52,6 +52,7 @@ typedef struct sEngineDef {
 	int* TSFid;
 	int WNN_DecompLevel;
 	char WNN_WaveletType[30];
+	int AdderCount;	// Training Sessions Counter (ADD_SAMPLE)
 #ifdef __cplusplus
 	sEngineDef() {
 		TSFid = MallocArray<int>(MAX_TSFCOUNT);

@@ -15,7 +15,7 @@ __declspec(dllexport) void __stdcall SaveRunData(tCoreLog* coreLog, DWORD pid, D
 	coreLog->RunOutput[pPos].ThreadId = tid;
 	coreLog->RunOutput[pPos].Pos = pPos;
 	coreLog->RunOutput[pPos].Actual_TRS = pActual;
-	coreLog->RunOutput[pPos].Predicted_TRS = (pPredicted == NULL) ? 0 : pPredicted[0];
+	coreLog->RunOutput[pPos].Predicted_TRS = (pPredicted == NULL) ? EMPTY_VALUE : pPredicted[0];
 }
 //--
 
@@ -139,8 +139,9 @@ __declspec(dllexport) void  __stdcall LogWrite(tDebugInfo* DebugParms, int LogTy
 	//-- Opens Log file only once
 	if (DebugParms->fIsOpen != 1) {
 		strcpy(DebugParms->FullfName, DebugParms->fPath); strcat(DebugParms->FullfName, "/"); strcat(DebugParms->FullfName, DebugParms->fName);
-		DebugParms->fHandle = fopen(DebugParms->FullfName, "w");
+		DebugParms->fHandle = fopen(DebugParms->FullfName, "a");
 		DebugParms->fIsOpen = 1;
+		fprintf(DebugParms->fHandle, "\n---------- Process %d Started New Log at %s ----------\n", GetCurrentProcessId(), timestamp());
 	}
 
 	va_start(arguments, argcount);
@@ -198,10 +199,13 @@ __declspec(dllexport) void __stdcall LogCommit(tDebugInfo* pDebugParms) {
 //===
 
 //=== Log Write functions, Text 
-int Txt_InsertTesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
+int Txt_InsertTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
 	return 0;
 }
-int Txt_UpdateTesterDuration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
+int Txt_InsertClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
+	return 0;
+}
+int Txt_UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
 	return 0;
 }
 int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pDSType, char* pDSFileName, char* pSymbol, char* pTimeFrame, int pIsFilled, int pBarData, int pDataTransformation, double pwiggleRoom, int pHistoryLen, int pSampleLen, int pPredictionLen) {
@@ -222,24 +226,24 @@ int Txt_InsertDataParms(tDebugInfo* pDebugParms, int pid, int pDatasetId, int pD
 
 	return 0;
 }
-int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int pEngineType, int pInputCount, int pOutputCount, int pWNNDecompLevel, char* pWNNWaveletType) {
+int Txt_InsertEngineParms(tDebugInfo* pDebugParms, int pid, int basepid, int pEngineType, int pInputCount, int pOutputCount, int pAdderId, int pWNNDecompLevel, char* pWNNWaveletType) {
 	return 0;
 }
-int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
-	return 0;
-}
-//--
-int Txt_InsertCoreParms_NN(tDebugInfo* DebugParms, int pid, int lid, int cid, NN_Parms* NNParms) {
-	return 0;
-}
-int Txt_InsertCoreParms_SOM(tDebugInfo* DebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms) {
-	return 0;
-}
-int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms) {
+int Txt_InsertEngineThreads(tDebugInfo* pDebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	return 0;
 }
 //--
-int Txt_InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight) {
+int Txt_InsertCoreParms_NN(tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, NN_Parms* NNParms) {
+	return 0;
+}
+int Txt_InsertCoreParms_SOM(tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, SOM_Parms* SOMParms) {
+	return 0;
+}
+int Txt_InsertCoreParms_SVM(tDebugInfo* DebugParms, int aid, int pid, int lid, int cid, SVM_Parms* SVMParms) {
+	return 0;
+}
+//--
+int Txt_InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1) {
 	return 0;
 }
 int Txt_InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight) {
@@ -299,20 +303,27 @@ int Txt_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int tid, SVM_Parms* SV
 //===
 
 //=== Log Write functions, Generic 
-__declspec(dllexport) int __stdcall SaveTestLog_TesterParms(tDebugInfo* pDebugParms, int pid, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
+__declspec(dllexport) int __stdcall SaveTradeInfo(tDebugInfo* pDebugParms, int pid, int pBarId, char* pLastBarT, double pLastBarO, double pLastBarH, double pLastBarL, double pLastBarC, char* pFirstBarT, double pFirstBarO, double pFirstBarH, double pFirstBarL, double pFirstBarC, double pPrevFH, double pPrevFL, double pCurrBid, double pCurrAsk, double pCurrFH, double pCurrFL, int pTradeType, double pTradeSize, double pTradeTP, double pTradeSL) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
-	}
-	else {
-		return Txt_InsertTesterParms(pDebugParms, pid, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
+		return Ora_InsertTradeInfo(pDebugParms, pid, pBarId, pLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC, pFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC, pPrevFH, pPrevFL, pCurrBid, pCurrAsk, pCurrFH, pCurrFL, pTradeType, pTradeSize, pTradeTP, pTradeSL);
+	} else {
+		return Txt_InsertTradeInfo(pDebugParms, pid, pBarId, pLastBarT, pLastBarO, pLastBarH, pLastBarL, pLastBarC, pFirstBarT, pFirstBarO, pFirstBarH, pFirstBarL, pFirstBarC, pPrevFH, pPrevFL, pCurrBid, pCurrAsk, pCurrFH, pCurrFL, pTradeType, pTradeSize, pTradeTP, pTradeSL);
 	}
 }
-__declspec(dllexport) int __stdcall UpdateTestLog_Duration(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
+__declspec(dllexport) int __stdcall SaveClientInfo(tDebugInfo* pDebugParms, int pid, char* clientName, int pSimulationLen, char* pSimulationStart, double pElapsedS, int pDoTraining, int pDoRun) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_UpdateTesterDuration(pDebugParms, pid, pElapsedS);
+		return Ora_InsertClientInfo(pDebugParms, pid, clientName, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
 	}
 	else {
-		return Txt_UpdateTesterDuration(pDebugParms, pid, pElapsedS);
+		return Txt_InsertClientInfo(pDebugParms, pid, clientName, pSimulationLen, pSimulationStart, pElapsedS, pDoTraining, pDoRun);
+	}
+}
+__declspec(dllexport) int __stdcall UpdateClientInfo(tDebugInfo* pDebugParms, int pid, double pElapsedS) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_UpdateClientInfo(pDebugParms, pid, pElapsedS);
+	}
+	else {
+		return Txt_UpdateClientInfo(pDebugParms, pid, pElapsedS);
 	}
 }
 __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParms, tDataShape* pDataParms, int pid) {
@@ -345,6 +356,8 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 		for (d = 0; d<pDataParms->DatasetsCount; d++) vBarData[d] = vFileData->FileDataSet[d];
 		break;
 	case SOURCE_DATA_FROM_MT:
+		strcpy(vDSFileName, "\0");
+		vIsFilled = 0;
 		vBarData[0] = HIGH;
 		vBarData[1] = LOW;
 		break;
@@ -361,54 +374,54 @@ __declspec(dllexport) int __stdcall SaveTestLog_DataParms(tDebugInfo* pDebugParm
 	free(vBarData);
 	return ret;
 }
-__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, tEngineDef* pEngineParms) {
+__declspec(dllexport) int __stdcall SaveTestLog_EngineParms(tDebugInfo* pDebugParms, int pid, int basepid, tEngineDef* pEngineParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
+		return Ora_InsertEngineParms(pDebugParms, pid, basepid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->AdderCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 	else {
-		return Txt_InsertEngineParms(pDebugParms, pid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
+		return Txt_InsertEngineParms(pDebugParms, pid, basepid, pEngineParms->EngineType, pEngineParms->InputCount, pEngineParms->OutputCount, pEngineParms->AdderCount, pEngineParms->WNN_DecompLevel, pEngineParms->WNN_WaveletType);
 	}
 }
-__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
+__declspec(dllexport) int __stdcall SaveTestLog_EngineThreads(tDebugInfo* pDebugParms, int aid, int pid, int testid, tEngineDef* pEngineParms, tDataShape* pDataParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertEngineThreads(pDebugParms, pid, testid, pEngineParms, pDataParms);
+		return Ora_InsertEngineThreads(pDebugParms, aid, pid, testid, pEngineParms, pDataParms);
 	}
 	else {
-		return Txt_InsertEngineThreads(pDebugParms, pid, testid, pEngineParms, pDataParms);
-	}
-}
-//--
-__declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* pDebugParms, int pid, int lid, int cid, NN_Parms* NNParms) {
-	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_NN(pDebugParms, pid, lid, cid, NNParms);
-	}
-	else {
-		return Txt_InsertCoreParms_NN(pDebugParms, pid, lid, cid, NNParms);
-	}
-}
-__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SOM_Parms* SOMParms) {
-	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_SOM(pDebugParms, pid, lid, cid, SOMParms);
-	}
-	else {
-		return Txt_InsertCoreParms_SOM(pDebugParms, pid, lid, cid, SOMParms);
-	}
-}
-__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int pid, int lid, int cid, SVM_Parms* SVMParms) {
-	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreParms_SVM(pDebugParms, pid, lid, cid, SVMParms);
-	}
-	else {
-		return Txt_InsertCoreParms_SVM(pDebugParms, pid, lid, cid, SVMParms);
+		return Txt_InsertEngineThreads(pDebugParms, aid, pid, testid, pEngineParms, pDataParms);
 	}
 }
 //--
-__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight) {
+__declspec(dllexport) int __stdcall InsertCoreParms_NN (tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, NN_Parms* NNParms) {
 	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
-		return Ora_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight);
+		return Ora_InsertCoreParms_NN(pDebugParms, aid, pid, lid, cid, NNParms);
 	}
 	else {
-		return Txt_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight);
+		return Txt_InsertCoreParms_NN(pDebugParms, aid, pid, lid, cid, NNParms);
+	}
+}
+__declspec(dllexport) int __stdcall InsertCoreParms_SOM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SOM_Parms* SOMParms) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreParms_SOM(pDebugParms, aid, pid, lid, cid, SOMParms);
+	}
+	else {
+		return Txt_InsertCoreParms_SOM(pDebugParms, aid, pid, lid, cid, SOMParms);
+	}
+}
+__declspec(dllexport) int __stdcall InsertCoreParms_SVM(tDebugInfo* pDebugParms, int aid, int pid, int lid, int cid, SVM_Parms* SVMParms) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreParms_SVM(pDebugParms, aid, pid, lid, cid, SVMParms);
+	}
+	else {
+		return Txt_InsertCoreParms_SVM(pDebugParms, aid, pid, lid, cid, SVMParms);
+	}
+}
+//--
+__declspec(dllexport) int __stdcall InsertCoreImage_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tNNWeight*** NNWeight0, tNNWeight*** NNWeight1) {
+	if (pDebugParms->DebugDest == LOG_TO_ORCL) {
+		return Ora_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1);
+	}
+	else {
+		return Txt_InsertCoreImage_NN(pDebugParms, NNParms, NNWeight0, NNWeight1);
 	}
 }
 __declspec(dllexport) int __stdcall InsertCoreImage_SOM(tDebugInfo* pDebugParms, SOM_Parms* SOMParms, tSOMWeight** SOMWeight) {

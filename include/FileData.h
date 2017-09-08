@@ -8,13 +8,17 @@ typedef struct sFileData {
 	int FileDataSetsCount;
 	int FieldSep;	// COMMA|TAB|SPACE
 	int* FileDataSet;
+	int CalcFileDataBW;
+	int* FileBWDataSet;
 #ifdef __cplusplus
 	sFileData() {
 		FileDataSet = MallocArray<int>(MAXDATASETS);
+		FileBWDataSet = MallocArray<int>(MAXDATASETS);
 	}
 
 	~sFileData() {
 		free(FileDataSet);
+		free(FileBWDataSet);
 	}
 #endif
 } tFileData;

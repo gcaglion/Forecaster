@@ -1,0 +1,7 @@
+3 scenarios can be specified by Forecaster.Action parameter:
+
+					   Load	| Train | Run	|
+------------------------------------------------------------------------
+- TRAIN_SAVE_RUN	|	0	|	1	|	1	|
+- ADD_SAMPLES		|	1	|	1	|	0	|
+- JUST_RUN			|	1	|	0	|	1	|
