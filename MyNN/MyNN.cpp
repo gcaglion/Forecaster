@@ -3,7 +3,7 @@
 #include <MyNN.h>
 
 __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN) {
-	int i;
+	int i,nl;
 	int Levcnt;	// Levels count
 	//char** DescList = (char**)malloc(MAX_LEVELS * sizeof(char*)); for (i = 0; i < MAX_LEVELS; i++) DescList[i] = (char*)malloc(100);
 	char** DescList = MallocArray<char>(MAX_LEVELS, 256);
@@ -23,13 +23,23 @@ __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN) {
 	NN->NodesCount[NN->LevelsCount - 1] = NN->OutputCount;
 	NN->NodesCountTotal = NN->InputCount + NN->OutputCount;
 	//-- calc nodescount[], totalnodescount
-	for (int nl = 0; nl<(NN->LevelsCount - 2); nl++) {
+	for (nl = 0; nl<(NN->LevelsCount - 2); nl++) {
 		NN->NodesCount[nl + 1] = (int)floor(NN->NodesCount[nl] * NN->LevelRatio[nl]);
 		NN->NodesCountTotal += NN->NodesCount[nl + 1];
 	}
+	//-- add context neurons
+	if (NN->UseContext>0) {
+		for (nl = NN->LevelsCount-1; nl>=0; nl--) {
+			NN->NodesCount[nl-1] += NN->NodesCount[nl];
+		}
+	}
+	//-- add bias neurons one for each layer, except output layer
+	for (nl = 0; nl<(NN->LevelsCount-1); nl++) {
+		NN->NodesCount[nl] += 1;
+	}
 	//-- calc totalweightscount
 	NN->WeightsCountTotal = 0;
-	for (int nl = 0; nl<(NN->LevelsCount - 1); nl++) {
+	for (nl = 0; nl<(NN->LevelsCount - 1); nl++) {
 		for (int nn1 = 0; nn1<NN->NodesCount[nl + 1]; nn1++) {
 			for (int nn0 = 0; nn0<NN->NodesCount[nl]; nn0++) {
 				NN->WeightsCountTotal++;
@@ -87,7 +97,7 @@ void SaveFinalW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD
 				NNLog->NNFinalW[l][j][i].dW = NN->dW[l][t0][j][i];
 				NNLog->NNFinalW[l][j][i].dJdW = NN->dJdW[l][t0][j][i];
 				//-- Context neurons
-				if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? NN->F[0][t0][i] : 0;
+				//if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? NN->F[0][t0][i] : 0;
 			}
 		}
 	}
@@ -105,7 +115,7 @@ void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double*
 				NNLog->NNInitW[l][j][i].ToNeuron = i;
 				NNLog->NNInitW[l][j][i].Weight = W[l][t0][j][i];
 				//-- Context neurons
-				if (l==0) NNLog->NNInitW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
+				//if (l==0) NNLog->NNInitW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
 			}
 		}
 	}
@@ -353,7 +363,7 @@ void FeedBack(NN_Parms* NN, NN_MxData* Mx, bool Zero){
 	int i, l, cc;
 
 	cc = 0;// NN->OutputCount;
-	for (l = NN->LevelsCount-2; l>0; l--){
+	for (l = NN->LevelsCount-1; l>0; l--){
 		cc = NN->NodesCount[l]-cc;
 		for (i = 0; i<cc; i++){
 			Mx->NN.F[l-1][t0][NN->NodesCount[l-1]-cc+i] = (Zero)?0:Mx->NN.F[l][t0][i];
@@ -362,6 +372,22 @@ void FeedBack(NN_Parms* NN, NN_MxData* Mx, bool Zero){
 }
 
 void FF_Std(NN_Parms* pNNParms, NN_MxData* Mx){
+
+	for (int l = 0; l<(pNNParms->LevelsCount-1); l++) {
+		for (int tn = 0; tn<pNNParms->NodesCount[l+1]; tn++) {
+			Mx->NN.a[l+1][t0][tn] = 0;
+			for (int fn = 0; fn<pNNParms->NodesCount[l]; fn++) {
+				Mx->NN.a[l+1][t0][tn] += Mx->NN.F[l][t0][fn]*Mx->NN.W[l][t0][tn][fn];
+			}
+		}
+		Activate(pNNParms->ActivationFunction, pNNParms->NodesCount[l+1], Mx->NN.c[l+1][t0], Mx->NN.a[l+1][t0], Mx->NN.F[l+1][t0], Mx->NN.dF[l+1][t0]);
+		//-- reset bias neurons. they should always be 1
+		Mx->NN.F[l][t0][0] = 1;
+	}
+
+	//-- Hidden->Context 
+	if (pNNParms->UseContext==1) FeedBack(pNNParms, Mx, false);
+
 /*	//== Classic
 	int i, h, o;
 	//-- L0 -> L1
@@ -392,14 +418,13 @@ void FF_Std(NN_Parms* pNNParms, NN_MxData* Mx){
 	//-- Hidden->Context
 	for (int c = 0; c < pNNParms->ContextCount; c++) Mx->F[L0][t0][pNNParms->InputCount + c] = Mx->F[L1][t0][c];
 */
-
+/*
 	for (int l = 0; l<(pNNParms->LevelsCount-1); l++){
 		MbyV(pNNParms->NodesCount[l+1], pNNParms->NodesCount[l], Mx->NN.W[l][t0], false, Mx->NN.F[l][t0], Mx->NN.a[l+1][t0]);	
 		Activate(pNNParms->ActivationFunction, pNNParms->NodesCount[l+1], Mx->NN.c[l+1][t0], Mx->NN.a[l+1][t0], Mx->NN.F[l+1][t0], Mx->NN.dF[l+1][t0]);
 	}
-	//-- Hidden->Context 
-	if (pNNParms->UseContext==1) FeedBack(pNNParms, Mx, false);
-
+	//--
+*/
 }
 
 void FF(NN_Parms* NNParms, NN_MxData* Mx){
@@ -960,6 +985,10 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 			Mx->NN.c[l][t0][i] = 1;
 		}
 	}
+	//-- overwrite bias neurons. these should always have F=1
+	for (l = 0; l < (NN->LevelsCount-1); l++) {
+		Mx->NN.F[l][t0][0] = 1;
+	}
 
 	//-- Weights
 	k = 0;
@@ -1044,9 +1073,10 @@ void InitBdW(NN_Parms* NN, NN_MxData* Mx){
 
 double CalcNetworkTSE(NN_Parms* NN, NN_MxData* Mx, double* pSample, double* pTarget){
 	double ret = 0;
-	//-- 1. Load SampleData into Input Neurons OUT values, and TargetData into u[]
-	VCopy(NN->InputCount, pSample, Mx->NN.F[0][t0]);
-	VCopy(NN->OutputCount, pTarget, Mx->NN.u[t0]);
+	//-- 1. Load SampleData into Input Neurons OUT values , and TargetData into u[]
+	Mx->NN.F[0][t0][0] = 1;	//-- F[0] is the bias neuron for L0
+	for (int i = 0; i<NN->InputCount; i++) Mx->NN.F[0][t0][i+1] = pSample[i];
+	for (int i = 0; i<NN->OutputCount; i++) Mx->NN.u[t0][i] = pTarget[i];
 	//-- 2. Feed Forward, and calc squared error on output layer
 	FF(NN, Mx);
 	for (int o = 0; o < NN->OutputCount; o++) ret += pow(Mx->NN.e[t0][o], 2);
@@ -1467,7 +1497,7 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 	//-- 0. mallocs
 	NN_MxData MxData;
 	MxData.NN = Malloc_NNMem(NNParms);
-	double* tmpSample = (double*)malloc(NNParms->NodesCount[0] * sizeof(double));
+	double* tmpSample = (double*)malloc(NNParms->InputCount * sizeof(double));
 
 	//-- 1. Load W*** from NNParms->NNFinalW[Level][FromN][ToN] 
 	for (l = 0; l<NNParms->LevelsCount; l++){
@@ -1484,13 +1514,13 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 	if (NNParms->UseContext==1)	FeedBack(NNParms, &MxData, true);
 	
 	//-- 3. Write First window of data, with no prediction (that is, write the first sample)
-	for (i = 0; i<NNParms->NodesCount[0]; i++) SaveRunData(NNLogs, pid, tid, i, pSample[0][i], NULL);
+	for (i = 0; i<NNParms->InputCount; i++) SaveRunData(NNLogs, pid, tid, i, pSample[0][i], NULL);
 
 	//-- 4. Write Training Set data, with next-step prediction
 
 	//-- 4.1 In-Sample
 	for (s = 0; s<pSampleCount; s++){
-		for (i = 0; i < NNParms->NodesCount[0]; i++){
+		for (i = 0; i < NNParms->InputCount; i++){
 			tmpSample[i] = pSample[s][i];	//-- Only used for the last sample ( pSample[pSampleCount-1] )
 			MxData.NN.F[0][t0][i] = tmpSample[i];		//-- Present each sample to input neurons
 		}
@@ -1498,18 +1528,18 @@ __declspec(dllexport) void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tC
 		vPrediction = MxData.NN.F[NNParms->LevelsCount-1][t0];	//-- Predicted  Data. All steps
 		vActual = pTarget[s][0];
 		//-- Write RunLog structure
-		SaveRunData(NNLogs, pid, tid, NNParms->NodesCount[0] + s, vActual, vPrediction);
+		SaveRunData(NNLogs, pid, tid, NNParms->InputCount + s, vActual, vPrediction);
 	}
 
 	//-- 4.2 Out-of-Sample
 	for (s = 0; s < pInputData->PredictionLen; s++) {
-		ShiftArray(SHIFT_BACKWARD, NNParms->NodesCount[0], tmpSample, vActual);
+		ShiftArray(SHIFT_BACKWARD, NNParms->InputCount, tmpSample, vActual);
 		//--
-		for (i = 0; i < NNParms->NodesCount[0]; i++) MxData.NN.F[0][t0][i] = tmpSample[i];	//-- Present each sample to input neurons
+		for (i = 0; i < NNParms->InputCount; i++) MxData.NN.F[0][t0][i] = tmpSample[i];	//-- Present each sample to input neurons
 		FF(NNParms, &MxData);																//-- Feed-Forward the network;
 		vPrediction = MxData.NN.F[NNParms->LevelsCount-1][t0];								//-- Predicted  Data. All steps
 		//--
-		SaveRunData(NNLogs, pid, tid, (s + pSampleCount+NNParms->NodesCount[0]), NULL, vPrediction);
+		SaveRunData(NNLogs, pid, tid, (s + pSampleCount+NNParms->InputCount), NULL, vPrediction);
 		vActual = vPrediction[0];
 	}
 /*
