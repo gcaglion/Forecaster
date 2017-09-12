@@ -792,10 +792,10 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	bool success;
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
+	Calc_dJdW(NN, Mx, false, false);
+
 	//Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
-
-	Calc_dJdW(NN, Mx, false, false);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, -1, Mx->NN.scgd->p);
@@ -1096,7 +1096,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++){
 
-		//-- 0. reset BdW=0, TSE=0
+		//-- 0. reset BdW=0
 		InitBdW(NNParms, Mx);
 
 		//-- 1. present samples, and sum up dW into BdW
@@ -1115,14 +1115,6 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		//-- 2. Weight update : W = W + BdW
 		Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
 
-/*		//-- 3. Re-Evaluate error after weight adjustments
-		TSE_T = 0; TSE_V = 0;
-		for (s = 0; s < pSampleCount; s++){
-			//-- 1. Present Sample, and Sum up Squared Error for every Sample
-			if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
-			TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
-		}
-*/		
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
 		prevMSE_T = MSE_T;	// save previous MSE
 		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
@@ -1143,6 +1135,50 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 }
 
+/*void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+	int epoch;
+	int i, l;
+	int pid = GetCurrentProcessId();
+	int tid = GetCurrentThreadId();
+	double mse_t, tse_t, mse_v, tse_v;
+
+	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++) {
+		//-- this zeroes BdW for all levels
+		for (l = 0; l < (NNParms->LevelsCount - 1); l++) MInit(NNParms->NodesCount[l + 1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], 0);
+
+		for (int s = 0; s<pSampleCount; s++) {
+			//-- present sample and target
+			for (i = 0; i<NNParms->InputCount; i++) Mx->NN.F[0][t0][i] = pSampleData[s][i];
+			for (i = 0; i<NNParms->OutputCount; i++) Mx->NN.u[t0][i] = pTargetData[s][i];
+			//-- feed forward
+			FF(NNParms, Mx);
+			//-- compute weights deltas for curr item (goes into Mx->dW)
+			Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
+			//-- accumulate the deltas (BdW=BdW+dW)
+			for (l = 0; l < (NNParms->LevelsCount - 1); l++) MplusM(NNParms->NodesCount[l+1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], Mx->NN.dW[l][t0], Mx->NN.BdW[l][t0]);
+		}
+		//-- adjust weights using accumulated deltas (W=W+BdW)
+		for (l = 0; l < (NNParms->LevelsCount - 1); l++) MplusM(NNParms->NodesCount[l+1], NNParms->NodesCount[l], Mx->NN.W[l][t0], Mx->NN.BdW[l][t0], Mx->NN.W[l][t0]);
+
+		//-- feed forward, and calc MSE
+		//FF(NNParms, Mx);
+		tse_t = 0; tse_v = 0;
+		for (i = 0; i<NNParms->OutputCount; i++) tse_t += pow(Mx->NN.e[t0][i], 2); 
+		mse_t = tse_t/NNParms->OutputCount;
+		mse_v=tse_v/NNParms->OutputCount;
+
+		//-- print progress, and save MSE data
+		WaitForSingleObject(Mx->ScreenMutex, 10);
+		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, mse_t, mse_v);
+		ReleaseMutex(Mx->ScreenMutex);
+		SaveMSEData(NNLogs, pid, tid, epoch, mse_t, (Mx->useValidation>0) ? mse_v : 0);
+
+		if (mse_t < NNParms->TargetMSE) break;
+	}
+	NNLogs->ActualEpochs = epoch;
+	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
+}
+*/
 void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
 	int s;
 	int epoch;

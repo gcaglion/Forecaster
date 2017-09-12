@@ -20,3 +20,4 @@ ipch/*
 # MT4 stuff
 *.ex4
 *.utf8
+/~$Tester.xlsm
