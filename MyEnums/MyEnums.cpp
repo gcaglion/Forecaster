@@ -67,10 +67,6 @@ __declspec(dllexport) int __stdcall getEnumVal(tDebugInfo* pDebugParms, char* ed
 		if (strcmp(eVal, "BP_SCGD") == 0) { (*oVal)=BP_SCGD; ret=0;}
 		if (strcmp(eVal, "BP_QUICKPROP") == 0) { (*oVal)=BP_QUICKPROP; ret=0;}
 	}
-	else if (strcmp(right(edesc, 16), "TRAININGPROTOCOL") == 0) {
-		if (strcmp(eVal, "TP_STOCHASTIC") == 0) { (*oVal)=TP_STOCHASTIC; ret=0;}
-		if (strcmp(eVal, "TP_BATCH") == 0) { (*oVal)=TP_BATCH; ret=0;}
-	}
 	else if (strcmp(right(edesc, 18), "ACTIVATIONFUNCTION") == 0) {
 		if (strcmp(eVal, "NN_ACTIVATION_TANH") == 0) { (*oVal)=NN_ACTIVATION_TANH; ret=0;}
 		if (strcmp(eVal, "NN_ACTIVATION_EXP4") == 0) { (*oVal)=NN_ACTIVATION_EXP4; ret=0;}

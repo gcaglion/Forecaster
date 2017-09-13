@@ -1084,7 +1084,97 @@ double CalcNetworkTSE(NN_Parms* NN, NN_MxData* Mx, double* pSample, double* pTar
 	return ret;
 }
 
-void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
+void TrainBatch(NN_Parms* NNParms, NN_MxData* Mx) {
+
+}
+void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+	int s, si;
+	int epoch;
+	double MSE_T = 1000, MSE_V = 1000;
+	double TSE_T, TSE_V;
+	double prevMSE_T;
+	int pid = GetCurrentProcessId();
+	int tid = GetCurrentThreadId();
+
+	//-- Samples shuffle
+	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
+	ShuffleArray(sl, pSampleCount);
+
+	int BatchCount, BatchSize, BatchExtras;
+	switch (NNParms->TrainingBatchCount){
+	case 0:
+		//-- stochastic
+		BatchCount = pSampleCount;
+		BatchSize = 1;
+		BatchExtras = 0;
+		break;
+	case 1:
+		//-- batch
+		BatchCount = 1;
+		BatchSize = pSampleCount;
+		BatchExtras = 0;
+		break;
+	default:
+		//-- mini-batch
+		BatchCount = NNParms->TrainingBatchCount;
+		BatchSize = (int)floor(pSampleCount/BatchCount);
+		BatchExtras = pSampleCount-(BatchCount*BatchSize);
+		break;
+	}
+
+	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++) {
+		//-- reset sample id, and set tse=0
+		si = 0;
+		TSE_T = 0; TSE_V = 0;
+		for (int b = 0; b<BatchCount; b++) {
+			//-- 0. for each batch, reset BdW=0
+			InitBdW(NNParms, Mx);
+
+			for (int i = 0; i < BatchSize; i++) {
+				//-- 1. present every sample in the batch, and sum up total error in tse
+				s = sl[si];
+				if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
+				TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
+				//-- 1.2 Calc dW for every sample based on BP algorithm
+				if (Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx)) {
+					//-- 1.3 BdW = BdW + dW (only if BP is successful)
+					Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
+				}
+			}
+			//-- 2. Weight update after every batch: W = W + BdW
+			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
+
+			//-- next sample id
+			si++;
+		}
+
+		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
+		prevMSE_T = MSE_T;	// save previous MSE
+		MSE_T = TSE_T / pSampleCount / NNParms->OutputCount;
+		if (Mx->useValidation>0) {
+			MSE_V = TSE_V / pSampleCount / NNParms->OutputCount;
+			if (NNParms->StopAtDivergence == 1 && MSE_T > prevMSE_T) break;
+		}
+
+		//-- display progress
+		WaitForSingleObject(Mx->ScreenMutex, 10);
+		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, MSE_T, MSE_V);
+		ReleaseMutex(Mx->ScreenMutex);
+
+		SaveMSEData(NNLogs, pid, tid, epoch, MSE_T, (Mx->useValidation>0) ? MSE_V : 0);
+
+		if (MSE_T < NNParms->TargetMSE) {
+			epoch++;
+			break;
+		}
+	}
+	NNLogs->ActualEpochs = epoch;
+	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
+
+	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
+}
+
+void NNTrain_Batch_OLD(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
 
 	int s;
 	int epoch;
@@ -1135,7 +1225,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 }
 
-/*void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+void NNTrain_Batch_TEST(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
 	int epoch;
 	int i, l;
 	int pid = GetCurrentProcessId();
@@ -1161,7 +1251,7 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		for (l = 0; l < (NNParms->LevelsCount - 1); l++) MplusM(NNParms->NodesCount[l+1], NNParms->NodesCount[l], Mx->NN.W[l][t0], Mx->NN.BdW[l][t0], Mx->NN.W[l][t0]);
 
 		//-- feed forward, and calc MSE
-		//FF(NNParms, Mx);
+		FF(NNParms, Mx);
 		tse_t = 0; tse_v = 0;
 		for (i = 0; i<NNParms->OutputCount; i++) tse_t += pow(Mx->NN.e[t0][i], 2); 
 		mse_t = tse_t/NNParms->OutputCount;
@@ -1178,8 +1268,8 @@ void NNTrain_Batch(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	NNLogs->ActualEpochs = epoch;
 	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
 }
-*/
-void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
+
+void NNTrain_Stochastic_OLD(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
 	int s;
 	int epoch;
 	double MSE_T = 1000, MSE_V = 1000;
@@ -1226,17 +1316,6 @@ void NNTrain_Stochastic(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NN
 
 	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
 
-}
-
-void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV){
-	switch (NNParms->TrainingProtocol){
-	case TP_STOCHASTIC:
-		NNTrain_Stochastic(pDebugParms, NNParms, NNLogs, Mx, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
-		break;
-	case TP_BATCH:
-		NNTrain_Batch(pDebugParms, NNParms, NNLogs, Mx, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
-		break;
-	}
 }
 
 NN_Mem Malloc_NNMem(NN_Parms* pNNParms) {
