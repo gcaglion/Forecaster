@@ -644,7 +644,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 		case ENGINE_NN:
 			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[0][0].CoreSpecs;
 			if (getParam(ioParms, "NNInfo.UseContext", &NNInfo->UseContext) < 0)							return -1;
-			if (getParam(ioParms, "NNInfo.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)			return -1;
+			if (getParam(ioParms, "NNInfo.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "NNInfo.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)						return -1;
 			if (getParam(ioParms, "NNInfo.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
 			if (getParam(ioParms, "NNInfo.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
@@ -714,7 +714,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			for (c = 0; c < ioParms->EngineParms.CoresCount[l]; c++) {
 				NNInfo = (NN_Parms*)ioParms->EngineParms.Core[l][c].CoreSpecs;
 				if (getParam(ioParms, "WNNInfo.L0.UseContext", &NNInfo->UseContext) <0)								return -1;
-				if (getParam(ioParms, "WNNInfo.L0.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)			return -1;
+				if (getParam(ioParms, "WNNInfo.L0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
 				if (getParam(ioParms, "WNNInfo.L0.BP_Algo", &NNInfo->BP_Algo, enumlist) <0)							return -1;
 				if (getParam(ioParms, "WNNInfo.L0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
 				if (getParam(ioParms, "WNNInfo.L0.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
@@ -730,7 +730,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 			l = 1;
 			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[l][0].CoreSpecs;
 			if (getParam(ioParms, "WNNInfo.L1.UseContext", &NNInfo->UseContext) <0)								return -1;
-			if (getParam(ioParms, "WNNInfo.L1.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)			return -1;
+			if (getParam(ioParms, "WNNInfo.L1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) <0)		return -1;
 			if (getParam(ioParms, "WNNInfo.L1.BP_Algo", &NNInfo->BP_Algo, enumlist) <0)							return -1;
 			if (getParam(ioParms, "WNNInfo.L1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) <0)	return -1;
 			if (getParam(ioParms, "WNNInfo.L1.StopAtDivergence", &NNInfo->StopAtDivergence) <0)					return -1;
@@ -769,7 +769,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[0][1].CoreSpecs;
 			if (getParam(ioParms, "XIEInfo.NN0.UseContext", &NNInfo->UseContext) < 0)							return -1;
-			if (getParam(ioParms, "XIEInfo.NN0.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)			return -1;
+			if (getParam(ioParms, "XIEInfo.NN0.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)						return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
 			if (getParam(ioParms, "XIEInfo.NN0.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
@@ -784,7 +784,7 @@ __declspec(dllexport) int  ForecastParamLoader(tForecastParms* ioParms) {
 
 			NNInfo = (NN_Parms*)ioParms->EngineParms.Core[1][0].CoreSpecs;
 			if (getParam(ioParms, "XIEInfo.NN1.UseContext", &NNInfo->UseContext) < 0)							return -1;
-			if (getParam(ioParms, "XIEInfo.NN1.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)			return -1;
+			if (getParam(ioParms, "XIEInfo.NN1.TrainingProtocol", &NNInfo->TrainingProtocol, enumlist) < 0)		return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)						return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.ActivationFunction", &NNInfo->ActivationFunction, enumlist) < 0)	return -1;
 			if (getParam(ioParms, "XIEInfo.NN1.StopAtDivergence", &NNInfo->StopAtDivergence) < 0)				return -1;
@@ -1033,7 +1033,7 @@ void SetNetPidTid(tEngineDef* pEngineParms, int pLayer, int pDatasetsCount, int 
 			//-- MSE: we kee the same pid,tid from original Training session,
 			for (j = 0; j<pEngineParms->Core[pLayer][n].MSECount; j++) {
 				MSELog[j].BaseProcessId = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
-				MSELog[j].BaseThreadId  = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ThreadId : pSavedEngine->ThreadId;
+				MSELog[j].BaseThreadId  = (pAction==TRAIN_SAVE_RUN) ? MSELog[j].ProcessId : pSavedEngine->ProcessId;
 				MSELog[j].AdderId = pAdderId;
 			}
 

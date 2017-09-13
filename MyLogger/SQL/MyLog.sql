@@ -165,7 +165,7 @@ create table CoreParms_NN(
 	TargetMSE number,
 	UseContext number,
 	BP_Algo number, 
-	TrainingBatchCount number,
+	TrainingProtocol number,
 	StopAtDivergence number,
 	LearningRate number,
 	LearningMomentum number,

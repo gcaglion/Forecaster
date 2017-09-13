@@ -43,7 +43,7 @@ typedef struct {
 	double TargetMSE;
 	int UseContext;
 	int BP_Algo;
-	int TrainingBatchCount;
+	int TrainingProtocol;
 	int StopAtDivergence;
 	double LearningRate;
 	double LearningMomentum;
