@@ -102,7 +102,6 @@ static struct sqlexd {
               int   sqfoff;
    unsigned int   sqcmod;
    unsigned int   sqfmod;
-   unsigned int   sqlpfmem;
             void  *sqhstv[11];
    unsigned int   sqhstl[11];
             int   sqhsts[11];
@@ -112,7 +111,7 @@ static struct sqlexd {
    unsigned int   *sqharc[11];
    unsigned short  sqadto[11];
    unsigned short  sqtdso[11];
-} sqlstm = {13,11};
+} sqlstm = {12,11};
 
 /* SQLLIB Prototypes */
 extern void sqlcxt (void **, unsigned int *,
@@ -134,7 +133,7 @@ typedef struct { unsigned short len; unsigned char arr[1]; } varchar;
 
 /* cud (compilation unit data) array */
 static const short sqlcud0[] =
-{13,4138,178,8,0,
+{12,4138,1,8,0,
 5,0,0,0,0,0,58,131,0,0,1,1,0,1,0,3,109,0,0,
 24,0,0,0,0,0,27,133,0,0,4,4,0,1,0,1,97,0,0,1,97,0,0,1,97,0,0,1,10,0,0,
 55,0,0,2,0,0,32,155,0,0,0,0,0,1,0,
@@ -547,7 +546,7 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 1;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -585,7 +584,7 @@ EXPORT int  __stdcall OraConnect(tDebugInfo* DebugInfo, tDBConnection* DBConnInf
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -665,7 +664,7 @@ EXPORT void __stdcall OraDisconnect(sql_context pCtx, int Commit) {
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -684,7 +683,7 @@ EXPORT void __stdcall OraDisconnect(sql_context pCtx, int Commit) {
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -713,7 +712,7 @@ EXPORT void __stdcall OraCommit(void* pCtx) {
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -759,7 +758,7 @@ EXPORT int __stdcall Ora_InsertTradeInfo(tDebugInfo* pDebugParms, int pid, int p
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -822,7 +821,7 @@ EXPORT int __stdcall Ora_InsertClientInfo(tDebugInfo* DebugParms, int pid, char*
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -885,7 +884,7 @@ EXPORT int __stdcall Ora_UpdateClientInfo(tDebugInfo* DebugParms, int pid, doubl
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -945,7 +944,7 @@ EXPORT int __stdcall Ora_InsertDataParms  (tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1009,7 +1008,7 @@ EXPORT int __stdcall Ora_InsertEngineParms(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1072,7 +1071,7 @@ EXPORT int __stdcall Ora_InsertEngineThreads(tDebugInfo* DebugParms, int aid, in
 
 {
     struct sqlexd sqlstm;
-    sqlstm.sqlvsn = 13;
+    sqlstm.sqlvsn = 12;
     sqlstm.arrsiz = 4;
     sqlstm.sqladtp = &sqladt;
     sqlstm.sqltdsp = &sqltds;
@@ -1141,7 +1140,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int aid, in
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1205,7 +1204,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_SOM(tDebugInfo* DebugParms, int aid, in
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1272,7 +1271,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_SVM(tDebugInfo* DebugParms, int aid, in
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1383,7 +1382,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1402,7 +1401,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1421,7 +1420,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1457,7 +1456,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1493,7 +1492,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1529,7 +1528,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1565,7 +1564,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1601,7 +1600,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1637,7 +1636,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1673,7 +1672,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1709,7 +1708,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1745,7 +1744,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1781,7 +1780,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1817,7 +1816,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1854,7 +1853,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1890,7 +1889,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1926,7 +1925,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1962,7 +1961,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -1998,7 +1997,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2034,7 +2033,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2070,7 +2069,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2106,7 +2105,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2142,7 +2141,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2178,7 +2177,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2214,7 +2213,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2250,7 +2249,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2287,7 +2286,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2323,7 +2322,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2347,7 +2346,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2432,7 +2431,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2451,7 +2450,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2470,7 +2469,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2506,7 +2505,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2542,7 +2541,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2578,7 +2577,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2614,7 +2613,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2651,7 +2650,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2687,7 +2686,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2723,7 +2722,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2759,7 +2758,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2795,7 +2794,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2832,7 +2831,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2868,7 +2867,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2892,7 +2891,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SOM(tDebugInfo* DebugParms, SOM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2973,7 +2972,7 @@ EXPORT int __stdcall Ora_InsertCoreImage_SVM(tDebugInfo* DebugParms, SVM_Parms* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -2993,7 +2992,7 @@ level 8'";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3013,7 +3012,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3033,7 +3032,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3052,7 +3051,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3071,7 +3070,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3107,7 +3106,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3143,7 +3142,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3179,7 +3178,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3215,7 +3214,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3252,7 +3251,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3288,7 +3287,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3324,7 +3323,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3360,7 +3359,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3396,7 +3395,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3433,7 +3432,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3469,7 +3468,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3493,7 +3492,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3512,7 +3511,7 @@ M\"";
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3588,7 +3587,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -3632,7 +3631,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -3702,7 +3701,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3721,7 +3720,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3757,7 +3756,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3793,7 +3792,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3829,7 +3828,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3865,7 +3864,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3901,7 +3900,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3937,7 +3936,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -3973,7 +3972,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4009,7 +4008,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4045,7 +4044,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4081,7 +4080,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4117,7 +4116,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4153,7 +4152,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4189,7 +4188,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
    struct sqlexd sqlstm;
-   sqlstm.sqlvsn = 13;
+   sqlstm.sqlvsn = 12;
    sqlstm.arrsiz = 4;
    sqlstm.sqladtp = &sqladt;
    sqlstm.sqltdsp = &sqltds;
@@ -4233,7 +4232,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -4269,7 +4268,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -4294,7 +4293,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 4;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -4343,7 +4342,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_SVM(tDebugInfo* DebugParms, tSVMResult* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4452,7 +4451,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4471,7 +4470,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4490,7 +4489,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4526,7 +4525,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4562,7 +4561,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4598,7 +4597,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4634,7 +4633,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4670,7 +4669,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4706,7 +4705,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4734,7 +4733,7 @@ EXPORT int __stdcall Ora_BulkMSEInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4879,7 +4878,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4898,7 +4897,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4934,7 +4933,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -4970,7 +4969,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5006,7 +5005,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5042,7 +5041,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5078,7 +5077,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5114,7 +5113,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5150,7 +5149,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5186,7 +5185,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5222,7 +5221,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5258,7 +5257,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5294,7 +5293,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5330,7 +5329,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5367,7 +5366,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5386,7 +5385,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5422,7 +5421,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5458,7 +5457,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5494,7 +5493,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5530,7 +5529,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5566,7 +5565,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5610,7 +5609,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5654,7 +5653,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5698,7 +5697,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5742,7 +5741,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5786,7 +5785,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5830,7 +5829,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5874,7 +5873,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5919,7 +5918,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5955,7 +5954,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -5991,7 +5990,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6033,7 +6032,7 @@ EXPORT int __stdcall Ora_BulkRunInsert(tDebugInfo* DebugParms, int* pInsertCount
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6158,7 +6157,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6202,7 +6201,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6221,7 +6220,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6257,7 +6256,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6293,7 +6292,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6329,7 +6328,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6365,7 +6364,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6401,7 +6400,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6437,7 +6436,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6473,7 +6472,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6509,7 +6508,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6545,7 +6544,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6582,7 +6581,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6660,7 +6659,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6707,7 +6706,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6726,7 +6725,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6762,7 +6761,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6798,7 +6797,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6834,7 +6833,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6870,7 +6869,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6906,7 +6905,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6942,7 +6941,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -6978,7 +6977,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7014,7 +7013,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7050,7 +7049,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7087,7 +7086,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7174,7 +7173,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7226,7 +7225,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7245,7 +7244,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7281,7 +7280,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7317,7 +7316,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7353,7 +7352,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7389,7 +7388,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7425,7 +7424,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7461,7 +7460,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7497,7 +7496,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7533,7 +7532,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7569,7 +7568,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7605,7 +7604,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7641,7 +7640,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7677,7 +7676,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7713,7 +7712,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7749,7 +7748,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7785,7 +7784,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7821,7 +7820,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7864,7 +7863,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_P(tDebugInfo* DebugParms, NN_Par
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7913,7 +7912,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7951,7 +7950,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 4;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -7959,7 +7958,6 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4168;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -7975,14 +7973,13 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 5;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )4183;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -8052,7 +8049,7 @@ EXPORT int __stdcall Ora_LoadDataParms(tDebugInfo* DebugParms, int pid, tDataSha
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 5;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8106,7 +8103,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 5;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8144,7 +8141,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 5;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8152,7 +8149,6 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4252;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8170,14 +8166,13 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 6;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4267;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8254,7 +8249,7 @@ EXPORT int __stdcall Ora_LoadEngineParms(tDebugInfo* DebugParms, int pid, tEngin
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 6;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8309,7 +8304,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 6;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8347,7 +8342,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 6;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8355,7 +8350,6 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4340;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8373,14 +8367,13 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4355;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8502,7 +8495,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8543,7 +8536,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8581,7 +8574,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8589,7 +8582,6 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4448;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8607,14 +8599,13 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4463;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8703,7 +8694,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8744,7 +8735,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8782,7 +8773,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8790,7 +8781,6 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4540;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8808,14 +8798,13 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4555;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -8936,7 +8925,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -8978,7 +8967,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9016,7 +9005,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9024,7 +9013,6 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4648;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9038,14 +9026,13 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4663;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9081,7 +9068,7 @@ EXPORT int __stdcall Ora_getCoreThreadId(tDebugInfo* DebugParms, int pid, int te
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9126,7 +9113,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9164,7 +9151,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9172,7 +9159,6 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4716;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9187,14 +9173,13 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )4731;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -9280,7 +9265,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_NN(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9323,7 +9308,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9361,7 +9346,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9369,7 +9354,6 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4804;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9384,14 +9368,13 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )4819;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -9451,7 +9434,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SOM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9494,7 +9477,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9532,7 +9515,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9540,7 +9523,6 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4880;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9555,14 +9537,13 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )4895;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -9620,7 +9601,7 @@ EXPORT int __stdcall Ora_LoadCoreImage_SVM(tDebugInfo* DebugParms, int pid, int 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9665,7 +9646,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9703,7 +9684,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9711,7 +9692,6 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4956;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9725,14 +9705,13 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )4971;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9824,7 +9803,7 @@ EXPORT int __stdcall Ora_LoadCoreLogs_SVM(tDebugInfo* DebugParms, int pid, int t
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9869,7 +9848,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9907,7 +9886,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -9915,7 +9894,6 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5048;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9929,14 +9907,13 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5063;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -9972,7 +9949,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10000,7 +9977,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10038,7 +10015,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10046,7 +10023,6 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5116;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10060,14 +10036,13 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5131;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10103,7 +10078,7 @@ EXPORT int __stdcall SymbolLookup(tDebugInfo* DebugParms, sql_context pCtx, char
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10168,7 +10143,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10206,7 +10181,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10214,7 +10189,6 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5184;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10234,14 +10208,13 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )5199;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10298,7 +10271,7 @@ EXPORT int __stdcall FindBestPredictor(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10331,7 +10304,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10369,7 +10342,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10377,7 +10350,6 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5260;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10395,14 +10367,13 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5275;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10439,7 +10410,7 @@ EXPORT int __stdcall GetCharPFromQuery(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10471,7 +10442,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10509,7 +10480,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10517,7 +10488,6 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5328;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10536,14 +10506,13 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )5343;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10581,7 +10550,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10613,7 +10582,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10651,7 +10620,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10659,7 +10628,6 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5396;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10673,14 +10641,13 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5411;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10719,7 +10686,7 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10767,7 +10734,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10805,7 +10772,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10813,7 +10780,6 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, 
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5464;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -10828,14 +10794,13 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, 
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )5479;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -10919,7 +10884,7 @@ EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -10964,7 +10929,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11002,7 +10967,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11010,7 +10975,6 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
  sqlstm.iters = (unsigned int  )1;
  sqlstm.offset = (unsigned int  )5552;
  sqlstm.selerr = (unsigned short)1;
- sqlstm.sqlpfmem = (unsigned int  )0;
  sqlstm.cud = sqlcud0;
  sqlstm.sqlest = (unsigned char  *)&sqlca;
  sqlstm.sqlety = (unsigned short)4352;
@@ -11025,14 +10989,13 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
   sqlstm.iters = (unsigned int  )1;
   sqlstm.offset = (unsigned int  )5567;
   sqlstm.selerr = (unsigned short)1;
-  sqlstm.sqlpfmem = (unsigned int  )0;
   sqlstm.cud = sqlcud0;
   sqlstm.sqlest = (unsigned char  *)&sqlca;
   sqlstm.sqlety = (unsigned short)4352;
@@ -11146,7 +11109,7 @@ EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx,
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11253,7 +11216,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugParms, sql_context pCtx, char* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11272,7 +11235,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugParms, sql_context pCtx, char* 
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11310,7 +11273,7 @@ EXPORT int  __stdcall OraInsert(tDebugInfo* DebugParms, sql_context pCtx, char* 
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -11344,7 +11307,7 @@ EXPORT void __stdcall OraAllocateCtx(sql_context pCtx[MAX_CONTEXTS]) {
 
 {
   struct sqlexd sqlstm;
-  sqlstm.sqlvsn = 13;
+  sqlstm.sqlvsn = 12;
   sqlstm.arrsiz = 11;
   sqlstm.sqladtp = &sqladt;
   sqlstm.sqltdsp = &sqltds;
@@ -11385,7 +11348,7 @@ EXPORT void __stdcall OraEnableThreads() {
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11414,7 +11377,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
@@ -11432,7 +11395,7 @@ EXPORT void __stdcall OraContextFree(sql_context pCtx) {
 
 {
  struct sqlexd sqlstm;
- sqlstm.sqlvsn = 13;
+ sqlstm.sqlvsn = 12;
  sqlstm.arrsiz = 11;
  sqlstm.sqladtp = &sqladt;
  sqlstm.sqltdsp = &sqltds;
