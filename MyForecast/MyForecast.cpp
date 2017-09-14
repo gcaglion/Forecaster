@@ -1263,8 +1263,6 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 		CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, hd[d], hd_tsf[d]);
 		if (fp.DataParms.ValidationShift != 0) CalcTSF(fp.EngineParms.TSFcnt, fp.EngineParms.TSFid, &fp.DataParms, hlen, vd[d], vd_tsf[d]);
 	}
-	DumpArrayD(hlen, hd_tr[0], "C:/temp/HD_TR0.csv");
-	DumpArrayD(hlen, hd_trs[0], "C:/temp/HD_TRS0.csv");
 
 	for (l = 0; l < fp.EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
