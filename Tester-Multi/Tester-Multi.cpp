@@ -194,8 +194,7 @@ bool isRunning(PROCESS_INFORMATION pi, LPDWORD lasterror) {
 void main(int argc, char* argv[]) {
 	int MaxProcs = 3; if (argc>1) MaxProcs = atoi(argv[1]);
 
-	//string cmdBase = "C:\\Users\\gcaglion\\Documents\\dev\\Forecaster\\x64\\Debug\\cpuhog.exe ";
-	//vector<string> cmdParms = { "1 50000", "2 50000", "3 50000", "4 50000", "5 50000", "6 50000" , "7 50000" , "8 50000" };
+	//string cmdBase = "cpuhog.exe";
 	string cmdBase = "tester.exe --Forecaster.PauseAtEnd=0 ";
 	vector<string> cmdParms = getCmdList();
 
@@ -232,7 +231,7 @@ void main(int argc, char* argv[]) {
 		if (consoleCnt==(MaxProcs)) {
 			retW = (int)WaitForMultipleObjects(MaxProcs, h, false, INFINITE)+WAIT_OBJECT_0;
 			GetExitCodeProcess(h[retW], &exitCode);
-			printf("CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			printf("CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
 			fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
 			h[retW] = NULL;
 			consoleCnt--;
@@ -245,14 +244,14 @@ void main(int argc, char* argv[]) {
 		retW = (int)WaitForMultipleObjects(consoleCnt, h, false, INFINITE)+WAIT_OBJECT_0;
 		if (retW!=-1) {
 			GetExitCodeProcess(h[retW], &exitCode);
-			printf("CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
-			fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			printf("CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
+			fprintf(procLog, "CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
 		}
 		consoleCnt--;
 		c++;
 	}
 
-	//system("pause");
+	system("pause");
 	fclose(procLog);
 }
 
