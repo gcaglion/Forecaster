@@ -1080,8 +1080,7 @@ void CalcForecastFromEngineOutput(tEngineDef* pEngineParms, tDataShape* pDataPar
 		//-- Actual_TRS
 		for (i = 0; i < sl0; i++) act_trs[i]			= hd_trs[d][i];
 		for (i = 0; i < sc ; i++) act_trs[sl0 + i]		= hd_trs[d][sl0 + i];
-		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? EMPTY_VALUE : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as 0, so here we simply overwrite it if we have Future Data
-		//for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? runLog_i[i].Actual_TRS : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
+		for (i = 0; i < pl; i++) act_trs[sl0 + sc + i] = (pOOS == 0) ? EMPTY_VALUE : fd_trs[d][i];	//-- Run_<XXX> always writes Actual as the forecast from last step, so here we simply overwrite it if we have Future Data
 
 		//-- Predicted_TRS
 		for (i = 0; i < sl0; i++) prd_trs[i]			= EMPTY_VALUE;
@@ -1179,7 +1178,7 @@ __declspec(dllexport) int getForecast(int paramOverrideCnt, char** paramOverride
 	if (LogDBCtx != NULL) fp.DebugParms.DebugDB->DBCtx = LogDBCtx;
 
 	//dataDump(fp.DataParms.HistoryLen, pHistoryData, pHistoryBaseVal, pHistoryBW, pValidationData, pValidationBaseVal, fp.DataParms.PredictionLen, pFutureData, pFutureBW);
-	DumpArrayD(fp.DataParms.HistoryLen, pHistoryData[0], "c:/temp/High.csv");
+	//DumpArrayD(fp.DataParms.HistoryLen, pHistoryData[0], "c:/temp/High.csv");
 	LogWrite(&fp.DebugParms, LOG_INFO, "%s %s started. ProcessId=%d ; ThreadId=%d\n", 4, timestamp(), __func__, pid, tid);
 
 	fp.DebugParms.Mtx = FMutex;
