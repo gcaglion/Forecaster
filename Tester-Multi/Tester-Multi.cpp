@@ -196,7 +196,7 @@ void main(int argc, char* argv[]) {
 
 	//string cmdBase = "C:\\Users\\gcaglion\\Documents\\dev\\Forecaster\\x64\\Debug\\cpuhog.exe ";
 	//vector<string> cmdParms = { "1 50000", "2 50000", "3 50000", "4 50000", "5 50000", "6 50000" , "7 50000" , "8 50000" };
-	string cmdBase = "tester.exe --Forecaster.PauseOnError=0 ";
+	string cmdBase = "tester.exe --Forecaster.PauseAtEnd=0 ";
 	vector<string> cmdParms = getCmdList();
 
 	vector<string> cmd;
