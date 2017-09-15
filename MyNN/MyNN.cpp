@@ -894,7 +894,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	//-- 0. Before exiting, Restore original neurons and weights
 	Restore_Neurons(NN, Mx, t3);
-	Restore_Weights(NN, Mx, t3, true, true, true);
+	Restore_Weights(NN, Mx, t3, true, false, false);
 
 	return(k<NN->SCGDmaxK);
 }
