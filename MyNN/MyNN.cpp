@@ -757,7 +757,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	Calc_dJdW(NN, Mx, false, false);
 
-	Backup_Neurons(NN, Mx, t3);
+//	Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
@@ -893,8 +893,8 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->LVV_dW[t0]);
 
 	//-- 0. Before exiting, Restore original neurons and weights
-	Restore_Neurons(NN, Mx, t3);
 	Restore_Weights(NN, Mx, t3, true, false, false);
+	//Restore_Neurons(NN, Mx, t3);
 
 	return(k<NN->SCGDmaxK);
 }
@@ -1094,12 +1094,12 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 					//-- 1.3 BdW = BdW + dW (only if BP is successful)
 					Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
 				}
+				//-- next sample id
+				si++;
 			}
 			//-- 2. Weight update after every batch: W = W + BdW
 			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
 
-			//-- next sample id
-			si++;
 		}
 
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
