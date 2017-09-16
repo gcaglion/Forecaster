@@ -343,7 +343,7 @@ EXPORT int __stdcall Ora_InsertCoreParms_NN (tDebugInfo* DebugParms, int aid, in
 	}
 	//-- Builds Insert statement
 	//sprintf(&stmt[0], "insert into CoreParms_NN(ProcessId, ThreadId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingProtocol, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu) values(%d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f)", pid, tid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingProtocol, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu);
-	sprintf(&stmt[0], "insert into CoreParms_NN(AdderId, ProcessId, LayerId, CoreId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingBatchCount, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu) values(%d, %d, %d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f)", aid, pid, lid, cid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingBatchCount, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu);
+	sprintf(&stmt[0], "insert into CoreParms_NN(AdderId, ProcessId, LayerId, CoreId, InputCount, OutputCount, LevelsCount, LevelRatioS, MaxEpochs, TargetMSE, UseContext, BP_Algo, TrainingBatchCount, StopAtDivergence, LearningRate, LearningMomentum, ActivationFunction, HCPbeta, Mu, SCGDmaxK) values(%d, %d, %d, %d, %d, %d, %d, '%s', %d, %f, %d, %d, %d, %d, %f, %f, %d, %f, %f, %d)", aid, pid, lid, cid, NNParms->InputCount, NNParms->OutputCount, NNParms->LevelsCount, NNParms->LevelRatioS, NNParms->MaxEpochs, NNParms->TargetMSE, NNParms->UseContext, NNParms->BP_Algo, NNParms->TrainingBatchCount, NNParms->StopAtDivergence, NNParms->LearningRate, NNParms->LearningMomentum, NNParms->ActivationFunction, NNParms->HCPbeta, NNParms->mu, NNParms->SCGDmaxK);
 	//-- Executes Insert statements
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL EXECUTE IMMEDIATE : stmt;
@@ -1647,7 +1647,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 	sql_context vCtx = DebugParms->DebugDB->DBCtx;
 	char stmt[1000];
 	//-- Network Properties variables
-	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction;
+	int vInputCount, vOutputCount, vUseContext, vMaxEpochs, vBP_Algo, vActivationFunction, vSCGDmaxK;
 	char vLevelRatios[60];
 	double vLearningRate, vLearningMomentum, vHCPBeta, vTargetMSE;
 	EXEC SQL END DECLARE SECTION;
@@ -1659,7 +1659,7 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 	}
 
 	//sprintf(&stmt[0], "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from CoreParms_NN where ProcessId=%d and ThreadId=%d", pid, tid);
-	sprintf(stmt, "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE from coreparms_nn where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
+	sprintf(stmt, "select InputCount, OutputCount, LevelRatioS, UseContext, MaxEpochs, BP_Algo, LearningRate, LearningMomentum, ActivationFunction, HCPBeta, TargetMSE, SCGDmaxK from coreparms_nn where(processid, layerid, coreid) = (select processid, layerid, coreid from enginethreads where processid=%d and threadid=%d)", pid, tid);
 	EXEC SQL CONTEXT USE : vCtx;
 	EXEC SQL PREPARE sLEPNN FROM : stmt;
 	EXEC SQL DECLARE cLEPNN CURSOR FOR sLEPNN;
@@ -1668,9 +1668,9 @@ EXPORT int __stdcall Ora_LoadCoreParms_NN(tDebugInfo* DebugParms, int pid, int t
 		LogWrite_C(DebugParms, LOG_ERROR, "%s: SQL Error %d ; stmt=%s\n", 3, __func__, sqlca.sqlcode, stmt);
 		return sqlca.sqlcode;
 	}
-	EXEC SQL FETCH cLEPNN INTO vInputCount, vOutputCount, vLevelRatios, vUseContext, vMaxEpochs, vBP_Algo, vLearningRate, vLearningMomentum, vActivationFunction, vHCPBeta, vTargetMSE;
+	EXEC SQL FETCH cLEPNN INTO vInputCount, vOutputCount, vLevelRatios, vUseContext, vMaxEpochs, vBP_Algo, vLearningRate, vLearningMomentum, vActivationFunction, vHCPBeta, vTargetMSE, vSCGDmaxK;
 	if (sqlca.sqlcode == 0) {
-		oNNParms->InputCount = vInputCount; oNNParms->OutputCount = vOutputCount; oNNParms->UseContext = vUseContext; oNNParms->MaxEpochs = vMaxEpochs; oNNParms->BP_Algo = vBP_Algo; oNNParms->LearningRate = vLearningRate; oNNParms->LearningMomentum = vLearningMomentum; oNNParms->ActivationFunction = vActivationFunction; oNNParms->HCPbeta = vHCPBeta; oNNParms->TargetMSE = vTargetMSE;
+		oNNParms->InputCount = vInputCount; oNNParms->OutputCount = vOutputCount; oNNParms->UseContext = vUseContext; oNNParms->MaxEpochs = vMaxEpochs; oNNParms->BP_Algo = vBP_Algo; oNNParms->LearningRate = vLearningRate; oNNParms->LearningMomentum = vLearningMomentum; oNNParms->ActivationFunction = vActivationFunction; oNNParms->HCPbeta = vHCPBeta; oNNParms->TargetMSE = vTargetMSE; oNNParms->SCGDmaxK = vSCGDmaxK;
 		strcpy(oNNParms->LevelRatioS, vLevelRatios);
 	} else if (sqlca.sqlcode == 1403) {
 		LogWrite_C(DebugParms, LOG_ERROR, "%s(): Core not found. ProcessId=%d ; ThreadId=%d\n", 3, __func__, pid, tid);

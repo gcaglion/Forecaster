@@ -757,7 +757,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	Calc_dJdW(NN, Mx, false, false);
 
-//	Backup_Neurons(NN, Mx, t3);
+	Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
@@ -979,9 +979,6 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 			Mx->NN.scgd->LVV_W[t0][k] = &Mx->NN.W[l][t0][y][x];
 			Mx->NN.scgd->LVV_dW[t0][k] = &Mx->NN.dW[l][t0][y][x];
 			Mx->NN.scgd->LVV_dJdW[t0][k] = &Mx->NN.dJdW[l][t0][y][x];
-			Mx->NN.scgd->LVV_W[t1][k] = &Mx->NN.W[l][t0][y][x];
-			Mx->NN.scgd->LVV_dW[t1][k] = &Mx->NN.dW[l][t0][y][x];
-			Mx->NN.scgd->LVV_dJdW[t1][k] = &Mx->NN.dJdW[l][t0][y][x];
 			k++;
 		}
 	}

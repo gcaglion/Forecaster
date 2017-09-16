@@ -171,7 +171,8 @@ create table CoreParms_NN(
 	LearningMomentum number,
 	ActivationFunction number,
 	HCPbeta number,
-	Mu number
+	Mu number,
+	SCGDmaxK number
 );
 alter table CoreParms_NN add constraint CoreParms_NN_PK primary key( AdderId, ProcessId, LayerId, CoreId ) using index tablespace LogIdx;
 
