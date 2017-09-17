@@ -604,8 +604,8 @@ void Restore_Weights(NN_Parms* NN, NN_MxData* Mx, int timebin, bool doW=true, bo
 
 void dEdW_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new, double* odEdW_at_w){
 
-	Backup_Neurons(NN, Mx, t4);
-	Backup_Weights(NN, Mx, t4);
+	Backup_Weights(NN, Mx, t5);
+	Backup_Neurons(NN, Mx, t5);
 
 	//-- 1. put w_new into M
 	VCopy(NN->WeightsCountTotal, w_new, LVV_W);
@@ -614,8 +614,8 @@ void dEdW_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new, d
 	//-- 3. return vector is one row of dE/dW corresponding to w_idx
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], odEdW_at_w);
 
-	Restore_Neurons(NN, Mx, t4);
-	Restore_Weights(NN, Mx, t4);
+	Restore_Neurons(NN, Mx, t5);
+	Restore_Weights(NN, Mx, t5);
 
 }
 
@@ -757,7 +757,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	Calc_dJdW(NN, Mx, false, false);
 
-	Backup_Neurons(NN, Mx, t3);
+	//Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
@@ -839,9 +839,9 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 		if (comp >= 0){
 			//-- 7. Update weight vector
 
-			//-- W = W + dW
+			//-- dW = alpha * p
 			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
-			//===========================================================================================================
+			//-- W = W + dW
 			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->LVV_W[t0]);
 			//===========================================================================================================
 			//-- TotdW = TotdW + dW
@@ -1094,7 +1094,7 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 				//-- next sample id
 				si++;
 			}
-			//-- 2. Weight update after every batch: W = W + BdW
+			//-- 2. Weight update after every batch: W = W + BdW			
 			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
 
 		}

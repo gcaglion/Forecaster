@@ -11,7 +11,7 @@
 #define t2 2 //	(t - 2)
 #define t3 3 //	used for backup
 #define t4 4 //	used for backup
-#define ttmp 5
+#define t5 5 //	used for backup
 
 //-- Training Protocols
 #define TP_STOCHASTIC	0
