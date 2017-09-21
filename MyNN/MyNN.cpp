@@ -757,7 +757,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	Calc_dJdW(NN, Mx, false, false);
 
-	Backup_Neurons(NN, Mx, t3);
+	//Backup_Neurons(NN, Mx, t3);
 	Backup_Weights(NN, Mx, t3);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
@@ -790,7 +790,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 			dEdW_at_w_LVV(NN, Mx, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->newW, Mx->NN.scgd->dE1);
 			//=================================
 			//-- calc s
-			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE0, Mx->NN.scgd->dE1, Mx->NN.scgd->dE);
+			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE1, Mx->NN.scgd->dE0, Mx->NN.scgd->dE);
 			VdivS(NN->WeightsCountTotal, Mx->NN.scgd->dE, sigma, Mx->NN.scgd->s);
 
 			//-- calc delta
@@ -894,7 +894,7 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 
 	//-- 0. Before exiting, Restore original neurons and weights
 	Restore_Weights(NN, Mx, t3, true, false, false);
-	Restore_Neurons(NN, Mx, t3);
+	//Restore_Neurons(NN, Mx, t3);
 
 	return(k<NN->SCGDmaxK);
 }
