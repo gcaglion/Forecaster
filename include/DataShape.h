@@ -44,6 +44,5 @@ typedef struct{
 	double ScaleMax;
 	double  ScaleM;
 	double  ScaleP;
-	double MinVal;
 	tTSF*  TSF;
 }tTimeSerie;

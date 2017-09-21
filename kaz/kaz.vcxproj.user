@@ -11,9 +11,9 @@ SystemRoot=C:\Windows</LocalDebuggerEnvironment>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerEnvironment>ORACLE_HOME=$(ORACLE_HOME1)
-PATH=$(ORACLE_HOME1)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platform);$(SolutionDir)..\AAA_ExtLibs\fft\VisualStudio\$(Platform)\$(Configuration)
-SystemRoot=C:\Windows</LocalDebuggerEnvironment>
-    <LocalDebuggerWorkingDirectory>c:\temp\cpuhog</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerEnvironment>
+    </LocalDebuggerEnvironment>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerAttach>false</LocalDebuggerAttach>
   </PropertyGroup>
 </Project>

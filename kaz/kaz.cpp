@@ -191,7 +191,7 @@ void loadStaticData(double** hd, double** fd, double** bw) {
 	hd[0][17] = 0.96748; hd[1][17] = 0.96673; bw[0][17] = 0.00075; bw[1][17] = 0.00075;
 	hd[0][18] = 0.96776; hd[1][18] = 0.9666; bw[0][18] = 0.00116; bw[1][18] = 0.00116;
 	hd[0][19] = 0.96863; hd[1][19] = 0.96683; bw[0][19] = 0.0018; bw[1][19] = 0.0018;
-	hd[0][20] = 0.96882; hd[1][20] = 0.96809; bw[0][20] = 0.00073; bw[1][20] = 0.00073;
+/*	hd[0][20] = 0.96882; hd[1][20] = 0.96809; bw[0][20] = 0.00073; bw[1][20] = 0.00073;
 	hd[0][21] = 0.96951; hd[1][21] = 0.96866; bw[0][21] = 0.00085; bw[1][21] = 0.00085;
 	hd[0][22] = 0.96874; hd[1][22] = 0.96809; bw[0][22] = 0.00065; bw[1][22] = 0.00065;
 	hd[0][23] = 0.96862; hd[1][23] = 0.96767; bw[0][23] = 0.00095; bw[1][23] = 0.00095;
@@ -671,18 +671,52 @@ void loadStaticData(double** hd, double** fd, double** bw) {
 	hd[0][497] = 0.97312; hd[1][497] = 0.97237; bw[0][497] = 0.00075; bw[1][497] = 0.00075;
 	hd[0][498] = 0.97361; hd[1][498] = 0.97237; bw[0][498] = 0.00124; bw[1][498] = 0.00124;
 	hd[0][499] = 0.97324; hd[1][499] = 0.97225; bw[0][499] = 0.00099; bw[1][499] = 0.00099;
-
+*/
 }
 
-extern "C" __declspec(dllexport) int MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun);
+/*extern "C" __declspec(dllexport) int MTSaveClientInfo(int paramCnt, char* paramOverride, char* pDBCtx, char* pCurrentBar, int pDoTraining, int pDoRun);
 extern "C" __declspec(dllexport) int MTOraConnect(int paramCnt, char* paramOverride, char* oCtxS);
 extern "C" __declspec(dllexport) void MTOraDisconnect(int paramCnt, char* paramOverride, char* pLogDBCtxS, int pCommit);
+*/
+#include <MyTimeSeries.h>
+#include <DataShape.h>
 
 int main(int argc, char* argv[]) {
-	char sCtx[30];
+
+	int dscnt = 2;
+	int hlen = 20;
+	double** hd = MallocArray<double>(dscnt, hlen);
+	double** bw = MallocArray<double>(dscnt, hlen);
+	loadStaticData(hd, nullptr, bw);
+
+	double** hd_tr = MallocArray<double>(dscnt, hlen);
+	double** hd_trs = MallocArray<double>(dscnt, hlen);
+	double** hd_uns = MallocArray<double>(dscnt, hlen);
+	double** hd_untr = MallocArray<double>(dscnt, hlen);
+	double dataMin;
+	double scaleM, scaleP;
+	bool check = true;
+	double epsilon=1e-8;
+	int d = 0;
+
+	dataTransform(DT_DELTALOG, hlen, hd[d], 0, hd_tr[d]);
+	DataScale(hlen, hd_tr[d], -1, 1, hd_trs[d], &scaleM, &scaleP);
+	DataUnScale(hlen, 0, hlen, hd_trs[d], scaleM, scaleP, hd_uns[d]);
+	dataUnTransform(DT_DELTALOG, hlen, 0, 20, hd_tr[d], 0, hd[d], hd_untr[d]);
+
+	for (int i = 0; i<hlen; i++) {
+		if ((hd_untr[0][i]-hd[0][i])>epsilon) {
+			check = false;
+		}
+	}
+
+/*	char sCtx[30];
 	char* vParams = "MT4 --IniFile=c:/temp/Forecaster.ini";
 	if (MTOraConnect(1, vParams, sCtx)<0) return -1;
 	int ret = MTSaveClientInfo(1, vParams, sCtx, "201708100700", 0, 0);
 	MTOraDisconnect(1, vParams, sCtx, 1);
 	return ret;
+	*/
+
+	return 0;
 }

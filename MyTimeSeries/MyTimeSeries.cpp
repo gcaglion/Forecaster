@@ -489,110 +489,9 @@ EXPORT int __stdcall LoadHistoryData(int pHistoryLen, char* pDate0, int pBarData
 	return 0;
 
 }
-/*
-EXPORT void __stdcall DataTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* oMinVal, double pBaseVal) {
-	// oMinVal is needed to un-transform Log
-	// pBaseVal is needed as the first value of a delta-transformed timeserie
-	int i;
-	double maxval, tempval;
-	//FILE* fk = fopen("c:/temp/DataTransform.log", "w");
 
-	(*oMinVal = 0);
-	switch (Transformation) {
-	case DT_NONE:
-		for (i = iFromItem; i <iToItem; i++)	OutData[i] = InData[i];
-		break;
-	case DT_DELTA:
-		OutData[iFromItem] = InData[0] - pBaseVal;
-		for (i = iFromItem + 1; i < iToItem; i++) {
-			if (InData[i] == EMPTY_VALUE) {
-				OutData[i] = EMPTY_VALUE;
-			}
-			else {
-				OutData[i] = (InData[i] - InData[i - 1]);
-			}
-			//fprintf(fk, "InData[%d]=%f ; OutData[%d]=%f\n", i, InData[i], i, OutData[i]);
-		}
-		break;
-	case DT_LOG:
-		FindMinMax((iToItem - iFromItem), InData, oMinVal, &maxval);
-		for (i = iFromItem; i < iToItem; i++) {
-			//-- traslate, to make sure all the values are >1
-			if (InData[i] == EMPTY_VALUE) {
-				OutData[i] = EMPTY_VALUE;
-			}
-			else {
-				tempval = InData[i] - (*oMinVal) + 1;
-				OutData[i] = log(tempval);
-			}
-		}
-		break;
-	case (DT_DELTALOG):
-		double* tempData = (double*)malloc((iToItem - iFromItem) * sizeof(double));
-
-		DataTransform(DT_DELTA, iFromItem, iToItem, InData, tempData, oMinVal, pBaseVal);
-		//memcpy(tempData, OutData, (iToItem - iFromItem)*sizeof(double));
-
-		DataTransform(DT_LOG, iFromItem, iToItem, tempData, OutData, oMinVal, pBaseVal);
-
-		free(tempData);
-		break;
-	}
-	//fclose(fk);
-}
-
-EXPORT void __stdcall DataUnTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* ActualData, double oMinVal, double pBaseVal) {
-	//-- oMinVal is the min() of the original (untransformed) InputData, that was used to traslate InputData above 0
-	//-- ActualData is needed in Delta to calculate each step from the Actual Base, not from the cumulative calculated base
-
-	int i;
-
-	switch (Transformation) {
-	case DT_NONE:
-		for (i = iFromItem; i <iToItem; i++)	OutData[i] = InData[i];
-		break;
-	case DT_DELTA:
-		OutData[iFromItem] = ActualData[iFromItem];
-		for (i = iFromItem + 1; i < iToItem; i++) {
-
-			if (InData[i] == EMPTY_VALUE) {
-				OutData[i] = InData[i];
-			}
-			else {
-				if (ActualData[i] == EMPTY_VALUE) ActualData[i - 1] = OutData[i - 1];
-				OutData[i] = ActualData[i - 1] + InData[i];
-			}
-			//LogWrite(pDebugParms, "DataUnTransform() - DT_DELTA - InData[%d]=%f ; ActualData[%d]=%f ; OutData[%d]=%f ; oMinVal=%f\n", 7, i, InData[i], i, ActualData[i], i, OutData[i], oMinVal);
-		}
-		break;
-	case DT_LOG:
-		for (i = iFromItem; i < iToItem; i++) {
-			if (InData[i] == EMPTY_VALUE) {
-				OutData[i] = EMPTY_VALUE;
-			}
-			else {
-				OutData[i] = exp(InData[i]) + oMinVal - 1;
-			}
-			//LogWrite(pDebugParms, "DataUnTransform() - DT_LOG - InData[%d]=%f ; OutData[%d]=%f ; oMinVal=%f\n", 5, i, InData[i], i, OutData[i], oMinVal);
-		}
-		break;
-	case (DT_DELTALOG):
-		double* tempData = (double*)malloc((iToItem - iFromItem + 1) * sizeof(double));
-
-		DataUnTransform(DT_LOG, iFromItem, iToItem, InData, tempData, ActualData, oMinVal, pBaseVal);
-
-		DataUnTransform(DT_DELTA, iFromItem, iToItem, tempData, OutData, ActualData, oMinVal, pBaseVal);
-
-		free(tempData);
-		break;
-	}
-}
-*/
-//-- newest version ---------------------------------------------------------------------------------------------------
-EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata) {
-	double maxval;
-
-	FindMinMax(dlen, idata, oMinVal, &maxval);
+#define LOGMINVAL -10000
+EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* odata) {
 
 	switch (dt) {
 
@@ -601,12 +500,12 @@ EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, doubl
 		break;
 
 	case DT_LOG:
-		for (int i = 0; i < dlen; i++) odata[i] = log(idata[i] - (*oMinVal) + 1);
+		for (int i = 0; i < dlen; i++) odata[i] = log(idata[i] - LOGMINVAL + 1);
 		break;
 
 	case DT_DELTALOG:
-		dataTransform(DT_DELTA, dlen, idata, baseVal, oMinVal, odata);
-		dataTransform(DT_LOG,   dlen, odata, baseVal, oMinVal, odata);
+		dataTransform(DT_DELTA, dlen, idata, baseVal, odata);
+		dataTransform(DT_LOG,   dlen, odata, baseVal, odata);
 		break;
 
 	default:
@@ -616,7 +515,7 @@ EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, doubl
 
 }
 
-EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata) {
+EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double* iActual, double* odata) {
 	double prev;
 	int i;
 
@@ -640,7 +539,7 @@ EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idat
 		break;
 
 	case DT_LOG:
-		for (i = from_i; i < to_i; i++) odata[i] = exp(idata[i]) + iMinVal - 1;
+		for (i = from_i; i < to_i; i++) odata[i] = exp(idata[i]) + LOGMINVAL - 1;
 		break;
 
 	case DT_DELTALOG:
@@ -648,7 +547,7 @@ EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idat
 		for (i = from_i; i < to_i; i++){
 
 			//-- 1. unLOG
-			odata[i] = exp(idata[i]) + iMinVal - 1;
+			odata[i] = exp(idata[i]) + LOGMINVAL - 1;
 
 			//-- 2. unDELTA
 			if (i > from_i) {
@@ -674,9 +573,6 @@ EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idat
 	for (i = to_i; i < dlen; i++) odata[i] = EMPTY_VALUE;
 
 }
-//--------------------------------------------------------------------------------------------------------------------------
-
-
 
 EXPORT void __stdcall TSfromSamples(int sampleCnt, int sampleLen, double** iSample, double* oTS) {
 

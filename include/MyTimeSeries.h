@@ -22,11 +22,9 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int DatesCount, char** oDate);
 EXPORT int __stdcall GetDates_FXDB(tDebugInfo* DebugParms, tFXData* SourceParms, char* StartDate, int DatesCount, char** oDate);
 EXPORT int __stdcall LoadHistoryData(int pHistoryLen, char* pDate0, int pBarDataType, double* oHistoryData, tFXData* DBParms, tDebugInfo* DebugParms);
-//EXPORT void __stdcall DataTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* oMinVal, double pBaseVal);
-//EXPORT void __stdcall DataUnTransform(int Transformation, int iFromItem, int iToItem, double* InData, double* OutData, double* ActualData, double oMinVal, double pBaseVal);
-// newest version -------------------------------------------------------------------------------------------------------------------
-EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* oMinVal, double* odata);
-EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double iMinVal, double* iActual, double* odata);
+
+EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* odata);
+EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double* iActual, double* odata);
 //-----------------------------------------------------------------------------------------------------------------------------------
 EXPORT void __stdcall TSfromSamples(int sampleCnt, int sampleLen, double** iSample, double* oTS);
 EXPORT int __stdcall FXDataCompact(char* INfilename, int INtimeframe, char* OUTfilename, int OUTtimeframe);
