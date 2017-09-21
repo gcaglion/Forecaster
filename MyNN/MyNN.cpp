@@ -638,7 +638,7 @@ double E_at_w_LVV(NN_Parms* NN, NN_MxData* Mx, double** LVV_W, double* w_new){
 	return ret;
 }
 
-bool BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN, int pNetId, int TestId, NN_MxData* Mx){
+int BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN, int pNetId, int TestId, NN_MxData* Mx){
 	int i;
 
 	//== L21
@@ -703,10 +703,10 @@ bool BP_Qing(int pid, int tid, tDebugInfo* DebugParms, int pEpoch, NN_Parms* NN,
 	//-- calc adzev				- Qing(20)
 	Mx->NN.adzev[10][0] += Mx->NN.Q_sigma[10] / Mx->NN.Q_ro[10] * Mx->NN.norm_e[t0];
 
-	return true;
+	return 0;
 }
 
-bool BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
+int BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
 	//-- as per QuickProp2.pdf, 2.6.3	
 	int l, j, i;
 	
@@ -741,10 +741,10 @@ bool BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms
 			}
 		}
 	}
-	return true;
+	return 0;
 }
 
-bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
+int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
 
 	int k;
 
@@ -756,9 +756,6 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
 	Calc_dJdW(NN, Mx, false, false);
-
-	//Backup_Neurons(NN, Mx, t3);
-	Backup_Weights(NN, Mx, t3);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, -1, Mx->NN.scgd->p);
@@ -893,13 +890,13 @@ bool BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN,
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->LVV_dW[t0]);
 
 	//-- 0. Before exiting, Restore original neurons and weights
-	Restore_Weights(NN, Mx, t3, true, false, false);
+	//Restore_Weights(NN, Mx, t3, true, false, false);
 	//Restore_Neurons(NN, Mx, t3);
 
-	return(k<NN->SCGDmaxK);
+	return(1);	//-- so we don't update BdW and W in NNTrain()
 }
 
-bool BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, NN_MxData* Mx){
+int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, NN_MxData* Mx){
 	/*
 	int i, h, o;
 	double sk;
@@ -934,7 +931,7 @@ bool BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
 		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
 	}
-	return true;
+	return 0;
 }
 
 void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
@@ -993,10 +990,10 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 
 }
 
-bool Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
+int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx){
 	//-- All the BP routines should only set Mx->dW , and NOT change Mx->W
 
-	bool ret;	//-- if the specific BP routine returns false, than we do not apply the calculated dW
+	int ret;	//-- see CalcdWType in NNTrain()
 
 	//-- common to all BP variants
 	SavePrevWeights(NN, Mx);
@@ -1045,6 +1042,7 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 	double prevMSE_T;
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
+	int CalcdWType;	//-- 0: update BdW=BdW+dW after every sample, and W=W+BdW after every batch
 
 	//-- Samples shuffle
 	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
@@ -1082,20 +1080,23 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 			for (int l = 0; l < (NNParms->LevelsCount - 1); l++) MInit(NNParms->NodesCount[l + 1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], 0);
 
 			for (int i = 0; i < BatchSize; i++) {
+
 				//-- 1. present every sample in the batch, and sum up total error in tse
 				s = sl[si];
 				if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 				TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
+
 				//-- 1.2 Calc dW for every sample based on BP algorithm
-				if (Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx)) {
-					//-- 1.3 BdW = BdW + dW (only if BP is successful)
-					Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
-				}
+				CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
+
+				//-- 1.3 BdW = BdW + dW (only if BP_ALGO is not global, like SCGD)
+				if (CalcdWType==0) Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
+				
 				//-- next sample id
 				si++;
 			}
 			//-- 2. Weight update after every batch: W = W + BdW			
-			Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
+			if (CalcdWType==0) Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
 
 		}
 
