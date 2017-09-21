@@ -195,7 +195,7 @@ void main(int argc, char* argv[]) {
 	int MaxProcs = 3; if (argc>1) MaxProcs = atoi(argv[1]);
 
 	//string cmdBase = "cpuhog.exe";
-	string cmdBase = "tester.exe --Forecaster.PauseAtEnd=0 ";
+	string cmdBase = "tester.exe --Tester.PauseAtEnd=0 ";
 	vector<string> cmdParms = getCmdList();
 
 	vector<string> cmd;
@@ -251,7 +251,6 @@ void main(int argc, char* argv[]) {
 		c++;
 	}
 
-	system("pause");
 	fclose(procLog);
 }
 
