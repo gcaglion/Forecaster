@@ -27,6 +27,7 @@ typedef struct {
 	double* dE;
 	double* sigmap;
 	double rnorm;
+	double dWnorm;
 } tSCGDMem;
 
 typedef struct {

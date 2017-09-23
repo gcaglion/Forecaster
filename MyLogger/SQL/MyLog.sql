@@ -297,6 +297,7 @@ create table CoreLogs_NN_SCGD(
 	lambdau number,
 	rnorm number,
 	enorm number,
+	dWnorm number,
 	comp number
 ) storage (freelists 8);
 alter table CoreLogs_NN_SCGD add constraint CoreLogs_NN_SCGD_PK primary key(ProcessId, ThreadId, Epoch, BPid, K) using index tablespace LogIdx;

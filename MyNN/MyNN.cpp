@@ -121,7 +121,7 @@ void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double*
 	}
 }
 
-void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double rnorm, double enorm, double comp){
+void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double rnorm, double enorm, double dWnorm, double comp){
 	NNLog->IntP[timeStep].ProcessId = pid;
 	NNLog->IntP[timeStep].ThreadId = tid;
 	NNLog->IntP[timeStep].Epoch = epoch;
@@ -134,7 +134,8 @@ void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, i
 	NNLog->IntP[timeStep].lambda=lambda;
 	NNLog->IntP[timeStep].lambdau=lambdau;
 	NNLog->IntP[timeStep].rnorm=rnorm;
-	NNLog->IntP[timeStep].enorm=enorm;
+	NNLog->IntP[timeStep].enorm = enorm;
+	NNLog->IntP[timeStep].dWnorm = dWnorm;
 	NNLog->IntP[timeStep].comp= comp;
 }
 
@@ -881,7 +882,8 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 
 		//-- 9. if the steepest descent direction r>epsilon and success=true, then set k=k+1 and go to 2, else terminate and return w as the desired minimum
 		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
-		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], comp);
+		Mx->NN.scgd->dWnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->dW);
+		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], Mx->NN.scgd->dWnorm, comp);
 
 		k++; Mx->SCGD_progK++;
 	} while ((Mx->NN.scgd->rnorm>epsilon) && (k<NN->SCGDmaxK));

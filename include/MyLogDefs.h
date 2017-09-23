@@ -26,7 +26,7 @@ typedef struct {
 	int sigma10; double ro10; double D10W; double adzev10; int hcp10; int sigma21; double ro21; double adzev21N; double norm_e;
 	// SCGD stuff
 	int Epoch; int BPid; int K;
-	double delta; double mu; double alpha; double beta; double lambda; double lambdau; double rnorm; double enorm; double comp;
+	double delta; double mu; double alpha; double beta; double lambda; double lambdau; double rnorm; double enorm; double dWnorm;  double comp;
 } tLogInt;
 //============================================================================================================================================
 
