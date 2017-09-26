@@ -144,12 +144,13 @@ int main(int argc, char* argv[]) {
 	int ret = MTgetForecast(4, paramstring, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 */
-/*
+
 #include <MyOraUtils.h>
+//#include <MyLogger.h>
 int main(int argc, char* argv[]) {
 	
 	tDBConnection* DBConn=new tDBConnection;
-	strcpy(DBConn->DBUser, "LogUser");
+	strcpy(DBConn->DBUser, "LogUserxxx");
 	strcpy(DBConn->DBPassword, "LogPwd");
 	strcpy(DBConn->DBConnString, "Algo");
 	DBConn->DBCtx = NULL;
@@ -160,15 +161,14 @@ int main(int argc, char* argv[]) {
 	strcpy(DebugParms->fPath, "C:/temp");
 	strcpy(DebugParms->fName, "kaz.log");
 	DebugParms->DebugDB = DBConn;
+	DebugParms->PauseOnError = 1;
 
 	OraConnect(DebugParms, DBConn);
-	FILE* f = fopen("c:/temp/dioporco.log", "w");
-	fprintf(f, "%p\n", DBConn->DBCtx);
-	fclose(f);
-	OraDisconnect(DebugParms->DebugDB->DBCtx);
+	OraDisconnect(DebugParms->DebugDB->DBCtx, 0);
 	int kaz = 0;
+
 }
-*/
+
 
 void loadStaticData(double** hd, double** fd, double** bw) {
 	hd[0][0] = 0.96716; hd[1][0] = 0.96639; bw[0][0] = 0.00077; bw[1][0] = 0.00077;
@@ -681,6 +681,7 @@ extern "C" __declspec(dllexport) void MTOraDisconnect(int paramCnt, char* paramO
 #include <MyTimeSeries.h>
 #include <DataShape.h>
 
+/*
 int main(int argc, char* argv[]) {
 
 	int dscnt = 2;
@@ -710,13 +711,13 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-/*	char sCtx[30];
+	char sCtx[30];
 	char* vParams = "MT4 --IniFile=c:/temp/Forecaster.ini";
 	if (MTOraConnect(1, vParams, sCtx)<0) return -1;
 	int ret = MTSaveClientInfo(1, vParams, sCtx, "201708100700", 0, 0);
 	MTOraDisconnect(1, vParams, sCtx, 1);
 	return ret;
-	*/
 
 	return 0;
 }
+*/

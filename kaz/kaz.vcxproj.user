@@ -6,7 +6,7 @@ PATH=$(ORACLE_HOME2)\bin;C:\Program Files (x86)\Visual Leak Detector\bin\$(Platf
 SystemRoot=C:\Windows</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>
-    <LocalDebuggerWorkingDirectory>c:\temp\cpuhog</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>$(ProjectDir)</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerMergeEnvironment>true</LocalDebuggerMergeEnvironment>

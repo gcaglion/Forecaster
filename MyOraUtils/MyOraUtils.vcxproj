@@ -97,8 +97,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform);$(ORACLE_HOME2)\oci\lib\msvc; C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oci.lib;MyUtils.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform);$(ORACLE_HOME2)\oci\lib\msvc;$(ORACLE_HOME2)\precomp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>oci.lib;orasql11.lib;MyUtils.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>set ORACLE_HOME=$(ORACLE_HOME2)
@@ -118,8 +118,8 @@ $(ORACLE_HOME2)\bin\proc $(ProjectName).pc $(ProjectName).c SQLCHECK=SEMANTICS u
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform);$(ORACLE_HOME1)\oci\lib\msvc; C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>oci.lib;MyUtils.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);C:\Program Files (x86)\Visual Leak Detector\lib\$(Platform);$(ORACLE_HOME1)\oci\lib\msvc;$(ORACLE_HOME1)\precomp\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>oci.lib;orasql12.lib;MyUtils.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>set ORACLE_HOME=$(ORACLE_HOME1)
