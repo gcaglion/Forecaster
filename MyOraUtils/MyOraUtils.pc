@@ -724,6 +724,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 	double* vbeta;
 	double* vlambda;
 	double* vlambdau;
+	double* vpnorm;
 	double* vrnorm;
 	double* venorm;
 	double* vdWnorm;
@@ -783,6 +784,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			vbeta = (double*)malloc(vInsertCount * sizeof(double));
 			vlambda = (double*)malloc(vInsertCount * sizeof(double));
 			vlambdau = (double*)malloc(vInsertCount * sizeof(double));
+			vpnorm = (double*)malloc(vInsertCount * sizeof(double));
 			vrnorm = (double*)malloc(vInsertCount * sizeof(double));
 			venorm = (double*)malloc(vInsertCount * sizeof(double));
 			vdWnorm = (double*)malloc(vInsertCount * sizeof(double));
@@ -801,6 +803,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 				vbeta[i] = NNLogs->IntP[i].beta;
 				vlambda[i] = NNLogs->IntP[i].lambda;
 				vlambdau[i] = NNLogs->IntP[i].lambdau;
+				vpnorm[i] = NNLogs->IntP[i].pnorm;
 				vrnorm[i] = NNLogs->IntP[i].rnorm;
 				venorm[i] = NNLogs->IntP[i].enorm;
 				vdWnorm[i] = NNLogs->IntP[i].dWnorm;
@@ -808,8 +811,8 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			}
 
 			//-- 4.3. Build Array Insert statement
-			sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Rnorm, Enorm, dWNorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14, :SCGD15)");
-			EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 15;
+			sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Pnorm, Rnorm, Enorm, dWNorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14, :SCGD15, :SCGD16)");
+			EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 16;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 1 DATA = : vProcessId;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 2 DATA = : vThreadId;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 3 DATA = : vEpoch;
@@ -821,10 +824,11 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 9 DATA = : vbeta;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 10 DATA = : vlambda;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 11 DATA = : vlambdau;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = : vrnorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = : venorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = : vdWnorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 15 DATA = : vcomp;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = : vpnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = : vrnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = : venorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 15 DATA = : vdWnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 16 DATA = : vcomp;
 
 			break;
 		case BP_STD:
@@ -842,7 +846,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 		}
 		//-- 6. free()s
 		EXEC SQL DEALLOCATE DESCRIPTOR 'inCLNN';
-		free(vProcessId); free(vThreadId); free(vEpoch); free(vBPid); free(vK); free(vdelta); free(vmu); free(valpha); free(vbeta); free(vlambda); free(vlambdau); free(vrnorm); free(venorm); free(vdWnorm); free(vcomp);
+		free(vProcessId); free(vThreadId); free(vEpoch); free(vBPid); free(vK); free(vdelta); free(vmu); free(valpha); free(vbeta); free(vlambda); free(vlambdau); free(vpnorm); free(vrnorm); free(venorm); free(vdWnorm); free(vcomp);
 	}
 
 	return 0;

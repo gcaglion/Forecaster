@@ -22,10 +22,12 @@ typedef struct {
 	double* prev_r;
 	double* bp;
 	double* lp;
+	double* ap;
 	double* dE0;
 	double* dE1;
 	double* dE;
 	double* sigmap;
+	double pnorm;
 	double rnorm;
 	double dWnorm;
 } tSCGDMem;

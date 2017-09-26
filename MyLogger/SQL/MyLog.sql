@@ -295,6 +295,7 @@ create table CoreLogs_NN_SCGD(
 	beta number,
 	lambda number,
 	lambdau number,
+	pnorm number,
 	rnorm number,
 	enorm number,
 	dWnorm number,

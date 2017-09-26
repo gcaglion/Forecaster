@@ -121,7 +121,7 @@ void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double*
 	}
 }
 
-void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double rnorm, double enorm, double dWnorm, double comp){
+void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double pnorm, double rnorm, double enorm, double dWnorm, double comp){
 	NNLog->IntP[timeStep].ProcessId = pid;
 	NNLog->IntP[timeStep].ThreadId = tid;
 	NNLog->IntP[timeStep].Epoch = epoch;
@@ -133,7 +133,8 @@ void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, i
 	NNLog->IntP[timeStep].beta=beta;
 	NNLog->IntP[timeStep].lambda=lambda;
 	NNLog->IntP[timeStep].lambdau=lambdau;
-	NNLog->IntP[timeStep].rnorm=rnorm;
+	NNLog->IntP[timeStep].pnorm = pnorm;
+	NNLog->IntP[timeStep].rnorm = rnorm;
 	NNLog->IntP[timeStep].enorm = enorm;
 	NNLog->IntP[timeStep].dWnorm = dWnorm;
 	NNLog->IntP[timeStep].comp= comp;
@@ -788,7 +789,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 			dEdW_at_w_LVV(NN, Mx, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->newW, Mx->NN.scgd->dE1);
 			//=================================
 			//-- calc s
-			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE1, Mx->NN.scgd->dE0, Mx->NN.scgd->dE);
+			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE0, Mx->NN.scgd->dE1, Mx->NN.scgd->dE);
 			VdivS(NN->WeightsCountTotal, Mx->NN.scgd->dE, sigma, Mx->NN.scgd->s);
 
 			//-- calc delta
@@ -803,13 +804,17 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		//--- 3.2 delta=delta+(lambda-lambdau)*|p|^2
 		delta += (lambda - lambdau)*pnorm2;
 
+		if (isnan(delta)) {
+			int kaz = 0;
+		}
+
 		//-- 4. if delta<=0 (i.e. Hessian is not positive definite) , then make it positive
 		if (delta <= 0){
 			//-- adjust s
-			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, (lambda - 2 * delta / pnorm2), Mx->NN.scgd->lp);
+			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, (lambda-2*delta/pnorm2), Mx->NN.scgd->lp);
 			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->s, Mx->NN.scgd->lp, Mx->NN.scgd->s);
 			//-- adjust lambdau
-			lambdau = 2 * (lambda - delta / pnorm2);
+			lambdau = 2 * (lambda-delta/pnorm2);
 			//-- adjust delta
 			delta = -delta + lambda*pnorm2;
 			//-- adjust lambda
@@ -823,8 +828,8 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		//-- 6. Comparison parameter
 
 		//--- 6.1 calc newW=w+alpha*p , which will also be used in (7)
-		VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
-		VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->newW);
+		VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->ap);
+		VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->ap, Mx->NN.scgd->newW);
 		//--- 6.2 E(w) is current norm_e
 		e_old = Mx->NN.norm_e[t0];
 		//--- 6.3 E(w+dw) ir calculated by E_at_w()
@@ -832,18 +837,19 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		e_new = E_at_w_LVV(NN, Mx, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->newW);
 		//=================================
 		//--- 6.4 comp=2*delta*(e_old-e_new)/mu^2
-		comp = 2 * delta*(e_old - e_new) / pow(mu, 2);
+		comp = 2 * delta*(e_old-e_new) / pow(mu, 2);
 
 		if (comp >= 0){
 			//-- 7. Update weight vector
 
-			//-- dW = alpha * p
-			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
-			//-- W = W + dW
-			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->LVV_W[t0]);
+			//-- ap = alpha * p
+			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->ap);
+			Mx->NN.scgd->dWnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->ap);
+			//-- W = W + ap
+			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->ap, Mx->NN.scgd->LVV_W[t0]);
 			//===========================================================================================================
 			//-- TotdW = TotdW + dW
-			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->dW, Mx->NN.scgd->TotdW);
+			//VplusV(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, Mx->NN.scgd->dW, Mx->NN.scgd->TotdW);
 			//-- 7.1 recalc  dJdW
 			//===========================================================================================================
 			Calc_dJdW(NN, Mx, true, false);
@@ -856,7 +862,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 			lambdau = 0; success = true;
 
 			//-- 7a. if k mod N = 0 then restart algorithm, else create new conjugate direction
-			if (((k + 1) % NN->NodesCountTotal) == 0){
+			if (((k+1)%NN->NodesCountTotal) == 0){
 				VCopy(NN->WeightsCountTotal, Mx->NN.scgd->r, Mx->NN.scgd->p);
 			}
 			else{
@@ -865,7 +871,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 				beta = (b1 - b2) / mu;
 				//-- p = r + beta*p
 				VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, beta, Mx->NN.scgd->bp);
-				VminusV(NN->WeightsCountTotal, Mx->NN.scgd->bp, Mx->NN.scgd->r, Mx->NN.scgd->p);// VplusV(NN->WeightsCountTotal, r, bp, p);
+				VplusV(NN->WeightsCountTotal, Mx->NN.scgd->bp, Mx->NN.scgd->r, Mx->NN.scgd->p);// VplusV(NN->WeightsCountTotal, r, bp, p);
 			}
 			//-- 7b. if comp>=0.75 reduce scale parameter
 			if (comp >= 0.75) lambda = lambda / 2;
@@ -873,6 +879,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		}
 		else{
 			//-- a reduction in error is not possible.
+			Mx->NN.scgd->dWnorm = 0;
 			lambdau = lambda;
 			success = false;
 		}
@@ -881,9 +888,10 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		if (comp<0.25) lambda = lambda * 4;
 
 		//-- 9. if the steepest descent direction r>epsilon and success=true, then set k=k+1 and go to 2, else terminate and return w as the desired minimum
+		Mx->NN.scgd->pnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->p);
 		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
-		Mx->NN.scgd->dWnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->dW);
-		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], Mx->NN.scgd->dWnorm, comp);
+		Mx->NN.scgd->dWnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->ap);
+		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->pnorm, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], Mx->NN.scgd->dWnorm, comp);
 
 		k++; Mx->SCGD_progK++;
 	} while ((Mx->NN.scgd->rnorm>epsilon) && (k<NN->SCGDmaxK));
@@ -1369,6 +1377,7 @@ NN_Mem Malloc_NNMem(NN_Parms* pNNParms) {
 	ret.scgd->prev_r = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
 	ret.scgd->bp = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
 	ret.scgd->lp = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
+	ret.scgd->ap = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
 	ret.scgd->dE0 = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
 	ret.scgd->dE1 = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
 	ret.scgd->dE = (double*)malloc(pNNParms->WeightsCountTotal*sizeof(double));
@@ -1519,6 +1528,7 @@ void   Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	free(NN.scgd->prev_r);
 	free(NN.scgd->bp);
 	free(NN.scgd->lp);
+	free(NN.scgd->ap);
 	free(NN.scgd->dE0);
 	free(NN.scgd->dE1);
 	free(NN.scgd->dE);
