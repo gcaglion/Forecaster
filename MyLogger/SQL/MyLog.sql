@@ -287,6 +287,7 @@ create table CoreLogs_NN_SCGD(
 	ProcessId number,
 	ThreadId number,
 	Epoch number,
+	SampleId number,
 	BPid number,
 	K number,
 	delta number,

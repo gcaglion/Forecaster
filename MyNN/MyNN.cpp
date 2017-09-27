@@ -102,7 +102,7 @@ void SaveFinalW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD
 		}
 	}
 }
-void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double**** W, double** F0) {
+void SaveInitW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD tid) {
 	//-- This should be called only once at the beginning of training
 	int i, j, l;
 	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
@@ -113,7 +113,9 @@ void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double*
 				NNLog->NNInitW[l][j][i].NeuronLevel = l;
 				NNLog->NNInitW[l][j][i].FromNeuron = j;
 				NNLog->NNInitW[l][j][i].ToNeuron = i;
-				NNLog->NNInitW[l][j][i].Weight = W[l][t0][j][i];
+				NNLog->NNInitW[l][j][i].Weight = NN->W[l][t0][j][i];
+				NNLog->NNInitW[l][j][i].dW = NN->dW[l][t0][j][i];
+				NNLog->NNInitW[l][j][i].dJdW = NN->dJdW[l][t0][j][i];
 				//-- Context neurons
 				//if (l==0) NNLog->NNInitW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
 			}
@@ -121,10 +123,11 @@ void SaveInitW(NN_Parms* NNParms, tCoreLog* NNLog, DWORD pid, DWORD tid, double*
 	}
 }
 
-void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double pnorm, double rnorm, double enorm, double dWnorm, double comp){
+void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int sampleid, int BPid, int k, int timeStep, double delta, double mu, double alpha, double beta, double lambda, double lambdau, double pnorm, double rnorm, double enorm, double dWnorm, double comp){
 	NNLog->IntP[timeStep].ProcessId = pid;
 	NNLog->IntP[timeStep].ThreadId = tid;
 	NNLog->IntP[timeStep].Epoch = epoch;
+	NNLog->IntP[timeStep].SampleId = sampleid;
 	NNLog->IntP[timeStep].BPid = BPid;
 	NNLog->IntP[timeStep].K=k;
 	NNLog->IntP[timeStep].delta=delta;
@@ -760,7 +763,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 	Calc_dJdW(NN, Mx, false, false);
 
 	//-- 1. Choose initial vector w ; p=r=-E'(w)
-	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p); //VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, -1, Mx->NN.scgd->p);
+	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->p);
 	VCopy(NN->WeightsCountTotal, Mx->NN.scgd->p, Mx->NN.scgd->r);
 	//-- 1.1 Zero TotdW
 	VInit(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, 0);
@@ -768,18 +771,24 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 	success = true;
 	sigma = 1e-4;
 	lambda = 1e-6; lambdau = 0;
+	double prev_sigma;
 
 	k = 0;
 	do {
 		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
 		pnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->p);
+		if (pnorm==0) break;
 		pnorm2 = pow(pnorm, 2);
 
 		//-- 2. if success=true Calculate second-order  information (s and delta)
 		if (success){
 
 			//-- non-Hessian approximation
+			prev_sigma = sigma;
 			sigma = sigma / pnorm;
+			if (isinf(sigma)) {
+				int kaz = 0;
+			}
 			//-- get dE0 (dJdW at current W)
 			VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_dJdW[t0], Mx->NN.scgd->dE0);
 			//-- get dE1 (dJdW at W+sigma*p)
@@ -891,7 +900,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		Mx->NN.scgd->pnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->p);
 		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
 		Mx->NN.scgd->dWnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->ap);
-		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->pnorm, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], Mx->NN.scgd->dWnorm, comp);
+		if(DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->sampleid, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, Mx->NN.scgd->pnorm, Mx->NN.scgd->rnorm, Mx->NN.norm_e[t0], Mx->NN.scgd->dWnorm, comp);
 
 		k++; Mx->SCGD_progK++;
 	} while ((Mx->NN.scgd->rnorm>epsilon) && (k<NN->SCGDmaxK));
@@ -936,10 +945,13 @@ int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, N
 
 	//-- calc dW 
 	for (int l = 0; l<(NN->LevelsCount-1); l++){
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
-		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
+		VbyV2M(NN->NodesCount[l+1], Mx->NN.edF[l+1][t0], NN->NodesCount[l], Mx->NN.F[l][t0], false, Mx->NN.dW[l][t0]);					//-- dW[l] = edF[l+1] * F[l]
+		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], -NN->LearningRate*(1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW[l] = dW[l] * lr*(1-lm)
+
+//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
+//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
+//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
+//		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
 	}
 	return 0;
 }
@@ -1097,6 +1109,7 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 				TSE_T += CalcNetworkTSE(NNParms, Mx, pSampleData[s], pTargetData[s]);
 
 				//-- 1.2 Calc dW for every sample based on BP algorithm
+				Mx->sampleid = si;
 				CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
 
 				//-- 1.3 BdW = BdW + dW (only if BP_ALGO is not global, like SCGD)
@@ -1638,7 +1651,7 @@ __declspec(dllexport) int Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMu
 	//-- Init Weights and Neurons
 	NNInit(pNNParms, &MxData, loadW, pNNLogs);
 	//-- Save Initial Weights
-	SaveInitW(pNNParms, pNNLogs, pid, tid, MxData.NN.W, MxData.NN.F[0]);
+	SaveInitW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 	//-- Train 
 	NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	//-- Save Final Weights

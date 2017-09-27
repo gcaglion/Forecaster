@@ -86,6 +86,7 @@ typedef struct {
 
 	int		BPCount;
 	int		SCGD_progK;
+	int		sampleid;
 	int		ScreenPos;
 	HANDLE	ScreenMutex;
 	int useValidation;

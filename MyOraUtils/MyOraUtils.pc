@@ -716,6 +716,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 	int* vThreadId;
 	//-- BP_SCGD
 	int* vEpoch;
+	int* vSampleId;
 	int* vBPid;
 	int* vK;
 	double* vdelta;
@@ -776,6 +777,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			vProcessId = (int*)malloc(vInsertCount * sizeof(int));
 			vThreadId = (int*)malloc(vInsertCount * sizeof(int));
 			vEpoch = (int*)malloc(vInsertCount * sizeof(int));
+			vSampleId = (int*)malloc(vInsertCount * sizeof(int));
 			vBPid = (int*)malloc(vInsertCount * sizeof(int));
 			vK = (int*)malloc(vInsertCount * sizeof(int));
 			vdelta = (double*)malloc(vInsertCount * sizeof(double));
@@ -795,6 +797,7 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 				vProcessId[i] = NNLogs->IntP[i].ProcessId;
 				vThreadId[i] = NNLogs->IntP[i].ThreadId;
 				vEpoch[i] = NNLogs->IntP[i].Epoch;
+				vSampleId[i] = NNLogs->IntP[i].SampleId;
 				vBPid[i] = NNLogs->IntP[i].BPid;
 				vK[i] = NNLogs->IntP[i].K;
 				vdelta[i] = NNLogs->IntP[i].delta;
@@ -811,24 +814,25 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			}
 
 			//-- 4.3. Build Array Insert statement
-			sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Pnorm, Rnorm, Enorm, dWNorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14, :SCGD15, :SCGD16)");
-			EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 16;
+			sprintf(&stmt[0], "insert into CoreLogs_NN_SCGD(ProcessId, ThreadId, Epoch, SampleId, BPId, K, Delta, Mu, Alpha, Beta, Lambda, Lambdau, Pnorm, Rnorm, Enorm, dWNorm, Comp) values(:SCGD01, :SCGD02, :SCGD03, :SCGD04, :SCGD05, :SCGD06, :SCGD07, :SCGD08, :SCGD09, :SCGD10, :SCGD11, :SCGD12, :SCGD13, :SCGD14, :SCGD15, :SCGD16, :SCGD17)");
+			EXEC SQL SET DESCRIPTOR 'inCLNN' COUNT = 17;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 1 DATA = : vProcessId;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 2 DATA = : vThreadId;
 			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 3 DATA = : vEpoch;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 4 DATA = : vBPid;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 5 DATA = : vK;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 6 DATA = : vdelta;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 7 DATA = : vmu;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 8 DATA = : valpha;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 9 DATA = : vbeta;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 10 DATA = : vlambda;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 11 DATA = : vlambdau;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = : vpnorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = : vrnorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = : venorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 15 DATA = : vdWnorm;
-			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 16 DATA = : vcomp;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 4 DATA = : vSampleId;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 5 DATA = : vBPid;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 6 DATA = : vK;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 7 DATA = : vdelta;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 8 DATA = : vmu;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 9 DATA = : valpha;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 10 DATA = : vbeta;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 11 DATA = : vlambda;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 12 DATA = : vlambdau;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 13 DATA = : vpnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 14 DATA = : vrnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 15 DATA = : venorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 16 DATA = : vdWnorm;
+			EXEC SQL FOR : vInsertCount SET DESCRIPTOR 'inCLNN' VALUE 17 DATA = : vcomp;
 
 			break;
 		case BP_STD:
