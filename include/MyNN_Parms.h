@@ -21,6 +21,7 @@
 //-- Backpropagation algorithms
 #define BP_STD   0
 #define BP_QING	 1
+#define BP_RPROP 4
 #define BP_SCGD		 5 // Scaled Conjugate Gradient Descent
 #define BP_QUICKPROP 6
 //--

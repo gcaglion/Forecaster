@@ -956,6 +956,50 @@ int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, N
 	return 0;
 }
 
+int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
+	int l, j, i;
+
+	double d0 = 0.1;
+	double dmax = 50;
+	double dmin = 1e-6;
+	double nuplus = 1.2;
+	double numinus = 0.5;
+
+	//-- save prevW, prevdW
+	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
+		for (j = 0; j < pNNParms->NodesCount[l+1]; j++) {
+			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
+				Mx->NN.W[l][t1][j][i] = Mx->NN.W[l][t0][j][i];
+				Mx->NN.dW[l][t1][j][i] = Mx->NN.dW[l][t0][j][i];
+			}
+		}
+	}
+
+	Calc_dJdW(pNNParms, Mx, false, false);
+
+	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
+		for (j = 0; j < pNNParms->NodesCount[l+1]; j++) {
+			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
+
+				if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) >0) {
+					Mx->NN.dW[l][t0][j][i] = min(Mx->NN.dW[l][t1][j][i]*nuplus, dmax);
+					Mx->NN.W[l][t0][j][i] -= (Mx->NN.dJdW[l][t0][j][i]<0?-1:0)*Mx->NN.dW[l][t0][j][i];
+					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
+				} else if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) <0) {
+					Mx->NN.dW[l][t0][j][i] = max(Mx->NN.dW[l][t1][j][i]*numinus, dmin);
+					Mx->NN.dJdW[l][t1][j][i] = 0;
+				} else {
+					Mx->NN.W[l][t0][j][i] -= (Mx->NN.dJdW[l][t0][j][i]<0?-1:0)*Mx->NN.dW[l][t0][j][i];
+					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
+				}
+
+			}
+		}
+	}
+
+	return(1);
+}
+
 void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 	int i, k, l, x, y;
 
@@ -988,7 +1032,7 @@ void NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs){
 				Mx->NN.dJdW[l][t0][y][x] = NNLogs->NNFinalW[l][y][x].dJdW;
 			} else {
 				Mx->NN.W[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l]), 1 / sqrt((double)NN->NodesCount[l]));
-				Mx->NN.dW[l][t0][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l+1]), 1 / sqrt((double)NN->NodesCount[l+1]));
+				Mx->NN.dW[l][t0][y][x] = 0;	// MyRndDbl(-1 / sqrt((double)NN->NodesCount[l+1]), 1 / sqrt((double)NN->NodesCount[l+1]));
 				Mx->NN.dJdW[l][t0][y][x] = 0;
 			}
 
@@ -1018,7 +1062,7 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 	int ret;	//-- see CalcdWType in NNTrain()
 
 	//-- common to all BP variants
-	SavePrevWeights(NN, Mx);
+	if(NN->BP_Algo!=BP_RPROP) SavePrevWeights(NN, Mx);
 
 	switch (NN->BP_Algo){
 	case BP_STD:
@@ -1026,6 +1070,9 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 		break;
 	case BP_QUICKPROP:
 		ret = BP_QuickProp(pid, tid, pEpoch, pDebugParms, NN, Mx);
+		break;
+	case BP_RPROP:
+		ret = BP_Rprop(pid, tid, pEpoch, pDebugParms, NN, Mx);
 		break;
 	case BP_SCGD:
 		ret = BP_scgd(pid, tid, pEpoch, pDebugParms, NN, NNLogs, Mx);

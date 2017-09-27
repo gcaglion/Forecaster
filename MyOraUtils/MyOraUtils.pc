@@ -838,6 +838,9 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 		case BP_STD:
 			return 0;
 			break;
+		case BP_RPROP:
+			return 0;
+			break;
 		}
 
 		//-- 5. Execute Array Insert statement
