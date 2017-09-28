@@ -945,19 +945,15 @@ int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, N
 
 	//-- calc dW 
 	for (int l = 0; l<(NN->LevelsCount-1); l++){
-		VbyV2M(NN->NodesCount[l+1], Mx->NN.edF[l+1][t0], NN->NodesCount[l], Mx->NN.F[l][t0], false, Mx->NN.dW[l][t0]);					//-- dW[l] = edF[l+1] * F[l]
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], -NN->LearningRate*(1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW[l] = dW[l] * lr*(1-lm)
-
-//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
-//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
-//		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
-//		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
+		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
+		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
+		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
+		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
 	}
 	return 0;
 }
 
 int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
-	int l, j, i;
 
 	double d0 = 0.1;
 	double dmax = 50;
@@ -965,31 +961,25 @@ int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNN
 	double nuplus = 1.2;
 	double numinus = 0.5;
 
-	//-- save prevW, prevdW
-	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
-		for (j = 0; j < pNNParms->NodesCount[l+1]; j++) {
-			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
-				Mx->NN.W[l][t1][j][i] = Mx->NN.W[l][t0][j][i];
-				Mx->NN.dW[l][t1][j][i] = Mx->NN.dW[l][t0][j][i];
-			}
-		}
-	}
+	double d[2] = { 0,0 };
 
 	Calc_dJdW(pNNParms, Mx, false, false);
 
-	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
-		for (j = 0; j < pNNParms->NodesCount[l+1]; j++) {
-			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
+	for (int l = 0; l<(pNNParms->LevelsCount-1); l++) {
+		for (int j = 0; j < pNNParms->NodesCount[l+1]; j++) {
+			for (int i = 0; i < pNNParms->NodesCount[l]; i++) {
 
 				if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) >0) {
-					Mx->NN.dW[l][t0][j][i] = min(Mx->NN.dW[l][t1][j][i]*nuplus, dmax);
-					Mx->NN.W[l][t0][j][i] -= (Mx->NN.dJdW[l][t0][j][i]<0?-1:0)*Mx->NN.dW[l][t0][j][i];
+					d[t0] = min(d[t1]*nuplus, dmax);
+					Mx->NN.dW[l][t0][j][i] = +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
+					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
 				} else if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) <0) {
-					Mx->NN.dW[l][t0][j][i] = max(Mx->NN.dW[l][t1][j][i]*numinus, dmin);
+					d[t0]= max(d[t1]*numinus, dmin);
 					Mx->NN.dJdW[l][t1][j][i] = 0;
 				} else {
-					Mx->NN.W[l][t0][j][i] -= (Mx->NN.dJdW[l][t0][j][i]<0?-1:0)*Mx->NN.dW[l][t0][j][i];
+					Mx->NN.dW[l][t0][j][i]= +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
+					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
 				}
 

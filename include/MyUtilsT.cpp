@@ -6,6 +6,11 @@
 #define EXPORT __declspec(dllexport)
 
 #ifdef __cplusplus
+
+template <typename T> int sgn(T val) {
+	return (T(0) < val) - (val < T(0));
+}
+
 template <typename T>
 EXPORT T __stdcall ArrayMax(int arrlen, T* arr) {
 	T max = -10000;
