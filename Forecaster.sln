@@ -93,9 +93,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyForecast", "MyForecast\My
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyOraUtils", "MyOraUtils\MyOraUtils.vcxproj", "{B421DC87-731F-41EE-8F22-BA7B90E3A5DB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DD0F0A37-4355-417A-B021-FDDC57924F54} = {DD0F0A37-4355-417A-B021-FDDC57924F54}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MySVM", "MySVM\MySVM.vcxproj", "{C442F696-9618-4A83-BA65-F7124C35FB89}"
 	ProjectSection(ProjectDependencies) = postProject

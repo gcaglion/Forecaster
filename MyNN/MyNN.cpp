@@ -955,7 +955,7 @@ int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, N
 
 int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx){
 
-	double d0 = 0.1;
+	double d0 =pNNParms->d0;
 	double dmax = 50;
 	double dmin = 1e-6;
 	double nuplus = 1.2;

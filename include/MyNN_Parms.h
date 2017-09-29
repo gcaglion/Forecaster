@@ -51,5 +51,6 @@ typedef struct {
 	int ActivationFunction;
 	double HCPbeta;		// used by Qing
 	double mu;			// used by QuickProp
+	double d0;			// used by Rprop
 	int    SCGDmaxK;	// used by SCGD
 } NN_Parms;
