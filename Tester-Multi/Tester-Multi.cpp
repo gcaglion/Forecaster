@@ -192,7 +192,7 @@ bool isRunning(PROCESS_INFORMATION pi, LPDWORD lasterror) {
 }
 
 void main(int argc, char* argv[]) {
-	int MaxProcs = 3; if (argc>1) MaxProcs = atoi(argv[1]);
+	int MaxProcs = 5; if (argc>1) MaxProcs = atoi(argv[1]);
 
 	//string cmdBase = "cpuhog.exe";
 	string cmdBase = "tester.exe --Tester.PauseAtEnd=0 ";
@@ -222,17 +222,18 @@ void main(int argc, char* argv[]) {
 		}
 		consoleId = i;
 
-		//printf("consoleId=%d ; starting new console\n", consoleId);
 		consoleCmd[consoleId] = cmd[c];
 		if (!createProcess(c, cmd[c], &pi[c])) continue;
-		h[consoleId] = pi[c].hProcess; //fprintf(procLog, "h[%d]=%p\n", consoleId, h[consoleId]);
+		h[consoleId] = pi[c].hProcess;
 		consoleCnt++;
+		printf("CombinationId=%d ; ProcessId=%d ; parameters=%s\n", c, pi[c].dwProcessId, consoleCmd[consoleId].c_str());
+		fprintf(procLog, "CombinationId=%d ; ProcessId=%d ; parameters=%s\n", c, pi[c].dwProcessId, consoleCmd[consoleId].c_str());
 
 		if (consoleCnt==(MaxProcs)) {
 			retW = (int)WaitForMultipleObjects(MaxProcs, h, false, INFINITE)+WAIT_OBJECT_0;
 			GetExitCodeProcess(h[retW], &exitCode);
-			printf("CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
-			fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
+			//printf("CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
+			//fprintf(procLog, "CombinationId=%d ; exitCode=%d ; parameters=%s\n", c, exitCode, consoleCmd[retW].c_str());
 			h[retW] = NULL;
 			consoleCnt--;
 		}
@@ -244,8 +245,8 @@ void main(int argc, char* argv[]) {
 		retW = (int)WaitForMultipleObjects(consoleCnt, h, false, INFINITE)+WAIT_OBJECT_0;
 		if (retW!=-1) {
 			GetExitCodeProcess(h[retW], &exitCode);
-			printf("CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
-			fprintf(procLog, "CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
+			//printf("KKK!!! CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
+			//fprintf(procLog, "CombinationId=%d ; ProcessId=%d ; exitCode=%d ; parameters=%s\n", c, pi[c].dwProcessId, exitCode, consoleCmd[retW].c_str());
 		}
 		consoleCnt--;
 		c++;

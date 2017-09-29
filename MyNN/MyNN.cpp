@@ -514,49 +514,6 @@ void Calc_dJdW(NN_Parms* NN, NN_MxData* Mx, bool doFF, bool doCalcH){
 	if (doCalcH) Calc_H(NN, Mx);
 }
 
-/*void dEdW_at_w(NN_Parms* NN, NN_MxData* Mx, int level, double** W, int w_idx, double* w_new, double* odEdW_at_w){
-	int mx = NN->NodesCount[level];
-	double* tmpW = (double*)malloc(mx*sizeof(double));
-
-	//-- 1. save w vector at pos w_idx into tmpW
-	VCopy(mx, W[w_idx], tmpW);
-	//-- 2. put w_new into M
-	VCopy(mx, w_new, W[w_idx]);
-	//-- 3. FF to recalc E
-	FF(NN, Mx);
-	//-- 4. calc dE/dW whole matrix
-	Calc_dJdW(NN, Mx, false, false);
-	//-- 5. return vector is one row of dE/dW corresponding to w_idx
-	VCopy(mx, Mx->NN.dJdW[level][t0][w_idx], odEdW_at_w);
-	//-- 6. put original w back into place, and re-run FF
-	VCopy(mx, tmpW, W[w_idx]);
-	FF(NN, Mx);
-
-	free(tmpW);
-}
-*/
-
-/*double E_at_w(NN_Parms* NN, NN_MxData* Mx, int my, int mx, double** M, int w_idx, double* w_new){
-	double ret;
-	double* tmpW = (double*)malloc(mx*sizeof(double));
-
-	//-- 1. save w vector at pos w_idx into w_old
-	VCopy(mx, M[w_idx], tmpW);
-	//-- 2. put w_new into M
-	VCopy(mx, w_new, M[w_idx]);
-	//-- 3. FF to recalc E
-	FF(NN, Mx);
-	//-- 5. return value is Mx->norm_e after FF
-	ret = Mx->NN.norm_e[t0];
-	//-- 6. put original w back into place, and re-run FF
-	VCopy(mx, tmpW, M[w_idx]);
-	FF(NN, Mx);
-	free(tmpW);
-
-	return ret;
-}
-*/
-
 //-- Backup/Restore utilities use t3/t4, as those are never used as actual timesteps
 void Backup_Neurons(NN_Parms* NN, NN_MxData* Mx, int timebin) {
 
@@ -973,6 +930,7 @@ int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNN
 					d[t0] = min(d[t1]*nuplus, dmax);
 					Mx->NN.dW[l][t0][j][i] = +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
+					//Mx->NN.W[l][t0][j][i] += sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
 				} else if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) <0) {
 					d[t0]= max(d[t1]*numinus, dmin);
@@ -980,6 +938,7 @@ int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNN
 				} else {
 					Mx->NN.dW[l][t0][j][i]= +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
+					//Mx->NN.W[l][t0][j][i] += sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
 				}
 
