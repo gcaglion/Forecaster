@@ -19,7 +19,7 @@ int initfParms(int paramCnt, char* paramOverride, tForecastParms* fp) {
 
 	//-- a. set overrides from full string in paramOverride parameter
 	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, fp) <0) return -4;
+	if (CLProcess(paramCnt, param, fp->iniParms) <0) return -4;
 	//-- b. process ini file
 	if (ForecastParamLoader(fp) <0) return -3;
 
@@ -151,7 +151,7 @@ extern "C" __declspec(dllexport) int  MTgetForecast(
 
 	//-- a. set overrides from full string in paramOverride parameter
 	paramCnt = cslToArray(paramOverride, ' ', param);
-	if (CLProcess(paramCnt, param, &fParms) <0) return -3;
+	if (CLProcess(paramCnt, param, fParms.iniParms) <0) return -3;
 	//-- b. process ini file
 	if (ForecastParamLoader(&fParms) <0) return -2;
 
