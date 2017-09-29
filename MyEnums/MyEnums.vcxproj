@@ -31,7 +31,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\MyEnums.h" />
-    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{26CA4489-4522-4CDC-8D94-DBF1AAD36C6C}</ProjectGuid>
