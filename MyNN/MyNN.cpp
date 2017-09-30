@@ -400,8 +400,7 @@ void FF(NN_Parms* NNParms, NN_MxData* Mx){
 	FF_Std(NNParms, Mx);
 
 	//-- Regardless of the method, here we update the network error, and calc eT (1xL2)matrix of e , and ||e|| (norm of e)
-	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], Mx->NN.u[t0], Mx->NN.F[NNParms->LevelsCount-1][t0], Mx->NN.e[t0]);
-	//V2HorM(NNParms->NodesCount[NNParms->LevelsCount-1], Mx->NN.e[t0], Mx->NN.eT);
+	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], Mx->NN.F[NNParms->LevelsCount-1][t0], Mx->NN.u[t0], Mx->NN.e[t0]);
 	Mx->NN.norm_e[t0] = Vnorm(NNParms->NodesCount[NNParms->LevelsCount-1], Mx->NN.e[t0]);
 	//-- the same goes for Validation error
 	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], Mx->NN.Vu[t0], Mx->NN.F[NNParms->LevelsCount-1][t0], Mx->NN.Ve[t0]);
@@ -902,10 +901,11 @@ int BP_Std(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, N
 
 	//-- calc dW 
 	for (int l = 0; l<(NN->LevelsCount-1); l++){
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dJdW[l][t0], NN->LearningRate, Mx->NN.dW[l][t0]);
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t1], NN->LearningMomentum, Mx->NN.dW[l][t1]);		//-- prevdW = prevdW * lm
-		MbyS(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], (1-NN->LearningMomentum), Mx->NN.dW[l][t0]);	//-- dW = dW * (1-lm)
-		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], Mx->NN.dW[l][t0], Mx->NN.dW[l][t1], Mx->NN.dW[l][t0]);		//-- dW = dW + prevdW
+		for (int j = 0; j < NN->NodesCount[l+1]; j++) {
+			for (int i = 0; i < NN->NodesCount[l]; i++) {
+				Mx->NN.dW[l][t0][j][i] = (1-NN->LearningMomentum) * (-NN->LearningRate * Mx->NN.dJdW[l][t0][j][i]) +NN->LearningMomentum * Mx->NN.dW[l][t1][j][i];	
+			}
+		}
 	}
 	return 0;
 }
@@ -928,7 +928,7 @@ int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNN
 
 				if ((Mx->NN.dJdW[l][t1][j][i] * Mx->NN.dJdW[l][t0][j][i]) >0) {
 					d[t0] = min(d[t1]*nuplus, dmax);
-					Mx->NN.dW[l][t0][j][i] = +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
+					Mx->NN.dW[l][t0][j][i] = -sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
 					//Mx->NN.W[l][t0][j][i] += sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
@@ -936,7 +936,7 @@ int BP_Rprop(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNN
 					d[t0]= max(d[t1]*numinus, dmin);
 					Mx->NN.dJdW[l][t1][j][i] = 0;
 				} else {
-					Mx->NN.dW[l][t0][j][i]= +sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
+					Mx->NN.dW[l][t0][j][i]= -sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.W[l][t0][j][i] += Mx->NN.dW[l][t0][j][i];
 					//Mx->NN.W[l][t0][j][i] += sgn(Mx->NN.dJdW[l][t0][j][i])*d[0];
 					Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
