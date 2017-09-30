@@ -20,12 +20,16 @@ typedef struct {
 	double* TotdW;
 	double* newW;
 	double* prev_r;
+	double* alphap;
 	double* bp;
 	double* lp;
 	double* ap;
 	double* dE0;
 	double* dE1;
 	double* dE;
+	double* E0;
+	double* E1;
+	double* E;
 	double* sigmap;
 	double pnorm;
 	double rnorm;
