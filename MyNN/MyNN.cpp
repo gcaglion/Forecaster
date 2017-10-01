@@ -318,8 +318,7 @@ void FeedBack(NN_Parms* NNParms, NN_Mem* NN, bool Zero) {
 	for (l = NNParms->LevelsCount-1; l>0; l--) {
 		cc = NNParms->NodesCount[l]-cc+((l==NNParms->LevelsCount-1) ? 0 : 1);
 		for (i = 0; i<cc; i++) {
-			//Mx->NN.F[l-1][t0][NNParms->NodesCount[l-1]-cc+i] = (Zero) ? 0 : Mx->NN.F[l][t0][i];
-			NN->F[t0][l-1][NNParms->NodesCount[l-1]-cc+i] = (Zero) ? 0 : NN->F[t0][l][i+((l==NNParms->LevelsCount-1) ? 0 : 1)];
+			NN->F[l-1][t0][NNParms->NodesCount[l-1]-cc+i] = (Zero) ? 0 : NN->F[l][t0][i+((l==NNParms->LevelsCount-1) ? 0 : 1)];
 		}
 	}
 }
@@ -327,14 +326,14 @@ void FF_Std(NN_Parms* pNNParms, NN_Mem* NN) {
 
 	for (int l = 0; l<(pNNParms->LevelsCount-1); l++) {
 		for (int tn = 0; tn<pNNParms->NodesCount[l+1]; tn++) {
-			NN->a[t0][l+1][tn] = 0;
+			NN->a[l+1][t0][tn] = 0;
 			for (int fn = 0; fn<pNNParms->NodesCount[l]; fn++) {
-				NN->a[t0][l+1][tn] += NN->F[t0][l][fn]*NN->W[t0][l][tn][fn];
+				NN->a[l+1][t0][tn] += NN->F[l][t0][fn]*NN->W[l][t0][tn][fn];
 			}
 		}
-		Activate(pNNParms->ActivationFunction, pNNParms->NodesCount[l+1], NN->c[t0][l+1], NN->a[t0][l+1], NN->F[t0][l+1], NN->dF[t0][l+1]);
+		Activate(pNNParms->ActivationFunction, pNNParms->NodesCount[l+1], NN->c[l+1][t0], NN->a[l+1][t0], NN->F[l+1][t0], NN->dF[l+1][t0]);
 		//-- reset bias neurons. they should always be 1
-		NN->F[t0][l][0] = 1;
+		NN->F[l][t0][0] = 1;
 	}
 
 	//-- Hidden->Context 
@@ -345,10 +344,10 @@ void FF(NN_Parms* NNParms, NN_Mem* NN) {
 	FF_Std(NNParms, NN);
 
 	//-- Regardless of the method, here we update the network error, and calc eT (1xL2)matrix of e , and ||e|| (norm of e)
-	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], NN->F[t0][NNParms->LevelsCount-1], NN->u[t0], NN->e[t0]);
+	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], NN->F[NNParms->LevelsCount-1][t0], NN->u[t0], NN->e[t0]);
 	NN->norm_e[t0] = Vnorm(NNParms->NodesCount[NNParms->LevelsCount-1], NN->e[t0]);
 	//-- the same goes for Validation error
-	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], NN->Vu[t0], NN->F[t0][NNParms->LevelsCount-1], NN->Ve[t0]);
+	VminusV(NNParms->NodesCount[NNParms->LevelsCount-1], NN->F[NNParms->LevelsCount-1][t0], NN->Vu[t0], NN->Ve[t0]);
 }
 
 void Calc_H(NN_Parms* NN, NN_MxData* Mx) {
@@ -373,18 +372,56 @@ void dJdWcalc(NN_Parms* NNParms, NN_Mem* NN) {
 
 		if (l==(NNParms->LevelsCount-1)) {
 			//-- top level only
-			VbyV2V(NNParms->NodesCount[l], NN->e[t0], NN->dF[t0][l], NN->edF[t0][l]);										// edF(l) = e * F'(l)
+			VbyV2V(NNParms->NodesCount[l], NN->e[t0], NN->dF[l][t0], NN->edF[l][t0]);										// edF(l) = e * F'(l)
 		} else {
 			//-- lower levels
-			MbyV(NNParms->NodesCount[l+1], NNParms->NodesCount[l], NN->W[t0][l], true, NN->edF[t0][l+1], NN->edF[t0][l]);	// edF(l) = edF(l+1) * WT(l+1)
-			VbyV2V(NNParms->NodesCount[l], NN->edF[t0][l], NN->dF[t0][l], NN->edF[t0][l]);									// edF(l) = edF(l)   * F'(l)
+			MbyV(NNParms->NodesCount[l+1], NNParms->NodesCount[l], NN->W[l][t0], true, NN->edF[l+1][t0], NN->edF[l][t0]);	// edF(l) = edF(l+1) * WT(l+1)
+			VbyV2V(NNParms->NodesCount[l], NN->edF[l][t0], NN->dF[l][t0], NN->edF[l][t0]);									// edF(l) = edF(l)   * F'(l)
 		}
 		//-- common
-		VbyV2M(NNParms->NodesCount[l], NN->edF[t0][l], NNParms->NodesCount[l-1], NN->F[t0][l-1], false, NN->dJdW[t0][l-1]);	// dJdW(l) = edF(l) * F(l-1)
+		VbyV2M(NNParms->NodesCount[l], NN->edF[l][t0], NNParms->NodesCount[l-1], NN->F[l-1][t0], false, NN->dJdW[l-1][t0]);	// dJdW(l) = edF(l) * F(l-1)
 	}
 
 }
 
+void BackupW(NN_Parms* NNParms, double**** w) {
+	//-- Backup current W (into t5)
+	for (int l = 0; l<(NNParms->LevelsCount-1); l++) {
+		for (int fn = 0; fn<NNParms->NodesCount[l+1]; fn++) {
+			for (int tn = 0; tn<NNParms->NodesCount[l]; tn++) {
+				w[l][t5][fn][tn] = w[l][t0][fn][tn];
+			}
+		}
+	}
+}
+void RestoreW(NN_Parms* NNParms, double**** w) {
+	//-- Restore W
+	for (int l = 0; l<(NNParms->LevelsCount-1); l++) {
+		for (int fn = 0; fn<NNParms->NodesCount[l+1]; fn++) {
+			for (int tn = 0; tn<NNParms->NodesCount[l]; tn++) {
+				w[l][t0][fn][tn] = w[l][t5][fn][tn];
+			}
+		}
+	}
+}
+
+void Ecalc(NN_Parms* NNParms, NN_Mem* NN, double* iW, double* oE) {
+	BackupNeurons(NNParms, NN);
+	BackupWeights(NNParms, NN);
+
+	//-- put iW into W
+	VCopy(NNParms->WeightsCountTotal, iW, NN->scgd->LVV_W[t0]);
+
+	//-- calc E, by running FeedForward
+	FF(NNParms, NN);
+
+	//-- put e[t0] into output
+	VCopy(NNParms->NodesCount[NNParms->LevelsCount-1], NN->e[t0], oE);
+
+	//RestoreNeurons(NNParms, NN);
+	RestoreWeights(NNParms, NN);
+
+}
 void Ecalc(NN_Parms* NNParms, NN_Mem* NN, double** iW, double* oE) {
 
 	BackupNeurons(NNParms, NN);
@@ -400,6 +437,27 @@ void Ecalc(NN_Parms* NNParms, NN_Mem* NN, double** iW, double* oE) {
 	VCopy(NNParms->NodesCount[NNParms->LevelsCount-1], NN->e[t0], oE);
 
 	//RestoreNeurons(NNParms, NN);
+	RestoreWeights(NNParms, NN);
+
+}
+void dEcalc(NN_Parms* NNParms, NN_Mem* NN, double* iW, double* odE) {
+
+	BackupNeurons(NNParms, NN);
+	BackupWeights(NNParms, NN);
+
+	//-- put iW into W
+	VCopy(NNParms->WeightsCountTotal, iW, NN->scgd->LVV_W[t0]);
+
+	//-- calc E, by running FeedForward
+	FF(NNParms, NN);
+
+	//-- calc dJdW
+	dJdWcalc(NNParms, NN);
+
+	//-- put dJdW into output
+	VCopy(NNParms->WeightsCountTotal, NN->scgd->LVV_W[t0], odE);
+
+	RestoreNeurons(NNParms, NN);
 	RestoreWeights(NNParms, NN);
 
 }
@@ -425,10 +483,7 @@ void dEcalc(NN_Parms* NNParms, NN_Mem* NN, double** iW, double* odE) {
 
 }
 int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx) {
-
-	int k;
-
-	bool success;
+	
 	double epsilon = NNParms->TargetMSE / NNParms->OutputCount;
 
 	//-- some abbreviations
@@ -439,7 +494,8 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	double** W = Mx->NN.scgd->LVV_W[t0];
 	double** dW = Mx->NN.scgd->LVV_dW[t0];
 	double** dE = Mx->NN.scgd->LVV_dJdW[t0];
-	double** newW = Mx->NN.scgd->LVV_W[t3];
+	//double** newW = Mx->NN.scgd->LVV_W[t3];
+	double* newW = Mx->NN.scgd->newW;
 	//--
 	double* p = Mx->NN.scgd->p;
 	double* r = Mx->NN.scgd->r;
@@ -451,6 +507,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	double* dE0 = Mx->NN.scgd->dE0;
 	double* dE1 = Mx->NN.scgd->dE1;
 	double* dE10 = Mx->NN.scgd->dE;
+	double* SdW = Mx->NN.scgd->dW;
 	double* sigmap = Mx->NN.scgd->sigmap;
 	double delta;
 	double lambda, lambdau;
@@ -463,6 +520,11 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	double beta = 0;
 	double* bp = Mx->NN.scgd->bp;
 
+	sigma = 1e-4;
+	lambda = 1e-6; lambdau = 0;
+	bool success = true;
+
+	BackupW(NNParms, Mx->NN.W);
 
 	//-- 0. Calc dJdW
 	dJdWcalc(NNParms, &Mx->NN);
@@ -471,14 +533,9 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	VCopy(wl, dE, p); VbyS(wl, p, -1, p);
 	VCopy(wl, p, r);
 
-	success = true;
-	sigma = 1e-4;
-	lambda = 1e-6; lambdau = 0;
-
-	k = 0;
+	int k = 0;
 	do {
 		pnorm = Vnorm(wl, p); pnorm2 = pnorm*pnorm;
-		rnorm = Vnorm(wl, r); rnorm2 = rnorm*rnorm;
 
 		//-- 2.
 		if (success) {
@@ -521,8 +578,10 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 
 		//-- 7.
 		if (comp>=0) {
-			VCopy(wl, alphap, dW); dWnorm = Vnorm(wl, alphap);
-			VplusV(wl, W, dW, W);
+			//==============================
+			VCopy(wl, alphap, SdW); 
+			VplusV(wl, W, SdW, W);
+			//==============================
 			VCopy(wl, r, prev_r);
 			dEcalc(NNParms, &Mx->NN, W, r); VbyS(wl, r, -1, r);
 			lambdau = 0;
@@ -541,15 +600,25 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 			lambdau = lambda;
 			success = false;
 		}
+		
+		rnorm = Vnorm(wl, r); rnorm2 = rnorm*rnorm;
+		dWnorm = Vnorm(wl, alphap);
+		VplusV(wl, dW, SdW, dW);
 
 		//-- 8.
 		if (comp<0.25) lambda *= 4;
 
 		//-- save logs
+		if (isnan(delta) || pnorm==0) {
+			int kaz = 0;
+		}
 		if (DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->sampleid, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, pnorm, rnorm, Mx->NN.norm_e[t0], dWnorm, comp);
 
 		k++; Mx->SCGD_progK++;
 	} while ((rnorm > epsilon) && (k<NNParms->SCGDmaxK));
+
+	//VCopy(wl, SdW, dW);
+	RestoreW(NNParms, Mx->NN.W);
 
 	return(1);	//-- so we don't update BdW and W in NNTrain()
 }
@@ -558,6 +627,15 @@ int BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms*
 	//-- as per QuickProp2.pdf, 2.6.3	
 	int l, j, i;
 
+	//-- save dJdW[t0]->dJdW[t1]
+	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
+		for (j = 0; j < pNNParms->NodesCount[l+1]; j++) {
+			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
+				Mx->NN.dJdW[l][t1][j][i] = Mx->NN.dJdW[l][t0][j][i];
+			}
+		}
+	}
+
 	dJdWcalc(pNNParms, &Mx->NN);
 
 	for (l = 0; l<(pNNParms->LevelsCount-1); l++) {
@@ -565,22 +643,26 @@ int BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms*
 			for (i = 0; i < pNNParms->NodesCount[l]; i++) {
 
 				Mx->NN.dW[l][t0][j][i] = pNNParms->LearningRate*Mx->NN.dJdW[l][t0][j][i];
+
 				if (Mx->NN.dW[l][t0][j][i]>0) {
+
 					if (Mx->NN.dJdW[l][t0][j][i]>(pNNParms->mu / (1 + pNNParms->mu)*Mx->NN.dJdW[l][t1][j][i])) {
-						Mx->NN.dW[l][t0][j][i] = pNNParms->mu*Mx->NN.dW[l][t0][j][i];
+						Mx->NN.dW[l][t0][j][i] = -pNNParms->mu*Mx->NN.dW[l][t0][j][i];
 					} else {
 						Mx->NN.dW[l][t0][j][i] = Mx->NN.dJdW[l][t0][j][i] / (Mx->NN.dJdW[l][t1][j][i] - Mx->NN.dJdW[l][t0][j][i])*Mx->NN.dW[l][t0][j][i];
 					}
 					if (Mx->NN.dJdW[l][t0][j][i]>0) Mx->NN.dW[l][t0][j][i] += pNNParms->LearningRate*Mx->NN.dJdW[l][t0][j][i];
+				
 				} else if (Mx->NN.dW[l][t0][j][i]<0) {
 					if (Mx->NN.dJdW[l][t0][j][i]<(pNNParms->mu / (1 + pNNParms->mu)*Mx->NN.dJdW[l][t1][j][i])) {
-						Mx->NN.dW[l][t0][j][i] = pNNParms->mu*Mx->NN.dW[l][t0][j][i];
+						Mx->NN.dW[l][t0][j][i] = -pNNParms->mu*Mx->NN.dW[l][t0][j][i];
 					} else {
 						Mx->NN.dW[l][t0][j][i] = Mx->NN.dJdW[l][t0][j][i] / (Mx->NN.dJdW[l][t1][j][i] - Mx->NN.dJdW[l][t0][j][i])*Mx->NN.dW[l][t0][j][i];
 					}
 					if (Mx->NN.dJdW[l][t0][j][i]<0) Mx->NN.dW[l][t0][j][i] += pNNParms->LearningRate*Mx->NN.dJdW[l][t0][j][i];
+				
 				} else if (Mx->NN.dW[l][t0][j][i] == 0) {
-					Mx->NN.dW[l][t0][j][i] += pNNParms->LearningRate*Mx->NN.dJdW[l][t0][j][i];
+					Mx->NN.dW[l][t0][j][i] -= pNNParms->LearningRate*Mx->NN.dJdW[l][t0][j][i];
 				}
 			}
 		}
@@ -853,8 +935,8 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 
 	int ret;	//-- see CalcdWType in NNTrain()
 
-				//-- common to all BP variants
-	if (NN->BP_Algo!=BP_RPROP) SavePrevWeights(NN, Mx);
+	//-- common to all BP variants
+	//if (NN->BP_Algo!=BP_RPROP) SavePrevWeights(NN, Mx);
 
 	switch (NN->BP_Algo) {
 	case BP_STD:
@@ -905,7 +987,7 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 	int tid = GetCurrentThreadId();
 	int CalcdWType;	//-- 0: update BdW=BdW+dW after every sample, and W=W+BdW after every batch
 
-					//-- Samples shuffle
+	//-- Samples shuffle
 	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
 	ShuffleArray(sl, pSampleCount);
 
