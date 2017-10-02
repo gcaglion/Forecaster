@@ -494,7 +494,6 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	double** W = Mx->NN.scgd->LVV_W[t0];
 	double** dW = Mx->NN.scgd->LVV_dW[t0];
 	double** dE = Mx->NN.scgd->LVV_dJdW[t0];
-	//double** newW = Mx->NN.scgd->LVV_W[t3];
 	double* newW = Mx->NN.scgd->newW;
 	//--
 	double* p = Mx->NN.scgd->p;
@@ -533,6 +532,9 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 	VCopy(wl, dE, p); VbyS(wl, p, -1, p);
 	VCopy(wl, p, r);
 
+	//-- zero SdW
+	VInit(wl, SdW, 0);
+
 	int k = 0;
 	do {
 		pnorm = Vnorm(wl, p); pnorm2 = pnorm*pnorm;
@@ -552,7 +554,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 		//-- 3.
 		VbyS(wl, p, (lambda-lambdau), lambdap);
 		VplusV(wl, s, lambdap, s);
-		delta = delta+(lambda-lambdau)*pnorm2;
+		delta += (lambda-lambdau)*pnorm2;
 
 		//-- 4.
 		if (delta<=0) {
@@ -579,10 +581,11 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 		//-- 7.
 		if (comp>=0) {
 			//==============================
-			VCopy(wl, alphap, SdW); 
-			VplusV(wl, W, SdW, W);
+			VplusV(wl, W, alphap, W); 
+			VplusV(wl, SdW, alphap, SdW);
 			//==============================
 			VCopy(wl, r, prev_r);
+			FF(NNParms, &Mx->NN);
 			dEcalc(NNParms, &Mx->NN, W, r); VbyS(wl, r, -1, r);
 			lambdau = 0;
 			success = true;
@@ -602,8 +605,7 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 		}
 		
 		rnorm = Vnorm(wl, r); rnorm2 = rnorm*rnorm;
-		dWnorm = Vnorm(wl, alphap);
-		VplusV(wl, dW, SdW, dW);
+		dWnorm = Vnorm(wl, SdW);
 
 		//-- 8.
 		if (comp<0.25) lambda *= 4;
@@ -617,12 +619,13 @@ int BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NNPa
 		k++; Mx->SCGD_progK++;
 	} while ((rnorm > epsilon) && (k<NNParms->SCGDmaxK));
 
-	//VCopy(wl, SdW, dW);
+	VCopy(wl, SdW, dW);
+
 	RestoreW(NNParms, Mx->NN.W);
 
 	return(1);	//-- so we don't update BdW and W in NNTrain()
 }
-
+			
 int BP_QuickProp(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* pNNParms, NN_MxData* Mx) {
 	//-- as per QuickProp2.pdf, 2.6.3	
 	int l, j, i;
@@ -958,9 +961,9 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 }
 
 void Update_W(NN_Parms* NN, NN_MxData* Mx, double**** baseW, double**** addedW) {
-	//-- Saves W[t0] in W[t1] , then baseW = baseW + addedW
+	//-- baseW = baseW + addedW
 	for (int l = 0; l < (NN->LevelsCount - 1); l++) {
-		MplusM(NN->NodesCount[l + 1], NN->NodesCount[l], baseW[l][t0], addedW[l][t0], baseW[l][t0]);	// W = W + dW
+		MplusM(NN->NodesCount[l+1], NN->NodesCount[l], baseW[l][t0], addedW[l][t0], baseW[l][t0]);
 	}
 }
 
@@ -1019,9 +1022,9 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 		TSE_T = 0; TSE_V = 0;
 		for (int b = 0; b<BatchCount; b++) {
 
-			//-- 0. for each batch, reset BdW=0
+			//-- 0. for each batch, BdW=0
 			for (int l = 0; l < (NNParms->LevelsCount - 1); l++) MInit(NNParms->NodesCount[l + 1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], 0);
-
+			
 			for (int i = 0; i < BatchSize; i++) {
 
 				//-- 1. present every sample in the batch, and sum up total error in tse
@@ -1039,6 +1042,7 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 				//-- next sample id
 				si++;
 			}
+
 			//-- 2. Weight update after every batch: W = W + BdW			
 			if (CalcdWType==0) Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
 
