@@ -43,12 +43,11 @@ typedef struct {
 	double*** dF;
 	double*** edF;
 	double*** c;
-	//-- outer node only -> [Time]
-	double** e;
-	double** u;
-	double** Ve;
-	double** Vu;
-	double* norm_e;
+	//-- outer node only -> [TRAINING/VALIDATION][Time]
+	double*** e;
+	double*** u;
+	double** norm_e;
+	double** mse;
 	//-- weight levels -> [Levels-1][Time]
 	double**** W;
 	double**** dW;

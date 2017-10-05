@@ -26,6 +26,10 @@
 #define BP_QUICKPROP 6
 //--
 
+//-- Training vs. Validation
+#define TRAINING 0
+#define VALIDATION 1
+
 //-- Activation Functions
 #define NN_ACTIVATION_TANH 1	// y=tanh(x)				=> range is [-1 ÷ 1]
 #define NN_ACTIVATION_EXP4 2	// y = 1 / (1+exp(-4*x))	=> range is [ 0 ÷ 1]
