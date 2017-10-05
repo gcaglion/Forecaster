@@ -1068,14 +1068,14 @@ void Update_W(NN_Parms* NN, NN_MxData* Mx, double**** baseW, double**** addedW) 
 	}
 }
 
-void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+void NNTrain_ORIG(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
 	int s, si;
 	int epoch;
 
 	double TSE_T, TSE_V;
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
-	int CalcdWType;	
+	int CalcdWType;
 
 	//-- set initial network MSEs
 	Mx->NN.mse[t0][TRAINING] = 0;
@@ -1115,14 +1115,14 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 
 			//-- 0. for each batch, BdW=0
 			for (int l = 0; l < (NNParms->LevelsCount - 1); l++) MInit(NNParms->NodesCount[l + 1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], 0);
-			
+
 			for (int i = 0; i < BatchSize; i++) {
 				Mx->sampleid = si;
 				s = sl[si];
 
 				//-- 1. present every sample in the batch, and sum up total error in tse				
 				if (Mx->useValidation>0)	TSE_V += CalcNetworkError(NNParms, Mx, VALIDATION, pSampleDataV[s], pTargetDataV[s]);
-											TSE_T += CalcNetworkError(NNParms, Mx, TRAINING,   pSampleData[s],  pTargetData[s]);
+				TSE_T += CalcNetworkError(NNParms, Mx, TRAINING, pSampleData[s], pTargetData[s]);
 
 				//-- 1.2 Calc dW for every sample based on BP algorithm
 				CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
@@ -1142,9 +1142,108 @@ void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_Mx
 		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
 		Mx->NN.mse[t1][TRAINING] = Mx->NN.mse[t0][TRAINING];	// save previous MSE
 		Mx->NN.mse[t0][TRAINING] = TSE_T / pSampleCount / NNParms->OutputCount;		// MSE = TSE / samplecount
-		
+
 		if (Mx->useValidation>0) {
 			Mx->NN.mse[t0][VALIDATION] = TSE_V / pSampleCount / NNParms->OutputCount;	// MSE = TSE / samplecount
+			if (NNParms->StopAtDivergence == 1 && Mx->NN.mse[t0][TRAINING] > Mx->NN.mse[t1][TRAINING]) break;
+		}
+
+		//-- display progress
+		WaitForSingleObject(Mx->ScreenMutex, 10);
+		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Epoch %6d , Training MSE=%f , Validation MSE=%f", pid, tid, epoch, Mx->NN.mse[t0][TRAINING], Mx->NN.mse[t0][VALIDATION]);
+		ReleaseMutex(Mx->ScreenMutex);
+
+		SaveMSEData(NNLogs, pid, tid, epoch, Mx->NN.mse[t0][TRAINING], (Mx->useValidation>0) ? Mx->NN.mse[t0][VALIDATION] : 0);
+
+		if (Mx->NN.mse[t0][TRAINING] < NNParms->TargetMSE) {
+			epoch++;
+			break;
+		}
+	}
+	NNLogs->ActualEpochs = epoch;
+	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
+
+	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, Mx->NN.mse[t0][TRAINING], Mx->NN.mse[t0][VALIDATION]);
+}
+void NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
+	int s, si;
+	int epoch;
+
+	int pid = GetCurrentProcessId();
+	int tid = GetCurrentThreadId();
+	int CalcdWType;
+
+	//-- set initial network MSEs
+	Mx->NN.mse[t0][TRAINING] = 0;
+	Mx->NN.mse[t0][VALIDATION] = 0;
+
+	//-- Samples shuffle
+	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
+	ShuffleArray(sl, pSampleCount);
+
+	int BatchCount, BatchSize, BatchExtras;
+	switch (NNParms->TrainingBatchCount) {
+	case 0:
+		//-- stochastic
+		BatchCount = pSampleCount;
+		BatchSize = 1;
+		BatchExtras = 0;
+		break;
+	case 1:
+		//-- batch
+		BatchCount = 1;
+		BatchSize = pSampleCount;
+		BatchExtras = 0;
+		break;
+	default:
+		//-- mini-batch
+		BatchCount = NNParms->TrainingBatchCount;
+		BatchSize = (int)floor(pSampleCount/BatchCount);
+		BatchExtras = pSampleCount-(BatchCount*BatchSize);
+		break;
+	}
+
+	for (epoch = 0; epoch < NNParms->MaxEpochs; epoch++) {
+
+		//-- reset sample id, and set tse=0
+		si = 0;
+		Mx->NN.gse[t0][TRAINING] = 0;
+		Mx->NN.gse[t0][VALIDATION] = 0;
+
+		for (int b = 0; b<BatchCount; b++) {
+
+			//-- 0. for each batch, BdW=0
+			for (int l = 0; l < (NNParms->LevelsCount - 1); l++) MInit(NNParms->NodesCount[l + 1], NNParms->NodesCount[l], Mx->NN.BdW[l][t0], 0);
+
+			for (int i = 0; i < BatchSize; i++) {
+				Mx->sampleid = si;
+				s = sl[si];
+
+				//-- 1. present every sample in the batch, and sum up total error in tse				
+				if (Mx->useValidation>0)	Mx->NN.gse[t0][VALIDATION] += CalcNetworkError(NNParms, Mx, VALIDATION, pSampleDataV[s], pTargetDataV[s]);
+											Mx->NN.gse[t0][TRAINING]   += CalcNetworkError(NNParms, Mx, TRAINING,   pSampleData[s],  pTargetData[s]);
+
+				//-- 1.2 Calc dW for every sample based on BP algorithm
+				CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
+
+				//-- 1.3 BdW = BdW + dW (only if BP_ALGO is not global, like SCGD)
+				if (CalcdWType==0) Update_W(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
+
+				//-- next sample id
+				si++;
+			}
+
+			//-- 2. Weight update after every batch: W = W + BdW			
+			if (CalcdWType==0) Update_W(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
+
+		}
+
+		//-- 4. Calc MSE for epoch , and exit if less than TargetMSE
+		Mx->NN.mse[t1][TRAINING] = Mx->NN.mse[t0][TRAINING];	// save previous MSE
+		Mx->NN.mse[t0][TRAINING] = Mx->NN.gse[t0][TRAINING] / pSampleCount / NNParms->OutputCount;		// MSE = TSE / samplecount
+
+		if (Mx->useValidation>0) {
+			Mx->NN.mse[t0][VALIDATION] = Mx->NN.gse[t0][VALIDATION] / pSampleCount / NNParms->OutputCount;	// MSE = TSE / samplecount
 			if (NNParms->StopAtDivergence == 1 && Mx->NN.mse[t0][TRAINING] > Mx->NN.mse[t1][TRAINING]) break;
 		}
 
@@ -1195,6 +1294,7 @@ NN_Mem Malloc_NNMem(NN_Parms* pNNParms) {
 	ret.u = MallocArray<double>(2, TimeSteps, pNNParms->NodesCount[pNNParms->LevelsCount-1]);
 	ret.norm_e = MallocArray<double>(2, TimeSteps);
 	ret.mse = MallocArray<double>(2, TimeSteps);
+	ret.gse = MallocArray<double>(2, TimeSteps);
 
 	//-- weight levels -> [Levels-1][Time]
 	ret.W = (double****)malloc((pNNParms->LevelsCount - 1) * sizeof(double***));					// Core
@@ -1329,6 +1429,7 @@ void   Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	FreeArray(2, TimeSteps, pNNParms->OutputCount, NN.e);
 	FreeArray(2, TimeSteps, pNNParms->OutputCount, NN.u);
 	FreeArray(2, TimeSteps, NN.mse);
+	FreeArray(2, TimeSteps, NN.gse);
 
 	//-- weight levels -> [Levels-1][Time]
 	for (l = 0; l < (pNNParms->LevelsCount - 1); l++) {

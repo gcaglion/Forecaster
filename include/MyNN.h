@@ -48,6 +48,7 @@ typedef struct {
 	double*** u;
 	double** norm_e;
 	double** mse;
+	double** gse;	// global squared error (sum of squared errors for all the samples
 	//-- weight levels -> [Levels-1][Time]
 	double**** W;
 	double**** dW;
