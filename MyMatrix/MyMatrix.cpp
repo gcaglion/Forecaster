@@ -339,33 +339,48 @@ EXPORT void __stdcall MElDiv(int my, int mx, double**m1, double** m2, double** m
 }
 //---------------------------------------
 
+EXPORT void __stdcall MSumH(int my, int mx, double** m, double* oHsum) {
+	for (int y = 0; y<my; y++) {
+		oHsum[y] = 0;
+		for (int x = 0; x<mx; x++) {
+			oHsum[y] += m[y][x];
+		}
+	}
+}
+EXPORT void __stdcall MSumV(int my, int mx, double** m, double* oVsum) {
+	for (int x = 0; x<mx; x++) {
+		oVsum[x] = 0;
+		for (int y = 0; y<my; y++) {
+			oVsum[x] += m[y][x];
+		}
+	}
+}
+
+//---------------------------------------
+
 EXPORT void __stdcall M2LVV(int my, int mx, double** M, double* oLV){
 	//-- transforms a Matrix in its long vector version
 	for (int y = 0; y<my; y++){
 		for (int x = 0; x<mx; x++) oLV[y*mx + x] = M[y][x];
 	}
 }
-
 EXPORT void __stdcall LVV2M(int my, int mx, double* LV, double** oM){
 	//-- transforms a Long vector version of a matrix into a matrix
 	for (int y = 0; y<my; y++){
 		for (int x = 0; x < mx; x++) oM[y][x] = LV[y*mx + x];
 	}
 }
-
 EXPORT void __stdcall M2HorLV(int my, int mx, double** M, double** oM){
 	//-- transforms a Matrix in its long vector version, and the long vector into a 1-row matrix
 	for (int y = 0; y<my; y++){
 		for (int x = 0; x<mx; x++) oM[0][y*mx + x] = M[y][x];
 	}
 }
-
 EXPORT void __stdcall MplusM(int my, int mx, double**m1, double** m2, double** msum){
 	for (int y = 0; y < my; y++){
 		for (int x = 0; x < mx; x++) msum[y][x] = m1[y][x] + m2[y][x];
 	}
 }
-
 EXPORT void __stdcall MbyM(int m1y, int m1x, int m2y, int m2x, double**m1, double** m2, double** mbym){
 	for (int y = 0; y < m1y; y++){
 		for (int x2 = 0; x2 < m2x; x2++){
@@ -374,7 +389,6 @@ EXPORT void __stdcall MbyM(int m1y, int m1x, int m2y, int m2x, double**m1, doubl
 		}
 	}
 }
-
 EXPORT void __stdcall V2DiagM(int Vlen, double* V, double** M){
 	for (int y = 0; y < Vlen; y++){
 		for (int x = 0; x < Vlen; x++){
@@ -382,7 +396,6 @@ EXPORT void __stdcall V2DiagM(int Vlen, double* V, double** M){
 		}
 	}
 }
-
 EXPORT void __stdcall Transpose(int my, int mx, double** M, double** TM){
 	for (int y = 0; y < my; y++){
 		for (int x = 0; x < mx; x++){
@@ -390,7 +403,6 @@ EXPORT void __stdcall Transpose(int my, int mx, double** M, double** TM){
 		}
 	}
 }
-
 EXPORT void __stdcall MCopy(int my, int mx, double** fromM, double** toM){
 	for (int y = 0; y < my; y++){
 		for (int x = 0; x < mx; x++){
@@ -398,13 +410,11 @@ EXPORT void __stdcall MCopy(int my, int mx, double** fromM, double** toM){
 		}
 	}
 }
-
 EXPORT double __stdcall VDistance(int VLen, double* V1, double* V2){
 	double ret = 0;
 	for (int i = 0; i < VLen; i++) ret += (V1[i] - V2[i]);
 	return ret;
 }
-
 EXPORT double __stdcall Cov(int Vlen, double* V1, double* V2){
 	//-- calculates Covariance between two vectors
 	double V1avg = Vavg(Vlen, V1);
@@ -415,7 +425,6 @@ EXPORT double __stdcall Cov(int Vlen, double* V1, double* V2){
 	}
 	return (num / (Vlen - 1));
 }
-
 EXPORT void __stdcall CovM(int Vcnt, int Vlen, double** oM, ...){
 	//-- Builds a Covariance matrix for an arbitrary number of vectors
 	//-- arguments after oM should be double vectors, one for each variable
@@ -445,7 +454,6 @@ EXPORT void __stdcall CovM(int Vcnt, int Vlen, double** oM, ...){
 	for (i = 0; i < Vcnt; i++) free(V[i]);
 	free(V);
 }
-
 EXPORT double __stdcall Mdet(int mxy, double** M, double*** origM){
 	// http://www.mathsisfun.com/algebra/matrix-determinant.html
 	int x;

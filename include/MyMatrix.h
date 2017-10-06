@@ -56,8 +56,10 @@ EXPORT void __stdcall MElSum(int my, int mx, double**m1, double** m2, double** m
 EXPORT void __stdcall MElDiff(int my, int mx, double**m1, double** m2, double** mdiff);
 EXPORT void __stdcall MElProd(int my, int mx, double**m1, double** m2, double** mprod);
 EXPORT void __stdcall MElDiv(int my, int mx, double**m1, double** m2, double** mdiv);
-//---------------------------------------
-
+//------------------------------------------------------------------------
+EXPORT void __stdcall MSumH(int my, int mx, double** m, double* oHsum);
+EXPORT void __stdcall MSumV(int my, int mx, double** m, double* oVsum);
+//------------------------------------------------------------------------
 EXPORT void __stdcall M2HorLV(int my, int mx, double** M, double** oM);
 EXPORT void __stdcall MplusM(int my, int mx, double** M1, double** M2, double** MSum);
 EXPORT void __stdcall MbyM(int m1y, int m1x, int m2y, int m2x, double**m1, double** m2, double** mbym);

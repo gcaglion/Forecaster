@@ -19,6 +19,7 @@ typedef struct {
 	double* dW;
 	double* TotdW;
 	double* newW;
+	double* oldW;
 	double* prev_r;
 	double* alphap;
 	double* bp;
@@ -43,12 +44,15 @@ typedef struct {
 	double*** dF;
 	double*** edF;
 	double*** c;
-	//-- outer node only -> [TRAINING/VALIDATION][Time]
+	//-- outer node only -> [TRAINING/VALIDATION][Time][OutNeuron]
 	double*** e;
 	double*** u;
-	double** norm_e;
-	double** mse;
-	double** gse;	// global squared error (sum of squared errors for all the samples
+	//-- error stuff
+	double**** se;	// [TRAINING/VALIDATION][Time][Sample][OutNeuron]
+	double***  sse;	// [TRAINING/VALIDATION][Time][Sample]
+	double***  gse;	// [TRAINING/VALIDATION][Time][OutNeuron]
+	double**   tse;	// [TRAINING/VALIDATION][Time]
+
 	//-- weight levels -> [Levels-1][Time]
 	double**** W;
 	double**** dW;
@@ -94,6 +98,13 @@ typedef struct {
 	int		ScreenPos;
 	HANDLE	ScreenMutex;
 	int useValidation;
+
+	int BatchSize;
+	int* rsl;	// randomized samples list
+	int sampleCnt;
+	double** sample[2];
+	double** target[2];
+
 } NN_MxData;
 
 __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN);
