@@ -19,6 +19,7 @@ typedef struct {
 	double* dW;
 	double* TotdW;
 	double* newW;
+	double* oldW;
 	double* prev_r;
 	double* alphap;
 	double* bp;
@@ -46,9 +47,12 @@ typedef struct {
 	//-- outer node only -> [Time]
 	double** e;
 	double** u;
+	double* norm_e;
+	double** gse;
+	double* norm_gse;
+	double* mse;
 	double** Ve;
 	double** Vu;
-	double* norm_e;
 	//-- weight levels -> [Levels-1][Time]
 	double**** W;
 	double**** dW;
@@ -94,6 +98,11 @@ typedef struct {
 	int		ScreenPos;
 	HANDLE	ScreenMutex;
 	int useValidation;
+
+	int sampleCnt;
+	double** sample;
+	double** target;
+
 } NN_MxData;
 
 __declspec(dllexport) void __stdcall setNNTopology(NN_Parms* NN);
