@@ -57,6 +57,7 @@ typedef struct {
 	double**** W;
 	double**** dW;
 	double**** dJdW;
+	double**** GdJdW;
 	double**** BdW;
 	//-- temp matrices
 	double*** tmpM0;
