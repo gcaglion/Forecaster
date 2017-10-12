@@ -451,7 +451,7 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 	switch (pEngineParms->EngineType) {
 	case ENGINE_NN:
 		if ((*NNInfo)->BP_Algo == BP_QING) pDataParms->PredictionLen = pDataParms->SampleLen;
-		pEngineParms->Core[0][0].TimeStepsCount = (*NNInfo)->MaxEpochs * pDataParms->SampleCount * (((*NNInfo)->BP_Algo == BP_SCGD) ? (*NNInfo)->SCGDmaxK : 1);
+		pEngineParms->Core[0][0].TimeStepsCount = pDataParms->SampleCount * ( ((*NNInfo)->BP_Algo==BP_SCGD)? (*NNInfo)->SCGDmaxK : (*NNInfo)->MaxEpochs );
 		pEngineParms->Core[0][0].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[0][0].MSECount = (*NNInfo)->MaxEpochs;
@@ -929,8 +929,9 @@ void Run_XXX(tRunParams* rp) {
 		//-- other engine core types ...
 	}
 }
-void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, bool loadW, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
+int Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pid, int pTestId, int pLayer, bool loadW, tTrainParams* tp, double****** pSampleData, double****** pTargetData) {
 	int t;
+	int ret = 0;
 	int ThreadCount = pDataParms->DatasetsCount*pEngineParms->TotalCoresCount;
 	HANDLE* HTrain = (HANDLE*)malloc(ThreadCount * sizeof(HANDLE));
 	DWORD* kaz = (DWORD*)malloc(ThreadCount * sizeof(DWORD));
@@ -975,8 +976,13 @@ void Train_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* 
 	//-- we need to train all the nets in one layer, in order to have the inputs to the next layer
 	WaitForMultipleObjects(t, HTrain, TRUE, INFINITE);
 
+	//-- check for training failure
+	for (int ti = 0; ti<t; ti++) if (tp[ti].TrainSuccess!=0) ret = -1;
+
 	//-- free(s)
 	free(HTrain); free(kaz); free(tid);
+
+	return ret;
 }
 void Run_Layer(tDebugInfo* pDebugParms, tEngineDef* pEngineParms, tDataShape* pDataParms, int pDoTraining, int pLayer, int pid, tTrainParams* tp, tRunParams* rp, double****** SampleData, double****** TargetData) {
 	//-- The only reason why we make this multi-thread is to have different ThreadIds, so not to violate pk on MyLog_Run
@@ -1259,6 +1265,7 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 		if (fp->DataParms.ValidationShift != 0) CalcTSF(fp->EngineParms.TSFcnt, fp->EngineParms.TSFid, &fp->DataParms, hlen, vd[d], vd_tsf[d]);
 	}
 
+	int trainret;
 	for (l = 0; l < fp->EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
 			//-- for multi-layer engines, we need to define how each layer is defined
@@ -1292,12 +1299,12 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 		}
 		switch (fp->Action) {
 		case TRAIN_SAVE_RUN:
-			Train_Layer(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId, l, false, tp, Sample, Target);
+			trainret = Train_Layer(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId, l, false, tp, Sample, Target);
 			Run_Layer(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, 1, l, pid, tp, rp, Sample, Target);
 			break;
 		case ADD_SAMPLES:
 			//-- LoadEngine has already been done
-			Train_Layer(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId, l, true, tp, Sample, Target);
+			trainret = Train_Layer(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId, l, true, tp, Sample, Target);
 			break;
 		case JUST_RUN:
 			//-- LoadEngine has already been done
@@ -1308,29 +1315,35 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 
 	}
 
-	CalcForecastFromEngineOutput(&fp->EngineParms, &fp->DataParms, pTestId, hd_scaleM, hd_scaleP, pHistoryBaseVal, hd_trs, pHistoryBW, haveActualFuture, fd_trs, pFutureBW, runLog, oPredictedData);
-	LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
-	LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
-	if (fp->DataParms.DatasetsCount>1) {
-		LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
-		LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
-	}
-	//-- Save Logs
-	if (fp->DebugParms.SaveNothing==0) {
-		LogWrite(&fp->DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
-		if (pTestId == 0) {
-			printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp->DebugParms, &fp->DataParms, pid) != 0) return -1;
-			printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp->DebugParms, pid, (fp->Action==ADD_SAMPLES) ? fp->SavedEngine.ProcessId : pid, &fp->EngineParms) != 0) return -1;
+	//-- check for training failure
+	if (trainret!=0) {
+		LogWrite(&fp->DebugParms, LOG_ERROR, "Training Failed!\n", 0);
+	} else {
+		//-- if training succeded, calc Forecast, and save logs.
+		CalcForecastFromEngineOutput(&fp->EngineParms, &fp->DataParms, pTestId, hd_scaleM, hd_scaleP, pHistoryBaseVal, hd_trs, pHistoryBW, haveActualFuture, fd_trs, pFutureBW, runLog, oPredictedData);
+		LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[0][0]=%f\n", 2, __func__, oPredictedData[0][0]);
+		LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[0][1]=%f\n", 2, __func__, oPredictedData[0][1]);
+		if (fp->DataParms.DatasetsCount>1) {
+			LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[1][0]=%f\n", 2, __func__, oPredictedData[1][0]);
+			LogWrite(&fp->DebugParms, LOG_INFO, "%s(): oPredictedData[1][1]=%f\n", 2, __func__, oPredictedData[1][1]);
 		}
+		//-- Save Logs
+		if (fp->DebugParms.SaveNothing==0) {
+			LogWrite(&fp->DebugParms, LOG_INFO, "pTestId=%d\n", 1, pTestId);
+			if (pTestId == 0) {
+				printf("\nSaveTestLog_DataParams()...\n"); if (SaveTestLog_DataParms(&fp->DebugParms, &fp->DataParms, pid) != 0) return -1;
+				printf("SaveTestLog_EngineParms()...\n"); if (SaveTestLog_EngineParms(&fp->DebugParms, pid, (fp->Action==ADD_SAMPLES) ? fp->SavedEngine.ProcessId : pid, &fp->EngineParms) != 0) return -1;
+			}
 
-		printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp->DebugParms, fp->EngineParms.AdderCount, pid, pTestId, &fp->EngineParms, &fp->DataParms) != 0) return -1;
+			printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp->DebugParms, fp->EngineParms.AdderCount, pid, pTestId, &fp->EngineParms, &fp->DataParms) != 0) return -1;
 
-		if (fp->Action !=JUST_RUN) {
-			printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId) != 0) return -1;
-			printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId) != 0) return -1;
-		}
-		if (fp->Action!=ADD_SAMPLES) {
-			printf("LogSave_Run()...\n"); if (LogSave_Run(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId, runLog) != 0) return -1;
+			if (fp->Action !=JUST_RUN) {
+				printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId) != 0) return -1;
+				printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId) != 0) return -1;
+			}
+			if (fp->Action!=ADD_SAMPLES) {
+				printf("LogSave_Run()...\n"); if (LogSave_Run(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId, runLog) != 0) return -1;
+			}
 		}
 	}
 
