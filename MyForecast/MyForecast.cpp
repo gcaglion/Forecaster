@@ -721,7 +721,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 				if (getParam(fParms->iniParms, "WNNInfo.L0.Qing.HCPbeta", &NNInfo->HCPbeta) <0)								return -1;
 				if (getParam(fParms->iniParms, "WNNInfo.L0.QProp.mu", &NNInfo->mu) <0)										return -1;
 				if (getParam(fParms->iniParms, "WNNInfo.L0.RProp.d0", &NNInfo->d0) <0)										return -1;
-				if (getParam(fParms->iniParms, "WNNInfo.L0.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
+				if (getParam(fParms->iniParms, "WNNInfo.L0.SCGD.maxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 				if (getParam(fParms->iniParms, "WNNInfo.L0.LevelRatios", &NNInfo->LevelRatioS[0]) <0)						return -1;
 			}
 			l = 1;
@@ -738,7 +738,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 			if (getParam(fParms->iniParms, "WNNInfo.L1.Qing.HCPbeta", &NNInfo->HCPbeta) <0)								return -1;
 			if (getParam(fParms->iniParms, "WNNInfo.L1.QProp.mu", &NNInfo->mu) <0)										return -1;
 			if (getParam(fParms->iniParms, "WNNInfo.L1.RProp.d0", &NNInfo->d0) <0)										return -1;
-			if (getParam(fParms->iniParms, "WNNInfo.L1.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)								return -1;
+			if (getParam(fParms->iniParms, "WNNInfo.L1.SCGD.maxK", &NNInfo->SCGDmaxK) < 0)								return -1;
 			if (getParam(fParms->iniParms, "WNNInfo.L1.LevelRatios", &NNInfo->LevelRatioS[0]) <0)						return -1;
 			break;
 		case ENGINE_XIE:
@@ -778,7 +778,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.Qing.HCPbeta", &NNInfo->HCPbeta) <0)								return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.QProp.mu", &NNInfo->mu) <0)											return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.RProp.d0", &NNInfo->d0) <0)											return -1;
-			if (getParam(fParms->iniParms, "XIEInfo.NN0.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)									return -1;
+			if (getParam(fParms->iniParms, "XIEInfo.NN0.SCGD.maxK", &NNInfo->SCGDmaxK) < 0)									return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)							return -1;
 
 			NNInfo = (NN_Parms*)fParms->EngineParms.Core[1][0].CoreSpecs;
@@ -794,7 +794,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 			if (getParam(fParms->iniParms, "XIEInfo.NN1.Qing.HCPbeta", &NNInfo->HCPbeta) <0)								return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN1.QProp.mu", &NNInfo->mu) <0)											return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN1.RProp.d0", &NNInfo->d0) <0)											return -1;
-			if (getParam(fParms->iniParms, "XIEInfo.NN1.SCGDmaxK", &NNInfo->SCGDmaxK) < 0)									return -1;
+			if (getParam(fParms->iniParms, "XIEInfo.NN1.SCGD.maxK", &NNInfo->SCGDmaxK) < 0)									return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN1.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)							return -1;
 
 			break;
