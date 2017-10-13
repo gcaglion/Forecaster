@@ -221,18 +221,18 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
 	//-- outer node only -> [Time]
 	ret.e = (double**)malloc(TimeSteps * sizeof(double*));
 	ret.u = (double**)malloc(TimeSteps * sizeof(double*));
-	ret.gse = (double**)malloc(TimeSteps * sizeof(double*));
+	ret.ge = (double**)malloc(TimeSteps * sizeof(double*));
 	ret.Ve = (double**)malloc(TimeSteps * sizeof(double*));
 	ret.Vu = (double**)malloc(TimeSteps * sizeof(double*));
 	for (t = 0; t < TimeSteps; t++) {
 		ret.e[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
 		ret.u[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
-		ret.gse[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
+		ret.ge[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
 		ret.Ve[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
 		ret.Vu[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
 	}
 	ret.norm_e = (double*)malloc(TimeSteps * sizeof(double));
-	ret.norm_gse = (double*)malloc(TimeSteps * sizeof(double));
+	ret.norm_ge = (double*)malloc(TimeSteps * sizeof(double));
 	ret.mse = (double*)malloc(TimeSteps * sizeof(double));
 
 	//-- weight levels -> [Levels-1][Time]
@@ -316,17 +316,17 @@ void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	for (t = 0; t < TimeSteps; t++) {
 		free(NN.e[t]);
 		free(NN.u[t]);
-		free(NN.gse[t]);
+		free(NN.ge[t]);
 		free(NN.Ve[t]);
 		free(NN.Vu[t]);
 	}
 	free(NN.e);
 	free(NN.u);
-	free(NN.gse);
+	free(NN.ge);
 	free(NN.Ve);
 	free(NN.Vu);
 	free(NN.norm_e);
-	free(NN.norm_gse);
+	free(NN.norm_ge);
 	free(NN.mse);
 
 	//-- weight levels -> [Levels-1][Time]
@@ -510,7 +510,6 @@ void   RestoreW(NN_Parms* NNParms, double**** w, int timebin) {
 }
 double Ecalc(NN_Parms* NN, NN_MxData* Mx, int pSampleId = -1, double* atW = nullptr) {
 	double tse = 0;
-	double ret = 0;
 
 	//-- 0. if a specific W is supplied, first copy that into W
 	if (atW!=nullptr) {
@@ -522,7 +521,7 @@ double Ecalc(NN_Parms* NN, NN_MxData* Mx, int pSampleId = -1, double* atW = null
 	if (pSampleId==-1) {
 
 		//-- 1. reset gse for each neuron
-		for (int o = 0; o<NN->OutputCount; o++) Mx->NN.gse[t0][o] = 0;
+		for (int o = 0; o<NN->OutputCount; o++) Mx->NN.ge[t0][o] = 0;
 
 		for (int s = 0; s<Mx->sampleCnt; s++) {
 			//-- 2. Load SampleData into Input Neurons OUT values , and TargetData into u[]
@@ -531,18 +530,14 @@ double Ecalc(NN_Parms* NN, NN_MxData* Mx, int pSampleId = -1, double* atW = null
 			for (int i = 0; i<NN->OutputCount; i++) Mx->NN.u[t0][i] = Mx->target[s][i];
 			//-- 3. Feed Forward (also calcs e[], norm_e)
 			FF(NN, &Mx->NN);
-			//-- 4. sum up global squared error for each output neuron
-			for (int o = 0; o<NN->OutputCount; o++) Mx->NN.gse[t0][o] += pow(Mx->NN.e[t0][o], 2);
+			//-- 4. sum up global error for each output neuron
+			for (int o = 0; o<NN->OutputCount; o++) Mx->NN.ge[t0][o] += Mx->NN.e[t0][o];
 		}
 
-		//-- 5. calc gse norm
-		Mx->NN.norm_gse[t0] = Vnorm(NN->OutputCount, Mx->NN.gse[t0]);
+		//-- 5. calc ge norm and tse
+		Mx->NN.norm_ge[t0] = Vnorm(NN->OutputCount, Mx->NN.ge[t0]);
 		//-- 6. MSE = sum(GSE) / <number of output neurons> / <samples count>
-		for (int o = 0; o<NN->OutputCount; o++) tse += Mx->NN.gse[t0][o];
-		Mx->NN.mse[t0] = tse/NN->OutputCount/Mx->sampleCnt;
-		//-- 7. return value is norm_gse
-		//ret=Mx->NN.norm_gse[t0];
-		ret = Mx->NN.mse[t0];
+		for (int o = 0; o<NN->OutputCount; o++) tse += pow(Mx->NN.ge[t0][o],2);
 
 	} else {
 
@@ -552,8 +547,7 @@ double Ecalc(NN_Parms* NN, NN_MxData* Mx, int pSampleId = -1, double* atW = null
 		for (int i = 0; i<NN->OutputCount; i++) Mx->NN.u[t0][i] = Mx->target[pSampleId][i];
 		//-- 2. Feed Forward, and calc squared error on output layer
 		FF(NN, &Mx->NN);
-		for (int o = 0; o < NN->OutputCount; o++) ret += pow(Mx->NN.e[t0][o], 2);
-
+		for (int o = 0; o < NN->OutputCount; o++) tse += pow(Mx->NN.e[t0][o], 2);
 	}
 
 	//-- 3. if a specific W is supplied, restore W
@@ -561,7 +555,7 @@ double Ecalc(NN_Parms* NN, NN_MxData* Mx, int pSampleId = -1, double* atW = null
 		RestoreW(NN, Mx->NN.W, t5);
 	}
 
-	return ret;
+	return tse;
 }
 void   dEcalcCore(NN_Parms* NNParms, NN_MxData* Mx) {
 	for (int l = NNParms->LevelsCount-1; l>0; l--) {
@@ -712,7 +706,7 @@ int	BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, alpha, Mx->NN.scgd->dW);
 		VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->dW, Mx->NN.scgd->newW);
 
-		VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->oldW);
+		if(success) VCopy(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->oldW);
 		//--- 6.2 E(w)
 		e_old = Ecalc(NN, Mx, -1, Mx->NN.scgd->oldW);
 		//--- 6.3 E(w+dw) is calculated by E_at_w()
@@ -767,10 +761,10 @@ int	BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 		Mx->NN.scgd->rnorm = Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->r);
 		//-- display progress
 		WaitForSingleObject(Mx->ScreenMutex, 10);
-		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Iteration %6d , success=%s, rnorm=%f , mse=%f", pid, tid, k, (success)?"TRUE ":"FALSE", Mx->NN.scgd->rnorm, Mx->NN.mse[t0]);
+		gotoxy(0, Mx->ScreenPos); printf("\rProcess %6d, Thread %6d, Iteration %6d , success=%s, rnorm=%f , norm_ge=%f", pid, tid, k, (success)?"TRUE ":"FALSE", Mx->NN.scgd->rnorm, Mx->NN.norm_ge[t0]);
 		ReleaseMutex(Mx->ScreenMutex);
 
-		if (DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->sampleid, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, pnorm, Mx->NN.scgd->rnorm, Mx->NN.mse[t0], Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->dW), comp);
+		if (DebugParms->SaveInternals>0) SaveCoreData_SCGD(NNLogs, pid, tid, pEpoch, Mx->sampleid, Mx->BPCount, k, Mx->SCGD_progK, delta, mu, alpha, beta, lambda, lambdau, pnorm, Mx->NN.scgd->rnorm, Mx->NN.norm_ge[t0], Vnorm(NN->WeightsCountTotal, Mx->NN.scgd->dW), comp);
 
 		k++; Mx->SCGD_progK++;
 	} while ((Mx->NN.scgd->rnorm>0) && (k<NN->SCGDmaxK));
@@ -929,7 +923,6 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 
 int NNTrain_Global(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
 
-	double MSE_T = 1000, MSE_V = 1000;
 	int pid = GetCurrentProcessId();
 	int tid = GetCurrentThreadId();
 
@@ -953,14 +946,17 @@ int NNTrain_Global(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		break;
 	}
 
-	MSE_T = Ecalc(NNParms, Mx, -1);
+	double tse0 = Ecalc(NNParms, Mx, -1);
+	double mse0 = tse0 / pSampleCount / NNParms->OutputCount;
 	BP_scgd(pid, tid, 0, pDebugParms, NNParms, NNLogs, Mx);
+	double tse1 = Ecalc(NNParms, Mx, -1);
+	double mse1 = tse1 / pSampleCount / NNParms->OutputCount;
 
-	NNLogs->ActualEpochs = 1;
+	NNLogs->ActualEpochs = 2;
 	NNLogs->IntCnt = Mx->SCGD_progK;
-	SaveMSEData(NNLogs, pid, tid, 0, MSE_T, (Mx->useValidation>0) ? MSE_V : 0);
+	SaveMSEData(NNLogs, pid, tid, 0, mse0, 0);
+	SaveMSEData(NNLogs, pid, tid, 1, mse1, 0);
 
-	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
 	return 0;
 }
 int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxData* Mx, int pSampleCount, double** pSampleData, double** pTargetData, double** pSampleDataV, double** pTargetDataV) {
@@ -1052,7 +1048,7 @@ int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxD
 		}
 	}
 	NNLogs->ActualEpochs = epoch;
-	NNLogs->IntCnt = (NNParms->BP_Algo == BP_SCGD) ? Mx->SCGD_progK : epoch;
+	NNLogs->IntCnt = epoch;
 
 	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
 	return 0;

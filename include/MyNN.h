@@ -49,8 +49,8 @@ typedef struct {
 	double** e;
 	double** u;
 	double* norm_e;
-	double** gse;
-	double* norm_gse;
+	double** ge;
+	double* norm_ge;
 	double* mse;
 	double** Ve;
 	double** Vu;
