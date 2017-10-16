@@ -632,6 +632,12 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 		if (getParam(fParms->iniParms, "DataParms.WiggleRoom", &fParms->DataParms.wiggleRoom) < 0)								return -1;
 		fParms->DataParms.SampleCount = fParms->DataParms.HistoryLen - fParms->DataParms.SampleLen;
 
+		//-- Make sure DataParms make sense
+		if (fParms->DataParms.SampleLen>=fParms->DataParms.HistoryLen) {
+			LogWrite(&fParms->DebugParms, LOG_ERROR, "DataParms Error: HistoryLen (%d) must be greater than SampleLen (%d).\n", 2, fParms->DataParms.HistoryLen, fParms->DataParms.SampleLen);
+			return -1;
+		}
+
 		//-- Engine-specific parameters
 		setCoreInfo_Pre(&fParms->EngineParms, &fParms->DataParms, &NNInfo, &GAInfo, &SOMInfo, &SVMInfo);
 
