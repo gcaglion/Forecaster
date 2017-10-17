@@ -64,7 +64,8 @@ EXPORT int getEnumVal(char* edesc, char* eVal, int* oVal) {
 	else if (strcmp(right(edesc, 7), "BP_ALGO") == 0) {
 		if (strcmp(eVal, "BP_STD") == 0) { (*oVal)=BP_STD; ret=0;}
 		if (strcmp(eVal, "BP_QING") == 0) { (*oVal)=BP_QING; ret=0;}
-		if (strcmp(eVal, "BP_SCGD") == 0) { (*oVal)=BP_SCGD; ret=0;}
+		if (strcmp(eVal, "BP_SCGD") == 0) { (*oVal) = BP_SCGD; ret = 0; }
+		if (strcmp(eVal, "BP_LM") == 0) { (*oVal) = BP_LM; ret = 0; }
 		if (strcmp(eVal, "BP_QUICKPROP") == 0) { (*oVal) = BP_QUICKPROP; ret = 0; }
 		if (strcmp(eVal, "BP_RPROP") == 0) { (*oVal) = BP_RPROP; ret = 0; }
 	}

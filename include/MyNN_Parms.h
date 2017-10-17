@@ -19,11 +19,12 @@
 #define TP_ONLINE		2
 
 //-- Backpropagation algorithms
-#define BP_STD   0
-#define BP_QING	 1
-#define BP_RPROP 4
-#define BP_SCGD		 5 // Scaled Conjugate Gradient Descent
-#define BP_QUICKPROP 6
+#define BP_STD			0
+#define BP_QING			1
+#define BP_RPROP		2
+#define BP_QUICKPROP	3
+#define BP_SCGD			4 // Scaled Conjugate Gradient Descent
+#define BP_LM			5 // Levenberg-Marquardt
 //--
 
 //-- Activation Functions

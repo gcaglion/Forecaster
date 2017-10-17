@@ -772,6 +772,12 @@ EXPORT int __stdcall Ora_InsertCoreLogs_NN(tDebugInfo* DebugParms, int BPAlgo, t
 			//-- 3.3. Build Array Insert statement
 			return 0;
 			break;
+		case BP_LM:
+			//-- 3.1. malloc() column arrays
+			//-- 3.2. Assign struct fields to column arrays
+			//-- 3.3. Build Array Insert statement
+			return 0;
+			break;
 		case BP_SCGD:
 			//-- 4.1. malloc() column arrays
 			vProcessId = (int*)malloc(vInsertCount * sizeof(int));

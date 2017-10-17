@@ -625,7 +625,14 @@ void Calc_H(NN_Parms* NN, NN_MxData* Mx) {
 	}
 
 }
+void Calc_J(NN_Parms* NN, NN_MxData* Mx) {
+	//-- calcs Jacobian
 
+}
+int BP_lm(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx) {
+
+	return 0;
+}
 int	BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx) {
 
 	int k;
@@ -914,6 +921,8 @@ int Calc_dW(int pid, int tid, int pEpoch, tDebugInfo* pDebugParms, NN_Parms* NN,
 		break;
 	case BP_SCGD:
 		ret = BP_scgd(pid, tid, pEpoch, pDebugParms, NN, NNLogs, Mx);
+	case BP_LM:
+		ret = BP_lm(pid, tid, pEpoch, pDebugParms, NN, NNLogs, Mx);
 		break;
 	}
 	Mx->BPCount++;
@@ -948,7 +957,11 @@ int NNTrain_Global(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 	double tse0 = Ecalc(NNParms, Mx, -1);
 	double mse0 = tse0 / pSampleCount / NNParms->OutputCount;
-	BP_scgd(pid, tid, 0, pDebugParms, NNParms, NNLogs, Mx);
+	if (NNParms->BP_Algo==BP_SCGD) {
+		BP_scgd(pid, tid, 0, pDebugParms, NNParms, NNLogs, Mx);
+	} else {
+		BP_lm(pid, tid, 0, pDebugParms, NNParms, NNLogs, Mx);
+	}
 	double tse1 = Ecalc(NNParms, Mx, -1);
 	double mse1 = tse1 / pSampleCount / NNParms->OutputCount;
 
@@ -1163,7 +1176,7 @@ EXPORT int  Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInf
 	//-- Save Initial Weights
 	SaveInitW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 	//-- Train 
-	if(pNNParms->BP_Algo==BP_SCGD){
+	if(pNNParms->BP_Algo==BP_SCGD || pNNParms->BP_Algo==BP_LM){
 		ret = NNTrain_Global(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	} else {
 		ret = NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
