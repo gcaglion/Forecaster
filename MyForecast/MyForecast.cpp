@@ -1271,7 +1271,7 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 		if (fp->DataParms.ValidationShift != 0) CalcTSF(fp->EngineParms.TSFcnt, fp->EngineParms.TSFid, &fp->DataParms, hlen, vd[d], vd_tsf[d]);
 	}
 
-	int trainret;
+	int trainret=0;
 	for (l = 0; l < fp->EngineParms.LayersCount; l++) {
 		for (d = 0; d < dscnt; d++) {
 			//-- for multi-layer engines, we need to define how each layer is defined

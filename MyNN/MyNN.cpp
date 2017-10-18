@@ -1080,7 +1080,7 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	double* tmpSample = (double*)malloc(NNParms->InputCount * sizeof(double));
 
 	//-- 1. Load W*** from NNParms->NNFinalW[Level][FromN][ToN] 
-	for (l = 0; l<NNParms->LevelsCount; l++) {
+	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
 		for (j = 0; j<NNParms->NodesCount[l+1]; j++) {
 			for (i = 0; i<NNParms->NodesCount[l]; i++) {
 				MxData.NN.W[l][t0][j][i] = NNLogs->NNFinalW[l][j][i].Weight;
