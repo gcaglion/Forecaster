@@ -1124,11 +1124,11 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	//-- 4.2 Out-of-Sample . This always uses predicted value from previous step as actual value. if we do have actual future data, this is updated in CalcForecastFromEngineOutput()
 	for (s = 0; s < pInputData->PredictionLen; s++) {
 		ShiftArray(SHIFT_BACKWARD, NNParms->InputCount, tmpSample, vActual);
-		//--
-		for (i = 0; i < NNParms->InputCount; i++) MxData.NN.F[0][t0][i] = tmpSample[i];	//-- Present each sample to input neurons
-		FF(NNParms, &MxData.NN);																//-- Feed-Forward the network;
+
+		for (i = 0; i < NNParms->InputCount; i++) MxData.NN.F[0][t0][i+1] = tmpSample[i];	//-- Present each sample to input neurons
+		FF(NNParms, &MxData.NN);															//-- Feed-Forward the network;
 		vPrediction = MxData.NN.F[NNParms->LevelsCount-1][t0];								//-- Predicted  Data. All steps
-																							//--
+
 		SaveRunData(NNLogs, pid, tid, (s + pSampleCount+NNParms->InputCount), NULL, vPrediction);
 		vActual = vPrediction[0];
 	}
