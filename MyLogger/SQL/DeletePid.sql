@@ -1,5 +1,5 @@
 set verify off
-define pid=101584,49976,100396,104916,87712,77756,106404,104080,4044,6484,104304,2544,97304,96888,97820
+define pid=5308
 delete from COREIMAGE_NN where processid in(&&pid);
 delete from COREIMAGE_SOM where processid in(&&pid);
 delete from COREIMAGE_SVM where processid in(&&pid);

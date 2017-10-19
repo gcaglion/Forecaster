@@ -1125,7 +1125,7 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	for (s = 0; s < pInputData->PredictionLen; s++) {
 		ShiftArray(SHIFT_BACKWARD, NNParms->InputCount, tmpSample, vActual);
 		//--
-		for (i = 0; i < NNParms->InputCount; i++) MxData.NN.F[0][t0][i] = tmpSample[i];	//-- Present each sample to input neurons
+		for (i = 0; i < NNParms->InputCount; i++) MxData.NN.F[0][t0][i+1] = tmpSample[i];	//-- Present each sample to input neurons
 		FF(NNParms, &MxData.NN);																//-- Feed-Forward the network;
 		vPrediction = MxData.NN.F[NNParms->LevelsCount-1][t0];								//-- Predicted  Data. All steps
 																							//--
