@@ -61,7 +61,7 @@ void mallocCoreLogs(tForecastParms* fParms) {
 				//-- NN-specific
 				if (fParms->EngineParms.Core[l][c].CoreType == ENGINE_NN) {
 					setNNTopology((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs);
-					mallocNNLog(&fParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, (fParms->DebugParms.SaveInternals>0), fParms->EngineParms.Core[l][c].TimeStepsCount);
+					mallocNNLog(&fParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount[TOTNODE], (fParms->DebugParms.SaveInternals>0), fParms->EngineParms.Core[l][c].TimeStepsCount);
 				}
 				//-- GA-specific
 				//-- SVM-specific is called from SVMTrain() because we don't know SVMcount until the end of training
@@ -80,7 +80,7 @@ void freeCoreLogs(tForecastParms* fParms) {
 				free(fParms->EngineParms.Core[l][c].CoreLog[d].RunOutput);
 				//-- NN-specific
 				if (fParms->EngineParms.Core[l][c].CoreType == ENGINE_NN) {
-					freeNNLog(&fParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount, (fParms->DebugParms.SaveInternals>0), fParms->EngineParms.Core[l][c].TimeStepsCount);
+					freeNNLog(&fParms->EngineParms.Core[l][c].CoreLog[d], ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->LevelsCount, ((NN_Parms*)fParms->EngineParms.Core[l][c].CoreSpecs)->NodesCount[TOTNODE], (fParms->DebugParms.SaveInternals>0), fParms->EngineParms.Core[l][c].TimeStepsCount);
 				}
 				//-- GA-specific
 				//-- SVM-specific

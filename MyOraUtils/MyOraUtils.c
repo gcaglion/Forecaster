@@ -1368,9 +1368,9 @@ EXPORT int __stdcall Ora_InsertCoreImage_NN(tDebugInfo* DebugParms, NN_Parms* NN
 	vCtxValue = (double*)malloc(vInsertCount * sizeof(double));
 
 	i = 0;
-	for (l = 0; l < (NNParms->LevelsCount - 1); l++) {
-		for (fn = 0; fn < NNParms->NodesCount[l + 1]; fn++) {
-			for (tn = 0; tn < NNParms->NodesCount[l]; tn++) {
+	for (l = 0; l < (NNParms->LevelsCount-1); l++) {
+		for (fn = 0; fn < NNParms->NodesCount[TOTNODE][l+1]; fn++) {
+			for (tn = 0; tn < NNParms->NodesCount[TOTNODE][l]; tn++) {
 				vProcessId[i] = NNWeight0[l][fn][tn].ProcessId;
 				vThreadId[i] = NNWeight0[l][fn][tn].ThreadId;
 				vNeuronLevel[i] = NNWeight0[l][fn][tn].NeuronLevel;
@@ -6255,7 +6255,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 	for (d = 0; d < pDatasetsCount; d++) {
 		for (l = 0; l < NN->LevelsCount; l++) {
 			for (t = 0; t < pTimeSteps; t++) {
-				for (j = 0; j < NN->NodesCount[l]; j++) {
+				for (j = 0; j < NN->NodesCount[TOTNODE][l]; j++) {
 					vInsertCount++;
 				}
 			}
@@ -6297,7 +6297,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 	for (d = 0; d < pDatasetsCount; d++) {
 		for (l = 0; l < NN->LevelsCount; l++) {
 			for (t = 0; t < pTimeSteps; t++) {
-				for (j = 0; j < NN->NodesCount[l]; j++) {
+				for (j = 0; j < NN->NodesCount[TOTNODE][l]; j++) {
 					vProcessId[idx] = pid;
 					vThreadId[idx] = 0;	// NNLogs->TrainingTid[d];
 					vTestId[idx] = testid;
@@ -6755,8 +6755,8 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 	for (d = 0; d < pDatasetsCount; d++) {
 		for (l = 0; l < (NN->LevelsCount - 1); l++) {
 			for (t = 0; t < pTimeSteps; t++) {
-				for (j = 0; j < NN->NodesCount[l + 1]; j++) {
-					for (i = 0; i < NN->NodesCount[l]; i++) {
+				for (j = 0; j < NN->NodesCount[TOTNODE][l+1]; j++) {
+					for (i = 0; i < NN->NodesCount[TOTNODE][l]; i++) {
 						vInsertCount++;
 					}
 				}
@@ -6799,7 +6799,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 	for (d = 0; d < pDatasetsCount; d++) {
 		for (l = 0; l < (NN->LevelsCount - 1); l++) {
 			for (t = 0; t < pTimeSteps; t++) {
-				for (j = 0; j < NN->NodesCount[l + 1]; j++) {
+				for (j = 0; j < NN->NodesCount[TOTNODE][l+1]; j++) {
 					for (i = 0; i < NN->NodesCount[l]; i++) {
 						vProcessId[idx] = pid;
 						vThreadId[idx] = 0;	// NNLogs->TrainingTid[d];
