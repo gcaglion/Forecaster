@@ -18,7 +18,6 @@ EXPORT void getNNOutputRange(NN_Parms* NNParms, double* oScaleMin, double* oScal
 		break;
 	}
 }
-
 EXPORT void setNNTopology(NN_Parms* NN) {
 	int i, nl;
 	int Levcnt;	// Levels count
@@ -471,43 +470,15 @@ void SumUpW(NN_Parms* NN, NN_MxData* Mx, double**** baseW, double**** addedW) {
 }
 
 void	FeedBack(NN_Parms* NNParms, NN_Mem* NN) {
+	//-- Sets values for Context Neurons.
 
-	//-- Sets values for Context Neurons. Called by FF (Zero=false) and Run_NN (Zero=true)
-
-	int l, i;
-	for (l = NNParms->LevelsCount-1; l>0; l--) {
-		for (i = 0; i<(NNParms->NodesCount[DATANODE][l]+NNParms->NodesCount[CTXNODE][l]); i++) {
+	for (int l = NNParms->LevelsCount-1; l>0; l--) {
+		for (int i = 0; i<(NNParms->NodesCount[DATANODE][l]+NNParms->NodesCount[CTXNODE][l]); i++) {
 			NN->F[l-1][t0][NNParms->NodesCount[BIASNODE][l-1]+NNParms->NodesCount[DATANODE][l-1]+i] = NN->F[l][t0][NNParms->NodesCount[BIASNODE][l]+i];
 		}
 	}
 
-/*	int cc = 0;
-	for (int l = NNParms->LevelsCount-1; l>0; l--) {
-		cc = NNParms->NodesCount[l]-cc+((l==NNParms->LevelsCount-1) ? 0 : 1);
-		for (int i = 0; i<cc; i++) {
-			NN->F[l-1][t0][NNParms->NodesCount[l-1]-cc+i] = (Zero) ? 0 : NN->F[l][t0][i+((l==NNParms->LevelsCount-1) ? 0 : 1)];
-		}
-	}
-	*/
 }
-/*void	FF_Std(NN_Parms* pNNParms, NN_Mem* NN) {
-
-	for (int l = 0; l<(pNNParms->LevelsCount-1); l++) {
-		for (int tn = 0; tn<pNNParms->NodesCount[l+1]; tn++) {
-			NN->a[l+1][t0][tn] = 0;
-			for (int fn = 0; fn<pNNParms->NodesCount[l]; fn++) {
-				NN->a[l+1][t0][tn] += NN->F[l][t0][fn]*NN->W[l][t0][tn][fn];
-			}
-		}
-		Activate(pNNParms->ActivationFunction, pNNParms->NodesCount[l+1], NN->c[l+1][t0], NN->a[l+1][t0], NN->F[l+1][t0], NN->dF[l+1][t0]);
-		//-- reset bias neurons. they should always be 1
-		NN->F[l][t0][0] = 1;
-	}
-
-	//-- Hidden->Context 
-	if (pNNParms->UseContext==1) FeedBack(pNNParms, NN, false);
-}
-*/
 double	FF(NN_Parms* NNParms, NN_Mem* NN) {
 
 	//-- 1. Feed-Forward and Activation
@@ -521,7 +492,7 @@ double	FF(NN_Parms* NNParms, NN_Mem* NN) {
 	}
 
 	//-- 1. Feedback to Context Neurons
-	FeedBack(NNParms, NN);
+	if(NNParms->UseContext>0) FeedBack(NNParms, NN);
 
 	//-- Regardless of the method, here we update the network error, and calc eT (1xL2)matrix of e , and ||e|| (norm of e)
 	VminusV(NNParms->NodesCount[DATANODE][NNParms->LevelsCount-1], NN->F[NNParms->LevelsCount-1][t0], NN->u[t0], NN->e[t0]);
