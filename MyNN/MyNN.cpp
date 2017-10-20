@@ -157,29 +157,33 @@ void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int samplei
 	NNLog->IntP[timeStep].comp = comp;
 }
 
-void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
-	int i, k, l, x, y;
-
+void	InitNeurons(NN_Parms* NN, NN_MxData* Mx) {
 	double vScaleMin, vScaleMax;
 	getNNOutputRange(NN, &vScaleMin, &vScaleMax);
 
 	for (int t = 0; t<TimeSteps; t++) {
-
-		//-- Neurons
-		for (l = 0; l < NN->LevelsCount; l++) {
+		for (int l = 0; l < NN->LevelsCount; l++) {
 			//-- Bias node (except for output layer)
-			if(l<(NN->LevelsCount-1)) Mx->NN.F[l][t][0] = 1;
+			if (l<(NN->LevelsCount-1)) Mx->NN.F[l][t][0] = 1;
 			//-- Data nodes
-			for (i = 0; i < NN->NodesCount[DATANODE][l]; i++) {
+			for (int i = 0; i < NN->NodesCount[DATANODE][l]; i++) {
 				Mx->NN.F[l][t][i+NN->NodesCount[BIASNODE][l]] = 0;
 				Mx->NN.dF[l][t][i+NN->NodesCount[BIASNODE][l]] = 0;
 				Mx->NN.c[l][t][i+NN->NodesCount[BIASNODE][l]] = 1;
 			}
 			//-- Context nodes
-			for (i = 0; i < NN->NodesCount[CTXNODE][l]; i++) {
+			for (int i = 0; i < NN->NodesCount[CTXNODE][l]; i++) {
 				Mx->NN.F[l][t][1+NN->NodesCount[DATANODE][l]+i] = (vScaleMax+vScaleMin)/2;	// see Elman.pdf, p.182
 			}
 		}
+	}
+}
+void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
+	int i, k, l, x, y;
+
+	for (int t = 0; t<TimeSteps; t++) {
+
+		InitNeurons(NN, Mx);
 
 		//-- Weights
 		k = 0;
@@ -472,8 +476,8 @@ void	FeedBack(NN_Parms* NNParms, NN_Mem* NN) {
 
 	int l, i;
 	for (l = NNParms->LevelsCount-1; l>0; l--) {
-		for (i = 0; i<NNParms->NodesCount[CTXNODE][l]; i++) {
-			NN->F[l-1][t0][NNParms->NodesCount[BIASNODE][l+1]+NNParms->NodesCount[DATANODE][l+1]+i] = NN->F[l][t0][NNParms->NodesCount[BIASNODE][l]+i];
+		for (i = 0; i<(NNParms->NodesCount[DATANODE][l]+NNParms->NodesCount[CTXNODE][l]); i++) {
+			NN->F[l-1][t0][NNParms->NodesCount[BIASNODE][l-1]+NNParms->NodesCount[DATANODE][l-1]+i] = NN->F[l][t0][NNParms->NodesCount[BIASNODE][l]+i];
 		}
 	}
 
@@ -512,8 +516,8 @@ double	FF(NN_Parms* NNParms, NN_Mem* NN) {
 		MbyV(NNParms->NodesCount[TOTNODE][l+1], NNParms->NodesCount[TOTNODE][l], NN->W[l][t0], false, NN->F[l][t0], NN->a[l+1][t0]);
 		//-- Activation 
 		Activate(NNParms->ActivationFunction, NNParms->NodesCount[TOTNODE][l+1], NN->c[l+1][t0], NN->a[l+1][t0], NN->F[l+1][t0], NN->dF[l+1][t0]);
-		//-- reset bias neuron at each level. they should always be 1
-		NN->F[l][t0][0] = 1;
+		//-- reset bias neuron at each level (except output level). they should always be 1
+		if(l<(NNParms->LevelsCount-2)) NN->F[l+1][t0][0] = 1;
 	}
 
 	//-- 1. Feedback to Context Neurons
@@ -1125,14 +1129,8 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 		}
 	}
 
-	//-- 2. Reset Context Neurons
-	if (NNParms->UseContext==1)	FeedBack(NNParms, &MxData.NN);
-	//-- 2.1. Reset Bias Neurons
-	for (l = 0; l<NNParms->LevelsCount; l++) {
-		for (i = 0; i<NNParms->NodesCount[TOTNODE][l]; i++) {
-			MxData.NN.F[l][t0][0] = 1;
-		}
-	}
+	//-- 2. Init Neurons
+	InitNeurons(NNParms, &MxData);
 
 	//-- 3. Write First window of data, with no prediction (that is, write the first sample)
 	for (i = 0; i<NNParms->InputCount; i++) SaveRunData(NNLogs, pid, tid, i, pSample[0][i], NULL);
