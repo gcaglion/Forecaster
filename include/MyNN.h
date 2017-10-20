@@ -90,6 +90,7 @@ typedef struct {
 #undef EXPORT
 #define EXPORT __declspec(dllexport)
 
+EXPORT void getNNOutputRange(NN_Parms* NNParms, double* oScaleMin, double* oScaleMax);
 EXPORT void setNNTopology(NN_Parms* NN);
 EXPORT void mallocNNLog(tCoreLog* coreLog, int levelsCnt, int* nodesCnt, bool mallocIntP, int tscnt);
 EXPORT void freeNNLog(tCoreLog* coreLog, int levelsCnt, int* nodesCnt, bool freeIntP, int tscnt);

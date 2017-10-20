@@ -2,6 +2,23 @@
 
 #include <MyNN.h>
 
+EXPORT void getNNOutputRange(NN_Parms* NNParms, double* oScaleMin, double* oScaleMax) {
+	switch (NNParms->ActivationFunction) {
+	case NN_ACTIVATION_TANH:
+		(*oScaleMin) = -1;
+		(*oScaleMax) = 1;
+		break;
+	case NN_ACTIVATION_EXP4:
+		(*oScaleMin) = 0;
+		(*oScaleMax) = 1;
+		break;
+	default:
+		(*oScaleMin) = -1;
+		(*oScaleMax) = 1;
+		break;
+	}
+}
+
 EXPORT void setNNTopology(NN_Parms* NN) {
 	int i, nl;
 	int Levcnt;	// Levels count
@@ -12,36 +29,38 @@ EXPORT void setNNTopology(NN_Parms* NN) {
 	Levcnt = cslToArray(NN->LevelRatioS, ',', DescList);
 
 	//-- 2. For Network Topology, convert string to float
-	for (i = 0; i <= Levcnt; i++) {
-		NN->LevelRatio[i] = atof(DescList[i]);
-	}
+	for (i = 0; i <= Levcnt; i++) NN->LevelRatio[i] = atof(DescList[i]);
+	
 	// set LevelsCount
-	NN->LevelsCount = (Levcnt + 2);
+	NN->LevelsCount = (Levcnt + 1);
 
-	// set NodesCount, NodesCountTotal
-	NN->NodesCount[0] = NN->InputCount;
-	NN->NodesCount[NN->LevelsCount - 1] = NN->OutputCount;
-	NN->NodesCountTotal = NN->InputCount + NN->OutputCount;
-	//-- calc nodescount[], totalnodescount
-	for (nl = 0; nl<(NN->LevelsCount - 2); nl++) {
-		NN->NodesCount[nl + 1] = (int)floor(NN->NodesCount[nl] * NN->LevelRatio[nl]);
-		NN->NodesCountTotal += NN->NodesCount[nl + 1];
-	}
+	// set NodesCount
+	NN->NodesCount[DATANODE][0] = NN->InputCount;
+	NN->NodesCount[DATANODE][NN->LevelsCount - 1] = NN->OutputCount;
+	
+	//-- calc nodescount[] (DATANODEs only)
+	for (nl = 0; nl<(NN->LevelsCount - 2); nl++) NN->NodesCount[DATANODE][nl+1] = (int)floor(NN->NodesCount[DATANODE][nl] * NN->LevelRatio[nl]);
+	
 	//-- add context neurons
+	for(nl=0; nl<NN->LevelsCount; nl++) NN->NodesCount[CTXNODE][nl] = 0;
 	if (NN->UseContext>0) {
-		for (nl = NN->LevelsCount-1; nl>=0; nl--) {
-			NN->NodesCount[nl-1] += NN->NodesCount[nl];
-		}
+		for (nl = NN->LevelsCount-1; nl>=0; nl--) NN->NodesCount[CTXNODE][nl-1] += NN->NodesCount[DATANODE][nl]+NN->NodesCount[CTXNODE][nl];
 	}
-	//-- add bias neurons one for each layer, except output layer
-	for (nl = 0; nl<(NN->LevelsCount-1); nl++) {
-		NN->NodesCount[nl] += 1;
+	//-- add one bias neurons for each layer, except output layer
+	for (nl = 0; nl<(NN->LevelsCount-1); nl++) NN->NodesCount[BIASNODE][nl] = 1;
+	
+	//-- calc total nodes for each layer, plus NodesCountTotal
+	NN->NodesCountTotal = 0;
+	for (nl = 0; nl<NN->LevelsCount; nl++) {
+		NN->NodesCount[TOTNODE][nl] = NN->NodesCount[DATANODE][nl]+NN->NodesCount[CTXNODE][nl]+NN->NodesCount[BIASNODE][nl];
+		NN->NodesCountTotal += NN->NodesCount[TOTNODE][nl];
 	}
-	//-- calc totalweightscount
+
+	//-- calc WeightsCountTotal
 	NN->WeightsCountTotal = 0;
 	for (nl = 0; nl<(NN->LevelsCount - 1); nl++) {
-		for (int nn1 = 0; nn1<NN->NodesCount[nl + 1]; nn1++) {
-			for (int nn0 = 0; nn0<NN->NodesCount[nl]; nn0++) {
+		for (int nn1 = 0; nn1<NN->NodesCount[TOTNODE][nl+1]; nn1++) {
+			for (int nn0 = 0; nn0<NN->NodesCount[TOTNODE][nl]; nn0++) {
 				NN->WeightsCountTotal++;
 			}
 		}
@@ -86,8 +105,8 @@ void SaveFinalW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD
 	//-- This should be called only once at the end of training
 	int i, j, l;
 	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
-		for (j = 0; j < NNParms->NodesCount[l+1]; j++) {
-			for (i = 0; i < NNParms->NodesCount[l]; i++) {
+		for (j = 0; j < NNParms->NodesCount[TOTNODE][l+1]; j++) {
+			for (i = 0; i < NNParms->NodesCount[TOTNODE][l]; i++) {
 				NNLog->NNFinalW[l][j][i].ProcessId = pid;
 				NNLog->NNFinalW[l][j][i].ThreadId = tid;
 				NNLog->NNFinalW[l][j][i].NeuronLevel = l;
@@ -96,8 +115,6 @@ void SaveFinalW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD
 				NNLog->NNFinalW[l][j][i].Weight = NN->W[l][t0][j][i];
 				NNLog->NNFinalW[l][j][i].dW = NN->dW[l][t0][j][i];
 				NNLog->NNFinalW[l][j][i].dJdW = NN->dJdW[l][t0][j][i];
-				//-- Context neurons
-				//if (l==0) NNLog->NNFinalW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? NN->F[0][t0][i] : 0;
 			}
 		}
 	}
@@ -106,8 +123,8 @@ void SaveInitW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD 
 	//-- This should be called only once at the beginning of training
 	int i, j, l;
 	for (l = 0; l<(NNParms->LevelsCount-1); l++) {
-		for (j = 0; j < NNParms->NodesCount[l+1]; j++) {
-			for (i = 0; i < NNParms->NodesCount[l]; i++) {
+		for (j = 0; j < NNParms->NodesCount[TOTNODE][l+1]; j++) {
+			for (i = 0; i < NNParms->NodesCount[TOTNODE][l]; i++) {
 				NNLog->NNInitW[l][j][i].ProcessId = pid;
 				NNLog->NNInitW[l][j][i].ThreadId = tid;
 				NNLog->NNInitW[l][j][i].NeuronLevel = l;
@@ -116,8 +133,6 @@ void SaveInitW(NN_Parms* NNParms, NN_Mem* NN, tCoreLog* NNLog, DWORD pid, DWORD 
 				NNLog->NNInitW[l][j][i].Weight = NN->W[l][t0][j][i];
 				NNLog->NNInitW[l][j][i].dW = NN->dW[l][t0][j][i];
 				NNLog->NNInitW[l][j][i].dJdW = NN->dJdW[l][t0][j][i];
-				//-- Context neurons
-				//if (l==0) NNLog->NNInitW[l][j][i].CtxValue = (i >= NNParms->InputCount) ? F0[t0][i] : 0;
 			}
 		}
 	}
@@ -145,18 +160,25 @@ void SaveCoreData_SCGD(tCoreLog* NNLog, int pid, int tid, int epoch, int samplei
 void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
 	int i, k, l, x, y;
 
+	double vScaleMin, vScaleMax;
+	getNNOutputRange(NN, &vScaleMin, &vScaleMax);
+
 	for (int t = 0; t<TimeSteps; t++) {
+
 		//-- Neurons
 		for (l = 0; l < NN->LevelsCount; l++) {
-			for (i = 0; i < NN->NodesCount[l]; i++) {
-				Mx->NN.F[l][t][i] = 0;
-				Mx->NN.dF[l][t][i] = 0;
-				Mx->NN.c[l][t][i] = 1;
-			}
-		}
-		//-- overwrite bias neurons. these should always have F=1
-		for (l = 0; l < (NN->LevelsCount-1); l++) {
+			//-- Bias node
 			Mx->NN.F[l][t][0] = 1;
+			//-- Data nodes
+			for (i = 0; i < NN->NodesCount[DATANODE][l]; i++) {
+				Mx->NN.F[l][t][1+i] = 0;
+				Mx->NN.dF[l][t][1+i] = 0;
+				Mx->NN.c[l][t][1+i] = 1;
+			}
+			//-- Context nodes
+			for (i = 0; i < NN->NodesCount[CTXNODE][l]; i++) {
+				Mx->NN.F[l][t][1+NN->NodesCount[DATANODE][l]+i] = (vScaleMax-vScaleMin)/2;	// see Elman.pdf, p.182
+			}
 		}
 
 		//-- Weights
@@ -164,9 +186,9 @@ void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
 		//FILE* fw = fopen("c:/temp/W.init", "r");
 		//float w, dw;
 		for (l = 0; l < (NN->LevelsCount-1); l++) {
-			for (i = 0; i < (NN->NodesCount[l+1] * NN->NodesCount[l]); i++) {
-				y = (int)(i / NN->NodesCount[l]);
-				x = i%NN->NodesCount[l];
+			for (i = 0; i < (NN->NodesCount[TOTNODE][l+1] * NN->NodesCount[TOTNODE][l]); i++) {
+				y = (int)(i / NN->NodesCount[TOTNODE][l]);
+				x = i%NN->NodesCount[TOTNODE][l];
 
 				if (loadW) {
 					//-- load weights as we do in Run_NN():
@@ -174,7 +196,7 @@ void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
 					Mx->NN.dW[l][t][y][x] = NNLogs->NNFinalW[l][y][x].dW;
 					Mx->NN.dJdW[l][t][y][x] = NNLogs->NNFinalW[l][y][x].dJdW;
 				} else {
-					Mx->NN.W[l][t][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[l]), 1 / sqrt((double)NN->NodesCount[l]));
+					Mx->NN.W[l][t][y][x] = MyRndDbl(-1 / sqrt((double)NN->NodesCount[TOTNODE][l]), 1 / sqrt((double)NN->NodesCount[TOTNODE][l]));
 					Mx->NN.dW[l][t][y][x] = 0;
 					Mx->NN.dJdW[l][t][y][x] = 0;
 				}
@@ -211,11 +233,11 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
 		ret.edF[l] = (double**)malloc(TimeSteps * sizeof(double*));
 		ret.c[l] = (double**)malloc(TimeSteps * sizeof(double*));
 		for (t = 0; t < TimeSteps; t++) {
-			ret.a[l][t] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-			ret.F[l][t] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-			ret.dF[l][t] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-			ret.edF[l][t] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-			ret.c[l][t] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
+			ret.a[l][t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+			ret.F[l][t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+			ret.dF[l][t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+			ret.edF[l][t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+			ret.c[l][t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
 		}
 	}
 	//-- outer node only -> [Time]
@@ -225,11 +247,11 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
 	ret.Ve = (double**)malloc(TimeSteps * sizeof(double*));
 	ret.Vu = (double**)malloc(TimeSteps * sizeof(double*));
 	for (t = 0; t < TimeSteps; t++) {
-		ret.e[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
-		ret.u[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
-		ret.ge[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
-		ret.Ve[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
-		ret.Vu[t] = (double*)malloc(pNNParms->NodesCount[pNNParms->LevelsCount - 1] * sizeof(double));
+		ret.e[t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][pNNParms->LevelsCount-1] * sizeof(double));
+		ret.u[t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][pNNParms->LevelsCount-1] * sizeof(double));
+		ret.ge[t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][pNNParms->LevelsCount-1] * sizeof(double));
+		ret.Ve[t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][pNNParms->LevelsCount-1] * sizeof(double));
+		ret.Vu[t] = (double*)malloc(pNNParms->NodesCount[TOTNODE][pNNParms->LevelsCount-1] * sizeof(double));
 	}
 	ret.norm_e = (double*)malloc(TimeSteps * sizeof(double));
 	ret.norm_ge = (double*)malloc(TimeSteps * sizeof(double));
@@ -248,17 +270,17 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
 		ret.GdJdW[l] = (double***)malloc(TimeSteps * sizeof(double**));
 		ret.BdW[l] = (double***)malloc(TimeSteps * sizeof(double**));
 		for (t = 0; t < TimeSteps; t++) {
-			ret.W[l][t] = (double**)malloc(pNNParms->NodesCount[l + 1] * sizeof(double*));
-			ret.dW[l][t] = (double**)malloc(pNNParms->NodesCount[l + 1] * sizeof(double*));
-			ret.dJdW[l][t] = (double**)malloc(pNNParms->NodesCount[l + 1] * sizeof(double*));
-			ret.GdJdW[l][t] = (double**)malloc(pNNParms->NodesCount[l + 1] * sizeof(double*));
-			ret.BdW[l][t] = (double**)malloc(pNNParms->NodesCount[l + 1] * sizeof(double*));
-			for (i = 0; i < pNNParms->NodesCount[l + 1]; i++) {
-				ret.W[l][t][i] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-				ret.dW[l][t][i] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-				ret.dJdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-				ret.GdJdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
-				ret.BdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[l] * sizeof(double));
+			ret.W[l][t] = (double**)malloc(pNNParms->NodesCount[TOTNODE][l+1] * sizeof(double*));
+			ret.dW[l][t] = (double**)malloc(pNNParms->NodesCount[TOTNODE][l+1] * sizeof(double*));
+			ret.dJdW[l][t] = (double**)malloc(pNNParms->NodesCount[TOTNODE][l+1] * sizeof(double*));
+			ret.GdJdW[l][t] = (double**)malloc(pNNParms->NodesCount[TOTNODE][l+1] * sizeof(double*));
+			ret.BdW[l][t] = (double**)malloc(pNNParms->NodesCount[TOTNODE][l+1] * sizeof(double*));
+			for (i = 0; i < pNNParms->NodesCount[l+1]; i++) {
+				ret.W[l][t][i] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+				ret.dW[l][t][i] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+				ret.dJdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+				ret.GdJdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
+				ret.BdW[l][t][i] = (double*)malloc(pNNParms->NodesCount[TOTNODE][l] * sizeof(double));
 			}
 		}
 	}
@@ -332,7 +354,7 @@ void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	//-- weight levels -> [Levels-1][Time]
 	for (l = 0; l < (pNNParms->LevelsCount - 1); l++) {
 		for (t = 0; t < TimeSteps; t++) {
-			for (i = 0; i < pNNParms->NodesCount[l + 1]; i++) {
+			for (i = 0; i < pNNParms->NodesCount[TOTNODE][l+1]; i++) {
 				free(NN.W[l][t][i]);
 				free(NN.dW[l][t][i]);
 				free(NN.dJdW[l][t][i]);
@@ -448,15 +470,21 @@ void	FeedBack(NN_Parms* NNParms, NN_Mem* NN, bool Zero) {
 
 	//-- Sets values for Context Neurons. Called by FF (Zero=false) and Run_NN (Zero=true)
 
-	int i, l, cc;
-
-	cc = 0;
+	int l, i;
 	for (l = NNParms->LevelsCount-1; l>0; l--) {
+		for (i = 0; i<NNParms->NodesCount[TOTNODE][l]; i++) {
+			NN->F[l-1][t0][NNParms->NodesCount[BIASNODE][l+1]+NNParms->NodesCount[DATANODE][l+1]+i] = NN->F[l][t0][NNParms->NodesCount[BIASNODE][l]+i];
+		}
+	}
+
+/*	int cc = 0;
+	for (int l = NNParms->LevelsCount-1; l>0; l--) {
 		cc = NNParms->NodesCount[l]-cc+((l==NNParms->LevelsCount-1) ? 0 : 1);
-		for (i = 0; i<cc; i++) {
+		for (int i = 0; i<cc; i++) {
 			NN->F[l-1][t0][NNParms->NodesCount[l-1]-cc+i] = (Zero) ? 0 : NN->F[l][t0][i+((l==NNParms->LevelsCount-1) ? 0 : 1)];
 		}
 	}
+	*/
 }
 void	FF_Std(NN_Parms* pNNParms, NN_Mem* NN) {
 
@@ -645,7 +673,7 @@ int	BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 	double epsilon = NN->TargetMSE / NN->OutputCount;
 
 	//BackupW(NN, Mx->NN.W, t4);
-	VInit(NN->NodesCountTotal, Mx->NN.scgd->TotdW, 0);
+	VInit(NN->WeightsCountTotal, Mx->NN.scgd->TotdW, 0);
 
 	dEcalc(NN, Mx, true);
 

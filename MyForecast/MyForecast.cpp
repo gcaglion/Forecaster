@@ -828,39 +828,11 @@ void SetTSScaleRange(int pEngineType, void* pCoreSpecs, double* oScaleMin, doubl
 
 	switch (pEngineType) {
 	case ENGINE_NN:
-		NNParms = (NN_Parms*)pCoreSpecs;
-		switch (NNParms->ActivationFunction) {
-		case NN_ACTIVATION_TANH:
-			(*oScaleMin) = -1;
-			(*oScaleMax) = 1;
-			break;
-		case NN_ACTIVATION_EXP4:
-			(*oScaleMin) = 0;
-			(*oScaleMax) = 1;
-			break;
-		default:
-			(*oScaleMin) = -1;
-			(*oScaleMax) = 1;
-			break;
-		}
+		getNNOutputRange((NN_Parms*)pCoreSpecs, oScaleMin, oScaleMax);
 		break;
 	case ENGINE_WNN:
 		//-- identical to ENGINE_NN
-		NNParms = (NN_Parms*)pCoreSpecs;
-		switch (NNParms->ActivationFunction) {
-		case NN_ACTIVATION_TANH:
-			(*oScaleMin) = -1;
-			(*oScaleMax) = 1;
-			break;
-		case NN_ACTIVATION_EXP4:
-			(*oScaleMin) = 0;
-			(*oScaleMax) = 1;
-			break;
-		default:
-			(*oScaleMin) = -1;
-			(*oScaleMax) = 1;
-			break;
-		}
+		getNNOutputRange((NN_Parms*)pCoreSpecs, oScaleMin, oScaleMax);
 		break;
 	case ENGINE_GA:
 		GAParms = (GA_Parms*)pCoreSpecs;

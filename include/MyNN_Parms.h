@@ -31,6 +31,12 @@
 #define NN_ACTIVATION_TANH 1	// y=tanh(x)				=> range is [-1 ÷ 1]
 #define NN_ACTIVATION_EXP4 2	// y = 1 / (1+exp(-4*x))	=> range is [ 0 ÷ 1]
 
+//-- Node Types
+#define DATANODE 0
+#define CTXNODE  1
+#define BIASNODE 2
+#define TOTNODE  3
+
 //-- NN engine core parameters
 typedef struct {
 	int InputCount;
@@ -38,9 +44,9 @@ typedef struct {
 	int LevelsCount;
 	double LevelRatio[MAX_LEVELS];	// Ratio between # of nodes at current and previous level
 	char LevelRatioS[60];			// comma-separated string with level ratios
-	int NodesCount[MAX_LEVELS];	// # of nodes at each level
-	int NodesCountTotal;		// total # of nodes
-	int WeightsCountTotal;		// total # of weights
+	int NodesCount[4][MAX_LEVELS];	// # of nodes (Data, Context, Bias) at each level
+	int NodesCountTotal;			// total # of nodes
+	int WeightsCountTotal;			// total # of weights
 	int MaxEpochs;
 	double TargetMSE;
 	int UseContext;
