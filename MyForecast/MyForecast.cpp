@@ -496,14 +496,14 @@ void setCoreInfo_Post(tEngineDef* pEngineParms, tDataShape* pDataParms, NN_Parms
 		pEngineParms->Core[0][0].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L0nn
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[0][1].CoreSpecs;
-		pEngineParms->Core[0][0].TimeStepsCount = pDataParms->SampleCount * (((*NNInfo)->BP_Algo==BP_SCGD) ? (*NNInfo)->SCGDmaxK : (*NNInfo)->MaxEpochs);
+		pEngineParms->Core[0][1].TimeStepsCount = pDataParms->SampleCount * (((*NNInfo)->BP_Algo==BP_SCGD) ? (*NNInfo)->SCGDmaxK : (*NNInfo)->MaxEpochs);
 		pEngineParms->Core[0][1].SampleLen = (*NNInfo)->InputCount;
 		pEngineParms->Core[0][1].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[0][1].MSECount = (*NNInfo)->MaxEpochs;
 		pEngineParms->Core[0][1].RunCount = pDataParms->HistoryLen + pDataParms->PredictionLen;
 		//-- L1nn
 		(*NNInfo) = (NN_Parms*)pEngineParms->Core[1][0].CoreSpecs;
-		pEngineParms->Core[0][0].TimeStepsCount = pDataParms->SampleCount * (((*NNInfo)->BP_Algo==BP_SCGD) ? (*NNInfo)->SCGDmaxK : (*NNInfo)->MaxEpochs);
+		pEngineParms->Core[1][0].TimeStepsCount = pDataParms->SampleCount * (((*NNInfo)->BP_Algo==BP_SCGD) ? (*NNInfo)->SCGDmaxK : (*NNInfo)->MaxEpochs);
 		pEngineParms->Core[1][0].SampleLen = pEngineParms->Core[0][0].TargetLen + pEngineParms->Core[0][1].TargetLen;	//(*NNInfo)->InputCount;
 		pEngineParms->Core[1][0].TargetLen = (*NNInfo)->OutputCount;
 		pEngineParms->Core[1][0].MSECount = (*NNInfo)->MaxEpochs;
