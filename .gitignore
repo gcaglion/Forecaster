@@ -22,3 +22,8 @@ ipch/*
 *.utf8
 /~$Tester.xlsm
 /~$Tester_Multi.xlsm
+
+# c# stuff
+TemporaryGeneratedFile*
+MyGUI/bin/*
+MyGUI/obj/*
