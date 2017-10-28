@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyGUI"
         mc:Ignorable="d"
-        Title="Parameters Manager" Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="740" Width="710">
+        Title="Parameters Manager" Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="840" Width="710">
     <Grid HorizontalAlignment="Left" VerticalAlignment="Top">
-        <TabControl x:Name="tabControl" HorizontalAlignment="Left" VerticalAlignment="Top"  Height="700" Width="700">
+        <TabControl x:Name="tabControl" HorizontalAlignment="Left" VerticalAlignment="Top"  Height="800" Width="700">
             <TabItem Header="General &amp; DataSource"  HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" FontSize="10">
                 <Grid x:Name="gr_Main" Background="#FFE5E5E5">
                     <Border x:Name="brd_ClientGeneral" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="109" Width="170" Margin="10,10">
@@ -19,6 +19,87 @@
                             <CheckBox x:Name="cb_PauseAtEnd" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Canvas.Left="90" Canvas.Top="84" />
                             <Label x:Name="label1" Content="General - Client" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="12" Margin="32,0,0,0"/>
                             <TextBox x:Name="txt_SimulationLength_Copy" HorizontalAlignment="Left" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="25" FontSize="10" Height="19" Canvas.Left="90" Canvas.Top="36" />
+                        </Canvas>
+                    </Border>
+                    <Border x:Name="brd_Forecaster_General" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="169"  Width="220" Margin="10,130">
+                        <Canvas x:Name="cnv_Forecaster_General" >
+                            <Label x:Name="label5" Content="General - Forecaster" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="32"/>
+                            <Label x:Name="label_Copy14" Content="Action" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="30"/>
+                            <Label x:Name="label_Copy15" Content="Have Future Data" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="51"/>
+                            <CheckBox x:Name="cb_HaveFutureData" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="93" Canvas.Top="58" IsChecked="True"/>
+                            <ComboBox x:Name="cbo_Action" Canvas.Left="93" Canvas.Top="34" Width="113" SelectedIndex="0" SelectionChanged="cbo_Action_SelectionChanged">
+                                <ComboBoxItem Content="TRAIN_SAVE_RUN"/>
+                                <ComboBoxItem Content="ADD_SAMPLES"/>
+                                <ComboBoxItem Content="JUST_RUN"/>
+                            </ComboBox>
+                            <Canvas x:Name="cnv_SavedEngine" Margin="0,70,20,20" Visibility="Hidden">
+                                <Label x:Name="label_Copy18" Content="SavedEngine Identification" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Top="3" Canvas.Left="52" FontWeight="Bold"/>
+                                <Label x:Name="label_Copy17" Content="ProcessId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="26"/>
+                                <Label x:Name="label_Copy16" Content="TestId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
+                                <Label x:Name="label_Copy19" Content="DatasetId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="68"/>
+                                <TextBox x:Name="txt_SavedEnginePid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="208280" VerticalAlignment="Top" Width="62" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="26"/>
+                                <TextBox x:Name="txt_SavedEngineTid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="34" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="47"/>
+                                <TextBox x:Name="txt_SavedEngineDSid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="34" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="68"/>
+                            </Canvas>
+                        </Canvas>
+                    </Border>
+                    <Border x:Name="brd_Forecaster_Debug" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,260" Height="240" Width="250">
+                        <Canvas x:Name="cnv_Forecaster_Debug">
+                            <Label x:Name="label50" Content="Forecaster Debug" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="70"/>
+                            <Label x:Name="label5a" Content="DebugLevel" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="25"/>
+                            <TextBox x:Name="txt_DebugLevel" Text="2" VerticalAlignment="Top" Width="20" FontSize="10" Height="19" Canvas.Top="28" Canvas.Left="100" />
+                            <Label x:Name="label5b" Content="DebugFileName" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
+                            <TextBox x:Name="txt_DebugFile" Text="C:\temp\Forecaster.log" VerticalAlignment="Top" Width="120" FontSize="10" Height="19" Canvas.Top="50" Canvas.Left="100" />
+                            <Button x:Name="btn_DebugFile" Content="..." Height="19" Width="19" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="225" Canvas.Top="50" Click="btn_DebugFile_Click"/>
+                            <Label x:Name="label5c" Content="ThreadSafeLogging" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="69"/>
+                            <CheckBox x:Name="cb_ThreadSafeLogging" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="72" IsChecked="False"></CheckBox>
+                            <Label x:Name="label5d" Content="PauseOnError" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="91"/>
+                            <CheckBox x:Name="cb_PauseOnError" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="94" IsChecked="True"></CheckBox>
+                            <Label x:Name="label5e" Content="DumpSampleData" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="113"/>
+                            <CheckBox x:Name="cb_DumpSampleData" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="116" IsChecked="False"></CheckBox>
+                        </Canvas>
+                    </Border>
+                    <Border x:Name="brd_Forecaster_Results" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10,10" Height="240" Width="200">
+                        <Canvas x:Name="cnv_Forecaster_Results">
+                            <Label x:Name="label60" Content="Forecaster Results" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="49"/>
+                            <Label x:Name="label6a" Content="SaveNothing" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="25"/>
+                            <CheckBox x:Name="cb_SaveNothing" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="28" IsChecked="False" Checked="cb_SaveNothing_Checked" Unchecked="cb_SaveNothing_UnChecked"></CheckBox>
+                            <Label x:Name="label6b" Content="SaveMSE" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
+                            <CheckBox x:Name="cb_SaveMSE" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="51" IsChecked="True"></CheckBox>
+                            <Label x:Name="label6c" Content="SaveRun" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="69"/>
+                            <CheckBox x:Name="cb_SaveRun" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="73" IsChecked="True"></CheckBox>
+                            <Label x:Name="label6d" Content="SaveInternals" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="91"/>
+                            <CheckBox x:Name="cb_SaveInternals" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="95" IsChecked="True"></CheckBox>
+                            <Label x:Name="label6e" Content="SaveImages" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="113"/>
+                            <CheckBox x:Name="cb_SaveImages" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="117" IsChecked="True"></CheckBox>
+                            <Label x:Name="label6f" Content="Destination" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="135"/>
+                            <ComboBox x:Name="cbo_ResultsDest" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="139" Width="80" SelectedIndex="0" SelectionChanged="cbo_ResultsDest_SelectionChanged">
+                                <ComboBoxItem Content="ORCL"/>
+                                <ComboBoxItem Content="TXT"/>
+                            </ComboBox>
+                            <Canvas x:Name="cnv_ResultsDB" Canvas.Top="157">
+                                <Label x:Name="label6g" Content="DBUser" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="0"/>
+                                <TextBox x:Name="txt_ResultsDBUser" Text="LogUser" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="3" Canvas.Left="100" />
+                                <Label x:Name="label6h" Content="DBPassword" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="22"/>
+                                <TextBox x:Name="txt_ResultsDBPassword" Text="LogPwd" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="25" Canvas.Left="100" />
+                                <Label x:Name="label6i" Content="DBConnString" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="44"/>
+                                <TextBox x:Name="txt_ResultsDBConnString" Text="Algo" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="48" Canvas.Left="100" />
+                            </Canvas>
+                        </Canvas>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Data Shape &amp; Pre-Processing" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="118" FontSize="10" >
+                <Grid x:Name="gr_DataShape" Background="#FFE5E5E5">
+                    <Border x:Name="brd_DataShape" BorderBrush="Black" BorderThickness="1" Margin="10,10,0,0" Height="100" Width="200" VerticalAlignment="Top" HorizontalAlignment="Left" Grid.ColumnSpan="2">
+                        <Canvas x:Name="cnv_DataShape">
+                            <Label x:Name="label9a" Content="Data Shape" FontSize="12" Canvas.Left="65" />
+                            <Label x:Name="label9b" Content="HistoryLen" Canvas.Top="25"/>
+                            <TextBox x:Name="txt_HistoryLen" Width="40" Text="1000" Canvas.Left="90" Canvas.Top="28" Height="19"/>
+                            <Label x:Name="label9c" Content="SampleLen" Canvas.Top="46"/>
+                            <TextBox x:Name="txt_SampleLen" Width="40" Text="100" Canvas.Left="90" Canvas.Top="49" Height="19"/>
+                            <Label x:Name="label9d" Content="PredictionLen" Canvas.Top="67"/>
+                            <TextBox x:Name="txt_PredictionLen" Width="20" Text="3" Canvas.Left="90" Canvas.Top="70" Height="19"/>
                         </Canvas>
                     </Border>
                     <Border x:Name="brd_DataSourceType" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Right" Height="109" Width="150" Margin="10,10" >
@@ -79,88 +160,7 @@
                             </ComboBox>
                         </Canvas>
                     </Border>
-                    <Border x:Name="brd_Forecaster_General" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Top" HorizontalAlignment="Left" Height="169"  Width="220" Margin="10,130">
-                        <Canvas x:Name="cnv_Forecaster_General" >
-                            <Label x:Name="label5" Content="General - Forecaster" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="32"/>
-                            <Label x:Name="label_Copy14" Content="Action" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="30"/>
-                            <Label x:Name="label_Copy15" Content="Have Future Data" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="51"/>
-                            <CheckBox x:Name="cb_HaveFutureData" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="93" Canvas.Top="58" IsChecked="True"/>
-                            <ComboBox x:Name="cbo_Action" Canvas.Left="93" Canvas.Top="34" Width="113" SelectedIndex="0" SelectionChanged="cbo_Action_SelectionChanged">
-                                <ComboBoxItem Content="TRAIN_SAVE_RUN"/>
-                                <ComboBoxItem Content="ADD_SAMPLES"/>
-                                <ComboBoxItem Content="JUST_RUN"/>
-                            </ComboBox>
-                            <Canvas x:Name="cnv_SavedEngine" Margin="0,70,20,20" Visibility="Hidden">
-                                <Label x:Name="label_Copy18" Content="SavedEngine Identification" HorizontalAlignment="Center" VerticalAlignment="Top" Canvas.Top="3" Canvas.Left="52" FontWeight="Bold"/>
-                                <Label x:Name="label_Copy17" Content="ProcessId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="26"/>
-                                <Label x:Name="label_Copy16" Content="TestId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
-                                <Label x:Name="label_Copy19" Content="DatasetId" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="68"/>
-                                <TextBox x:Name="txt_SavedEnginePid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="208280" VerticalAlignment="Top" Width="62" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="26"/>
-                                <TextBox x:Name="txt_SavedEngineTid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="34" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="47"/>
-                                <TextBox x:Name="txt_SavedEngineDSid" HorizontalAlignment="Left" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="34" FontSize="10" Height="19" Canvas.Left="93" Canvas.Top="68"/>
-                            </Canvas>
-                        </Canvas>
-                    </Border>
-                    <Border x:Name="brd_Forecaster_Debug" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,10" Height="240" Width="250">
-                        <Canvas x:Name="cnv_Forecaster_Debug">
-                            <Label x:Name="label50" Content="Forecaster Debug" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="49"/>
-                            <Label x:Name="label5a" Content="DebugLevel" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="25"/>
-                            <TextBox x:Name="txt_DebugLevel" Text="2" VerticalAlignment="Top" Width="20" FontSize="10" Height="19" Canvas.Top="28" Canvas.Left="100" />
-                            <Label x:Name="label5b" Content="DebugFileName" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
-                            <TextBox x:Name="txt_DebugFile" Text="C:\temp\Forecaster.log" VerticalAlignment="Top" Width="120" FontSize="10" Height="19" Canvas.Top="50" Canvas.Left="100" />
-                            <Button x:Name="btn_DebugFile" Content="..." Height="19" Width="19" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="225" Canvas.Top="50" Click="btn_DebugFile_Click"/>
-                            <Label x:Name="label5c" Content="ThreadSafeLogging" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="69"/>
-                            <CheckBox x:Name="cb_ThreadSafeLogging" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="72" IsChecked="False"></CheckBox>
-                            <Label x:Name="label5d" Content="PauseOnError" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="91"/>
-                            <CheckBox x:Name="cb_PauseOnError" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="94" IsChecked="True"></CheckBox>
-                            <Label x:Name="label5e" Content="DumpSampleData" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="113"/>
-                            <CheckBox x:Name="cb_DumpSampleData" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="116" IsChecked="False"></CheckBox>
-                        </Canvas>
-                    </Border>
-                    <Border x:Name="brd_Forecaster_Results" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10,10" Height="240" Width="200">
-                        <Canvas x:Name="cnv_Forecaster_Results">
-                            <Label x:Name="label60" Content="Forecaster Results" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Canvas.Left="49"/>
-                            <Label x:Name="label6a" Content="SaveNothing" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="25"/>
-                            <CheckBox x:Name="cb_SaveNothing" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="28" IsChecked="False" Checked="cb_SaveNothing_Checked" Unchecked="cb_SaveNothing_UnChecked"></CheckBox>
-                            <Label x:Name="label6b" Content="SaveMSE" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="47"/>
-                            <CheckBox x:Name="cb_SaveMSE" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="51" IsChecked="True"></CheckBox>
-                            <Label x:Name="label6c" Content="SaveRun" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="69"/>
-                            <CheckBox x:Name="cb_SaveRun" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="73" IsChecked="True"></CheckBox>
-                            <Label x:Name="label6d" Content="SaveInternals" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="91"/>
-                            <CheckBox x:Name="cb_SaveInternals" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="95" IsChecked="True"></CheckBox>
-                            <Label x:Name="label6e" Content="SaveImages" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="113"/>
-                            <CheckBox x:Name="cb_SaveImages" Content="" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="117" IsChecked="True"></CheckBox>
-                            <Label x:Name="label6f" Content="Destination" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="135"/>
-                            <ComboBox x:Name="cbo_ResultsDest" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Left="100" Canvas.Top="139" Width="80" SelectedIndex="0" SelectionChanged="cbo_ResultsDest_SelectionChanged">
-                                <ComboBoxItem Content="ORCL"/>
-                                <ComboBoxItem Content="TXT"/>
-                            </ComboBox>
-                            <Canvas x:Name="cnv_ResultsDB" Canvas.Top="157">
-                                <Label x:Name="label6g" Content="DBUser" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="0"/>
-                                <TextBox x:Name="txt_ResultsDBUser" Text="LogUser" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="3" Canvas.Left="100" />
-                                <Label x:Name="label6h" Content="DBPassword" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="22"/>
-                                <TextBox x:Name="txt_ResultsDBPassword" Text="LogPwd" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="25" Canvas.Left="100" />
-                                <Label x:Name="label6i" Content="DBConnString" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="44"/>
-                                <TextBox x:Name="txt_ResultsDBConnString" Text="Algo" VerticalAlignment="Top" Width="80" FontSize="10" Height="19" Canvas.Top="48" Canvas.Left="100" />
-                            </Canvas>
-                        </Canvas>
-                    </Border>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Data Shape &amp; Pre-Processing" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="118" FontSize="10" >
-                <Grid x:Name="gr_DataShape" Background="#FFE5E5E5">
-                    <Border x:Name="brd_DataShape" BorderBrush="Black" BorderThickness="1" Margin="10,10" Height="100" Width="200" VerticalAlignment="Top" HorizontalAlignment="Left">
-                        <Canvas x:Name="cnv_DataShape">
-                            <Label x:Name="label9a" Content="Data Shape" FontSize="12" Canvas.Left="65" />
-                            <Label x:Name="label9b" Content="HistoryLen" Canvas.Top="25"/>
-                            <TextBox x:Name="txt_HistoryLen" Width="40" Text="1000" Canvas.Left="90" Canvas.Top="28" Height="19"/>
-                            <Label x:Name="label9c" Content="SampleLen" Canvas.Top="46"/>
-                            <TextBox x:Name="txt_SampleLen" Width="40" Text="100" Canvas.Left="90" Canvas.Top="49" Height="19"/>
-                            <Label x:Name="label9d" Content="PredictionLen" Canvas.Top="67"/>
-                            <TextBox x:Name="txt_PredictionLen" Width="20" Text="3" Canvas.Left="90" Canvas.Top="70" Height="19"/>
-                        </Canvas>
-                    </Border>
-                    <Border x:Name="brd_DataPreProc" BorderBrush="Black" BorderThickness="1" Margin="10,10" Height="160" Width="200" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <Border x:Name="brd_DataPreProc" BorderBrush="Black" BorderThickness="1" Margin="10,120,10,0" Height="160" Width="200" VerticalAlignment="Top" HorizontalAlignment="Left">
                         <Canvas x:Name="cnv_DataPreProc">
                             <Label x:Name="label9e" Content="Data PreProcessing" FontSize="12" Canvas.Left="50" />
                             <Label x:Name="label9f" Content="ValidationShift" Canvas.Top="25"/>
@@ -455,7 +455,7 @@
                     </Border>
                     <Border x:Name="brd_SOMParms" BorderBrush="Black" BorderThickness="1"  Height="160" Width="185" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10,10" Visibility="Hidden">
                         <Canvas x:Name="cnv_SOMParms">
-                            <Label x:Name="lbl_Conf2" Content="SOM Configuration" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Margin="40,0,0,0"/>
+                            <Label x:Name="lbl_Conf2" Content="Layer 0 SOM Configuration" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="12" Margin="40,0,0,0"/>
                             <Label x:Name="label62" Content="OutputCount" Canvas.Top="30"/>
                             <Label x:Name="label62_Copy" Content="MaxEpochs" Canvas.Top="53"/>
                             <Label x:Name="label62_Copy1" Content="TDFunction" Canvas.Top="76"/>
