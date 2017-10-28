@@ -162,11 +162,17 @@
                     </Border>
                     <Border x:Name="brd_DataPreProc" BorderBrush="Black" BorderThickness="1" Margin="10,10" Height="160" Width="200" VerticalAlignment="Top" HorizontalAlignment="Right">
                         <Canvas x:Name="cnv_DataPreProc">
-                            <Label x:Name="label9e" Content="Data Shape" FontSize="12" Canvas.Left="65" />
+                            <Label x:Name="label9e" Content="Data PreProcessing" FontSize="12" Canvas.Left="50" />
                             <Label x:Name="label9f" Content="ValidationShift" Canvas.Top="25"/>
+                            <TextBox x:Name="txt_ValidationShift" Width="45" Text="-1000" Canvas.Left="100" Canvas.Top="28" Height="19"/>
                             <Label x:Name="label9g" Content="DataTransformation" Canvas.Top="46"/>
+                            <ComboBox x:Name="cbo_DataTransformation" Canvas.Left="100" Canvas.Top="49" Width="80">
+                                <ComboBoxItem Content="NONE"/>
+                                <ComboBoxItem Content="DELTA"/>
+                                <ComboBoxItem Content="DELTALOG"/>
+                            </ComboBox>
                             <Label x:Name="label9h" Content="UseTSFeatures" Canvas.Top="67"/>
-                            <CheckBox x:Name="cb_UseTSF"  Canvas.Top="70" Canvas.Left="80" IsChecked="True" Checked="cb_UseTSF_Checked" Unchecked="cb_UseTSF_Unchecked"></CheckBox>
+                            <CheckBox x:Name="cb_UseTSF"  Canvas.Top="70" Canvas.Left="100" IsChecked="True" Checked="cb_UseTSF_Checked" Unchecked="cb_UseTSF_Unchecked"></CheckBox>
                             <Canvas x:Name="cnv_TSF" Canvas.Top="90">
                                 <CheckBox x:Name="cb_TSFMean"  Canvas.Top="0" Canvas.Left="10" Content="TSF_Mean" IsChecked="True"></CheckBox>
                                 <CheckBox x:Name="cb_TSFMAD"  Canvas.Top="15" Canvas.Left="10" Content="TSF_MAD" IsChecked="True"></CheckBox>
