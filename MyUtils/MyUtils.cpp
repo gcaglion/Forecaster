@@ -18,6 +18,15 @@
 #undef EXPORT
 #define EXPORT __declspec(dllexport)
 
+extern "C"
+{
+	__declspec(dllexport) int __stdcall DisplayHelloFromDLL()
+	{
+		printf("Hello from DLL !\n");
+		return -2;
+	}
+}
+
 //------------ Resources Usage utilities -------------------
 static float CalculateCPULoad(unsigned long long idleTicks, unsigned long long totalTicks)
 {

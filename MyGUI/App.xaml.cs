@@ -5,6 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace MyGUI
 {
@@ -12,6 +14,12 @@ namespace MyGUI
     /// Interaction logic for App.xaml
     /// </summary>
     /// 
+
+    public class MyUtils
+    {
+        [DllImport("MyUtils.dll")]
+        public static extern int MyRndInt(int fromn, int ton);
+    }
 
     // implementation of C/C++ include files
     public static class DEF
@@ -25,7 +33,16 @@ namespace MyGUI
             public const int BP_LM          = 5;
         }
     }
+
     public partial class App : Application
     {
+
+        //int rnd = MyUtils.MyRndInt(1, 10);
+        //int kaz = 0;
+
+
+        //-- inizialize parameters from existing .ini file. The name of that will be in "LastParmsFile.ini" in current directory
+         public static string LastIniFile = File.ReadAllText("LastParmsFile.ini");
+
     }
 }
