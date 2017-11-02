@@ -105,7 +105,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, int* oParamValue
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		printf("Press any key..."); getchar();;
+		printf("Press any key..."); getchar();
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -118,7 +118,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, int* oParamValue
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key..."); getchar();;
+	printf("Press any key..."); getchar();
 	return -1;
 }
 EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, double* oParamValue) {
@@ -129,6 +129,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, double* oParamVa
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
+		printf("Press any key..."); getchar();
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %s ", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -142,7 +143,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, double* oParamVa
 	}
 	fclose(ParamFile);
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key..."); getchar();;
+	printf("Press any key..."); getchar();
 	return -1;
 }
 EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValue) {
@@ -153,7 +154,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValu
 	ParamFile = fopen(pFileName, "r");
 	if (ParamFile == NULL) {
 		printf("ReadParamFromFile() could not open Parameter file: %s . Exiting.\n", pFileName);
-		printf("Press any key..."); getchar();;
+		printf("Press any key..."); getchar();
 		return -1;
 	}
 	while (fscanf(ParamFile, "%s = %[^\n]", &vParamName[0], &vParamValue[0]) != EOF) {
@@ -165,7 +166,7 @@ EXPORT int ReadParamFromFile(char* pFileName, char* pParamName, char* oParamValu
 		}
 	}
 	printf("ReadParamFromFile() could not find Parameter: %s . Exiting.\n", pParamName);
-	printf("Press any key..."); getchar();;
+	printf("Press any key..."); getchar();
 	fclose(ParamFile);
 	return -1;
 }

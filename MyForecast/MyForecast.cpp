@@ -535,7 +535,6 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 	if (getParam(fParms->iniParms, "Results.DBUser", fParms->DebugParms.DebugDB->DBUser) < 0)					return -1;
 	if (getParam(fParms->iniParms, "Results.DBPassword", fParms->DebugParms.DebugDB->DBPassword) < 0)			return -1;
 	if (getParam(fParms->iniParms, "Results.DBConnString", fParms->DebugParms.DebugDB->DBConnString) < 0)		return -1;
-	//fParms->DebugParms.DebugDB->DBCtx = NULL;
 
 	//-- 2. Tester Data Source parameters (DatasetsCount needed before LoadXXXImage)
 	if (getParam(fParms->iniParms, "DataSource.SourceType", &fParms->DataParms.DataSourceType, enumlist) < 0)		return -1;
@@ -772,6 +771,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 			if (getParam(fParms->iniParms, "XIEInfo.SVM.NewVarSinQP", &SVMInfo->NewVarSinQP) < 0)					return -1;
 
 			NNInfo = (NN_Parms*)fParms->EngineParms.Core[0][1].CoreSpecs;
+			if (getParam(fParms->iniParms, "XIEInfo.NN0.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)							return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.UseContext", &NNInfo->UseContext) < 0)								return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.TrainingBatchCount", &NNInfo->TrainingBatchCount) < 0)				return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.BP_Algo", &NNInfo->BP_Algo, enumlist) < 0)							return -1;
@@ -785,7 +785,6 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.QProp.mu", &NNInfo->mu) <0)											return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.RProp.d0", &NNInfo->d0) <0)											return -1;
 			if (getParam(fParms->iniParms, "XIEInfo.NN0.SCGD.maxK", &NNInfo->SCGDmaxK) < 0)									return -1;
-			if (getParam(fParms->iniParms, "XIEInfo.NN0.LevelRatios", &NNInfo->LevelRatioS[0]) < 0)							return -1;
 
 			NNInfo = (NN_Parms*)fParms->EngineParms.Core[1][0].CoreSpecs;
 			if (getParam(fParms->iniParms, "XIEInfo.NN1.UseContext", &NNInfo->UseContext) < 0)								return -1;
@@ -821,7 +820,6 @@ EXPORT void ForecastParamFree(tForecastParms* fParms) {
 //--
 
 void SetTSScaleRange(int pEngineType, void* pCoreSpecs, double* oScaleMin, double* oScaleMax) {
-	NN_Parms* NNParms;
 	GA_Parms* GAParms;
 	SOM_Parms* SOMParms;
 	SVM_Parms* SVMParms;

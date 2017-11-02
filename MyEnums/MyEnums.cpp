@@ -112,6 +112,10 @@ EXPORT int getEnumVal(char* edesc, char* eVal, int* oVal) {
 		if (strcmp(eVal, "LEARNING_ALGO_CUSTOM") == 0) { (*oVal)=LEARNING_ALGO_CUSTOM; ret=0;}
 	}
 
+	if (ret<0) {
+		printf("getEnumVal() could not resolve Parameter: %s = %s . Exiting.\n", edesc, eVal);
+		printf("Press any key..."); getchar();
+	}
 	return ret;
 }
 //==================================================

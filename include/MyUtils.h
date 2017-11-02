@@ -82,7 +82,7 @@ EXPORT int isIndeterminate(const double pV);
 EXPORT void __stdcall SlideArray(int iWholeSetLen, double* iWholeSet, int iSampleCount, int iSampleLen, double** oSample, int iTargetLen, double** oTarget, int pWriteLog);
 EXPORT void __stdcall SlideArrayNew(int dlen, double* idata, int iSampleLen, int iTargetLen, double** oSample, double** oTarget, int pWriteLog);
 EXPORT void __stdcall UnSlideArray(int pRowsCnt, int pSampleLen, int pTargetLen, double** pSample, double** pTarget, double* oArr);
-//EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP);
+EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double* oScaleM, double* oScaleP);
 EXPORT void __stdcall  DataScale(int iDataLen, double* iOrigData, double iScaleMin, double iScaleMax, double* oScaledData, double iScaleM, double iScaleP);		//-- overloaded version used to scale an array using existing M/P
 EXPORT void __stdcall  DataUnScale(int iDataLen, int iFromItem, int iToItem, double* iScaledData, double iScaleM, double iScaleP, double* oUnScaledData);
 //------	Data Scaling Utilities - End	---------

@@ -80,13 +80,14 @@ namespace MyGUI
                     if (pname.Equals("Results.SaveRun")) cb_SaveRun.IsChecked = (pval.Equals("1"));
                     if (pname.Equals("Results.SaveInternals")) cb_SaveInternals.IsChecked = (pval.Equals("1"));
                     if (pname.Equals("Results.SaveImages")) cb_SaveImages.IsChecked = (pval.Equals("1"));
-                    if (pname.Equals("Results.Destination")) cbo_ResultsDest.Text = pval;
+                    if (pname.Equals("Results.Destination")) cbo_ResultsDest.Text = pval.Substring(7);
                     if (pname.Equals("Results.DBUser")) txt_ResultsDBUser.Text = pval;
                     if (pname.Equals("Results.DBPassword")) txt_ResultsDBPassword.Text = pval;
                     if (pname.Equals("Results.DBConnString")) txt_ResultsDBConnString.Text = pval;
                     //-- Forecaster Debug Parameters 
                     if (pname.Equals("Forecaster.DebugLevel")) txt_DebugLevel.Text = pval;
-                    if (pname.Equals("Forecaster.DebugFileName")) txt_DebugFile.Text = pval;
+                    if (pname.Equals("Forecaster.DebugFilePath")) txt_DebugFilePath.Text = pval;
+                    if (pname.Equals("Forecaster.DebugFileName")) txt_DebugFileName.Text = pval;
                     if (pname.Equals("Forecaster.ThreadSafeLogging")) cb_ThreadSafeLogging.IsChecked = (pval.Equals("1"));
                     if (pname.Equals("Forecaster.PauseOnError")) cb_PauseOnError.IsChecked = (pval.Equals("1"));
                     if (pname.Equals("Forecaster.DumpSampleData")) cb_DumpSampleData.IsChecked = (pval.Equals("1"));
@@ -272,7 +273,7 @@ namespace MyGUI
             sParms = sParms + "Results.SaveRun \t= " + ((cb_SaveRun.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
             sParms = sParms + "Results.SaveInternals \t= " + ((cb_SaveInternals.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
             sParms = sParms + "Results.SaveImages \t= " + ((cb_SaveImages.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
-            sParms = sParms + "Results.Destination \t= " + cbo_ResultsDest.Text + Environment.NewLine;
+            sParms = sParms + "Results.Destination \t= LOG_TO_" + cbo_ResultsDest.Text + Environment.NewLine;
             sParms = sParms + "Results.DBUser \t= " + txt_ResultsDBUser.Text + Environment.NewLine;
             sParms = sParms + "Results.DBPassword \t= " + txt_ResultsDBPassword.Text + Environment.NewLine;
             sParms = sParms + "Results.DBConnString \t= " + txt_ResultsDBConnString.Text + Environment.NewLine;
@@ -280,8 +281,8 @@ namespace MyGUI
             sParms = sParms + "//-- Forecaster Debug Parameters --//" + Environment.NewLine;
             sParms = sParms + "//---------------------------------//" + Environment.NewLine;
             sParms = sParms + "Forecaster.DebugLevel \t= " + txt_DebugLevel.Text + Environment.NewLine;
-            sParms = sParms + "Forecaster.DebugFilePath \t= \"\"" + Environment.NewLine;
-            sParms = sParms + "Forecaster.DebugFileName \t= " + txt_DebugFile.Text + Environment.NewLine;
+            sParms = sParms + "Forecaster.DebugFilePath \t= " + txt_DebugFilePath.Text + Environment.NewLine;
+            sParms = sParms + "Forecaster.DebugFileName \t= " + txt_DebugFileName.Text + Environment.NewLine;
             sParms = sParms + "Forecaster.ThreadSafeLogging \t= " + ((cb_ThreadSafeLogging.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
             sParms = sParms + "Forecaster.PauseOnError \t= " + ((cb_PauseOnError.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
             sParms = sParms + "Forecaster.DumpSampleData \t= " + ((cb_DumpSampleData.IsChecked.Value) ? "1" : "0") + Environment.NewLine;
@@ -678,21 +679,21 @@ namespace MyGUI
             }
         }
 
-        private void btn_DebugFile_Click(object sender, RoutedEventArgs e)
+        private void btn_DebugFilePath_Click(object sender, RoutedEventArgs e)
         {
-            var fileDialog = new System.Windows.Forms.OpenFileDialog();
-            var result = fileDialog.ShowDialog();
+            var pathDialog = new System.Windows.Forms.FolderBrowserDialog();
+            var result = pathDialog.ShowDialog();
             switch (result)
             {
                 case System.Windows.Forms.DialogResult.OK:
-                    var file = fileDialog.FileName;
-                    txt_DebugFile.Text = file;
-                    txt_DebugFile.ToolTip = file;
+                    var path = pathDialog.SelectedPath;
+                    txt_DebugFilePath.Text = path;
+                    txt_DebugFilePath.ToolTip = path;
                     break;
                 case System.Windows.Forms.DialogResult.Cancel:
                 default:
-                    txt_DebugFile.Text = null;
-                    txt_DebugFile.ToolTip = null;
+                    txt_DebugFilePath.Text = null;
+                    txt_DebugFilePath.ToolTip = null;
                     break;
             }
         }
@@ -712,6 +713,25 @@ namespace MyGUI
                 default:
                     txt_IniFile.Text = null;
                     txt_IniFile.ToolTip = null;
+                    break;
+            }
+        }
+
+        private void btn_fftlibdir_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new System.Windows.Forms.OpenFileDialog();
+            var result = fileDialog.ShowDialog();
+            switch (result)
+            {
+                case System.Windows.Forms.DialogResult.OK:
+                    var file = fileDialog.FileName;
+                    txt_fftlibdir.Text = file;
+                    txt_fftlibdir.ToolTip = file;
+                    break;
+                case System.Windows.Forms.DialogResult.Cancel:
+                default:
+                    txt_fftlibdir.Text = null;
+                    txt_fftlibdir.ToolTip = null;
                     break;
             }
         }
@@ -763,7 +783,11 @@ namespace MyGUI
 
         private void btn_Go_Click(object sender, RoutedEventArgs e) {
             SaveIniFile();
+            string exepath = System.AppDomain.CurrentDomain.BaseDirectory + "Tester.exe";
 
+            string newPath = txt_fftlibdir.Text + ";" + Environment.GetEnvironmentVariable("PATH");
+            Environment.SetEnvironmentVariable("PATH", newPath);
+            Process.Start(exepath, (" --IniFile=" + App.LastIniFile));
         }
 
         private void btn_Load_Click(object sender, RoutedEventArgs e) {
