@@ -219,7 +219,7 @@ void	NNInit(NN_Parms* NN, NN_MxData* Mx, bool loadW, tCoreLog* NNLogs) {
 	Mx->BPCount = 0; Mx->SCGD_progK = 0;
 
 }
-NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
+NN_Mem	Malloc_NNMem(NN_Parms* pNNParms, int pSampleCount) {
 	int i, l, t;
 	NN_Mem ret;
 
@@ -313,9 +313,12 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms) {
 	ret.scgd->LVV_dJdW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_dJdW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
 	ret.scgd->LVV_GdJdW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_GdJdW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
 
+	//-- Jacobian
+	ret.J = MallocArray<double>(pSampleCount, pNNParms->WeightsCountTotal);
+
 	return ret;
 }
-void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
+void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN, int pSampleCount) {
 	int l, t, i;
 	//-- node levels -> [Levels][Time]
 	for (l = 0; l < pNNParms->LevelsCount; l++) {
@@ -413,6 +416,9 @@ void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN) {
 	free(NN.scgd->E1);
 	free(NN.scgd->E);
 	free(NN.scgd->sigmap);
+
+	//-- Jacobian
+	FreeArray(pSampleCount, pNNParms->WeightsCountTotal, NN.J);
 }
 
 double	Derivate(int ActivationFunction, double INval) {
@@ -586,7 +592,7 @@ void   dEcalcCore(NN_Parms* NNParms, NN_MxData* Mx) {
 		VbyV2M(NNParms->NodesCount[TOTNODE][l], Mx->NN.edF[l][t0], NNParms->NodesCount[TOTNODE][l-1], Mx->NN.F[l-1][t0], false, Mx->NN.dJdW[l-1][t0]);	// dJdW(l) = edF(l) * F(l-1)
 	}
 }
-void   dEcalc(NN_Parms* NNParms, NN_MxData* Mx, bool global = false, bool recalcErr = false, double* atW = nullptr, double* odE = nullptr) {
+void   dEcalc(NN_Parms* NNParms, NN_MxData* Mx, bool global = false, bool recalcErr = false, bool calcJacobian=false, double* atW = nullptr, double* odE = nullptr) {
 
 	if (recalcErr) Ecalc(NNParms, Mx, -1);
 
@@ -612,6 +618,11 @@ void   dEcalc(NN_Parms* NNParms, NN_MxData* Mx, bool global = false, bool recalc
 			dEcalcCore(NNParms, Mx);
 			//-- 2.2.4 GdJdW = GdJdW + dJdW
 			SumUpW(NNParms, Mx, Mx->NN.GdJdW, Mx->NN.dJdW);
+
+			//-- calc Jacobian
+			if (calcJacobian) {
+				for (int i = 0; i<NNParms->WeightsCountTotal; i++) Mx->NN.J[s][i] = (*Mx->NN.scgd->LVV_dJdW[t0][i]);
+			}
 		}
 	} else {
 		dEcalcCore(NNParms, Mx);
@@ -638,10 +649,6 @@ void Calc_H(NN_Parms* NN, NN_MxData* Mx) {
 			}
 		}
 	}
-
-}
-void Calc_J(NN_Parms* NN, NN_MxData* Mx) {
-	//-- calcs Jacobian
 
 }
 int BP_lm(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, tCoreLog* NNLogs, NN_MxData* Mx) {
@@ -689,7 +696,7 @@ int	BP_scgd(int pid, int tid, int pEpoch, tDebugInfo* DebugParms, NN_Parms* NN, 
 			VbyS(NN->WeightsCountTotal, Mx->NN.scgd->p, sigma, Mx->NN.scgd->sigmap);
 			VplusV(NN->WeightsCountTotal, Mx->NN.scgd->LVV_W[t0], Mx->NN.scgd->sigmap, Mx->NN.scgd->newW);
 			//=================================
-			dEcalc(NN, Mx, true, true, Mx->NN.scgd->newW, Mx->NN.scgd->dE1);
+			dEcalc(NN, Mx, true, true, false, Mx->NN.scgd->newW, Mx->NN.scgd->dE1);
 			//-- calc s
 			VminusV(NN->WeightsCountTotal, Mx->NN.scgd->dE1, Mx->NN.scgd->dE0, Mx->NN.scgd->dE);
 			VdivS(NN->WeightsCountTotal, Mx->NN.scgd->dE, sigma, Mx->NN.scgd->s);
@@ -1086,7 +1093,7 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 
 	//-- 0. mallocs
 	NN_MxData MxData;
-	MxData.NN = Malloc_NNMem(NNParms);
+	MxData.NN = Malloc_NNMem(NNParms, pSampleCount);
 	double* tmpSample = (double*)malloc(NNParms->InputCount * sizeof(double));
 
 	//-- 1. Load W*** from NNParms->NNFinalW[Level][FromN][ToN] 
@@ -1154,7 +1161,7 @@ EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs,
 	*/
 	//-- 5. frees()
 	free(tmpSample);
-	Free_NNMem(NNParms, MxData.NN);
+	Free_NNMem(NNParms, MxData.NN, pSampleCount);
 
 }
 EXPORT int  Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, NN_Parms* pNNParms, tCoreLog* pNNLogs, bool loadW, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV) {
@@ -1167,7 +1174,7 @@ EXPORT int  Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInf
 
 	// mallocs
 	NN_MxData MxData;
-	MxData.NN = Malloc_NNMem(pNNParms);
+	MxData.NN = Malloc_NNMem(pNNParms, pSampleCount);
 	MxData.ScreenPos = pCorePos+1;
 	MxData.ScreenMutex = pScreenMutex;
 	MxData.useValidation = useValidation;
@@ -1189,7 +1196,7 @@ EXPORT int  Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInf
 	SaveFinalW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 
 	//-- free()s
-	Free_NNMem(pNNParms, MxData.NN);
+	Free_NNMem(pNNParms, MxData.NN, pSampleCount);
 
 	return ret;
 }

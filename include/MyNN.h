@@ -67,6 +67,8 @@ typedef struct {
 	double*** tmpM3;
 	//-- Hessian
 	double***** H;
+	//-- Jacobian
+	double** J;		// [SampleCount][WeightsCountTotal]
 	//-- SCGD stuff
 	tSCGDMem* scgd;
 } NN_Mem;
