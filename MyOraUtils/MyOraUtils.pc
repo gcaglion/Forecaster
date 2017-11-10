@@ -1212,7 +1212,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_aF(tDebugInfo* DebugParms, NN_Pa
 
 	//-- Connects to DB only once
 	if (vCtx == NULL) {
-		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "Ora_BulkInternalsInsert_NN_W() could not connect to Log Database...\n", 0);
+		if (OraConnect(DebugParms, DebugParms->DebugDB) != 0) LogWrite_C(DebugParms, LOG_ERROR, "%s() could not connect to Log Database...\n", 1, __func__);
 		vCtx = DebugParms->DebugDB->DBCtx;
 	}
 
@@ -1357,7 +1357,7 @@ EXPORT int __stdcall Ora_BulkInternalsInsert_NN_W(tDebugInfo* DebugParms, NN_Par
 		for (l = 0; l < (NN->LevelsCount - 1); l++) {
 			for (t = 0; t < pTimeSteps; t++) {
 				for (j = 0; j < NN->NodesCount[TOTNODE][l+1]; j++) {
-					for (i = 0; i < NN->NodesCount[l]; i++) {
+					for (i = 0; i < NN->NodesCount[TOTNODE][l]; i++) {
 						vProcessId[idx] = pid;
 						vThreadId[idx] = 0;	// NNLogs->TrainingTid[d];
 						vTestId[idx] = testid;
