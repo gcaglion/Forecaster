@@ -1,22 +1,25 @@
+create user ConcUser identified by ConcPwd default tablespace ConcData;
+grant dba to ConcUser;
+grant select any table to ConcUser;
+
 drop table TConcordance;
 create table TConcordance (
-	CurrentData 	varchar2(6),
-	CurrentStart	date,
-	TimeFrame 		varchar2(3),
-	OutputType		varchar2(5),
-	PredictorData	varchar2(6),
-	PredictorStart 	date,
-	PatternLength	number,	-- l
-	PatternShift	number,	-- h
-	KTau			number,
-	SRho			number,
-	Gini			number,
-	WeakC			number
-) tablespace GAData storage (MINEXTENTS 2 initial 1024M next 1024M PCTINCREASE 0);
-alter table TConcordance drop constraint TConcordance_PK;
-alter table TConcordance add constraint TConcordance_PK primary key (CurrentData, CurrentStart, TimeFrame, OutputType, PredictorData, PredictorStart, PatternLength) using index tablespace GAIdx storage (initial 100M minextents 10 next 100M);
-create index TConcordance_KTau on TConcordance(KTau) tablespace GAIdx;
-create index TConcordance_SRho on TConcordance(SRho) tablespace GAIdx;
+CurrentData varchar2(6),
+CurrentStart date,
+TimeFrame varchar2(3),
+OutputType varchar2(5),
+PredictorData varchar2(6),
+PredictorStart date,
+PatternLength number,	-- l
+PatternShift number,	-- h
+KTau number,
+SRho number,
+Gini number,
+WeakC number
+) tablespace ConcData storage (MINEXTENTS 2 initial 1024M next 1024M PCTINCREASE 0);
+alter table TConcordance add constraint TConcordance_PK primary key (CurrentData, CurrentStart, TimeFrame, OutputType, PredictorData, PredictorStart, PatternLength) using index tablespace ConcIdx storage (initial 100M minextents 10 next 100M);
+create index TConcordance_KTau on TConcordance(KTau) tablespace ConcIdx;
+create index TConcordance_SRho on TConcordance(SRho) tablespace ConcIdx;
 
 -- ====== VConcordance_* views are created from MyGA_New.xlsx!DDL ===
 

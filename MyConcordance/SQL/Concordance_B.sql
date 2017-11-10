@@ -229,6 +229,7 @@ procedure Load_AllData (CToDate varchar2, TotalBars number, CSymbol varchar2, HS
 	nrec number:=0;
 	AllBarsH number;
 begin
+	dbms_output.put_line('stmt= '||'select count(*) from History.'||HSymbol||'_'||TimeFrame||IIf(isFilled,'_FILLED','')||' where NewDateTime <= to_date('||chr(39)||CToDate  ||chr(39)||',''YYYY-MM-DD-HH24MI'')');
 	execute immediate 'select count(*) from History.'||HSymbol||'_'||TimeFrame||IIf(isFilled,'_FILLED','')||' where NewDateTime <= to_date('||chr(39)||CToDate  ||chr(39)||',''YYYY-MM-DD-HH24MI'')' into AllBarsH;
 	Cnrec:=0; Hnrec:=0;
 	dbms_output.put_line('AllBarsH='||AllBarsH||' ; TotalBars='||TotalBars);

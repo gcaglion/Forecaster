@@ -9,6 +9,10 @@
 #define DT_LOG		 2
 #define DT_DELTALOG	 3
 
+#define SOURCE_DATA_FROM_FXDB 0
+#define SOURCE_DATA_FROM_FILE 1
+#define SOURCE_DATA_FROM_MT   2
+
 typedef struct{
 	int DataSourceType;
 	void* DataSource;

@@ -1,21 +1,7 @@
-#include <stdlib.h>
-#include "stdio.h"
-#include "windows.h"
-#include "winbase.h"
-#include "time.h"
-#include <math.h>
-
-#include <MyUtils.h>
-#include <MyLog.h>
-#include <FXData.h>
-#include <MyOraUtils.h>
-#include <Concordance.h>
-
-#define FH 0
-#define FL 1
+#include <MyConcordance.h>
 
 // ====== ConcordanceCalc - related ========
-
+/*
 int SRank(int pOutputType, tBar* CBar, tBar* HBar, int arrsize, int arr2RankFrom, double* oCRank, double* oHRank, double* od2Rank){
 	int i, j;
 	int Num, Den;
@@ -88,7 +74,7 @@ int SRank(int pOutputType, tBar* CBar, tBar* HBar, int arrsize, int arr2RankFrom
 	return 0;
 }
 
-EXPORT int __stdcall ConcordanceCalc(tConcCalcParms* parms){
+EXPORT int __stdcall ConcordanceCalc(CONC_Parms* parms){
 #define BULK_SIZE 9000
 #define TOP_PREDICTORS_COUNT 10
 	//--
@@ -110,7 +96,7 @@ EXPORT int __stdcall ConcordanceCalc(tConcCalcParms* parms){
 	tConcordanceRec BestSRHORec[TOP_PREDICTORS_COUNT];
 	tConcordanceRec BestKTAURec[TOP_PREDICTORS_COUNT];
 
-	MyLogWrite(parms->DebugParms, "%s Process %d , Thread %d : Calling ConcordanceCalc for %s...\n", 4, timestamp(), GetCurrentProcessId(), GetCurrentThreadId(), (parms->OutputType == FH) ? "High" : "Low");
+	LogWrite(parms->DebugParms, LOG_INFO, "%s Process %d , Thread %d : Calling ConcordanceCalc for %s...\n", 4, timestamp(), GetCurrentProcessId(), GetCurrentThreadId(), (parms->OutputType == FH) ? "High" : "Low");
 
 	//-- Load CRec
 	CRecCount = parms->PastDepth;
@@ -203,7 +189,7 @@ EXPORT int __stdcall ConcordanceCalc(tConcCalcParms* parms){
 //=========================================
 
 int main(int argc, char* argv[]){
-	tCalcConc** param = (tCalcConc**)malloc(2 * sizeof(tCalcConc*)); param[FH] = (tCalcConc*)malloc(sizeof(tCalcConc)); param[FL] = (tCalcConc*)malloc(sizeof(tCalcConc));
+	tConcordanceParms** param = (tCalcConc**)malloc(2 * sizeof(tCalcConc*)); param[FH] = (tCalcConc*)malloc(sizeof(tCalcConc)); param[FL] = (tCalcConc*)malloc(sizeof(tCalcConc));
 	param[FH]->OutputType = FH;
 	param[FH]->DebugLevel = 1;
 	param[FH]->UserName = "GAUser"; param[FH]->Password = "GAPwd"; param[FH]->DBString = "Algo";
@@ -229,3 +215,134 @@ int main(int argc, char* argv[]){
 	system("pause");
 	return 0;
 }
+
+EXPORT int  Train_CONC(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInfo* pDebugParms, CONC_Parms* pCONCParms, tCoreLog* pCONCLogs, bool loadW, int pSampleCount, double** pSampleData, double** pTargetData, int useValidation, double** pSampleDataV, double** pTargetDataV){
+
+	//============
+	int pOutputType = FH;	// How to parametrize this??
+	//============
+
+	int h, i, j, l;
+	int ret;
+	int InsertCount = 0;
+	int InsertTotalCount = 0;
+	int InsertActualCount = 0;
+	tConcordanceRec ConcordanceRec[BULK_SIZE];
+	tConcordanceRec BestSRHORec[TOP_PREDICTORS_COUNT];
+	tConcordanceRec BestKTAURec[TOP_PREDICTORS_COUNT];
+	double Sumd2Rank;
+	double vSRho;
+	double Knumer;
+	double vKTau;
+	double vWeakC;
+	double vGini;
+
+	pCONCParms->CurrMinLen = 10;
+	pCONCParms->CurrMaxLen = 100;
+	pCONCParms->HistMaxLen = 1000;
+	pCONCParms->ConcDBParms = new tDBConnection("ConcUser", "ConcPwd", "Algo");
+
+//	if (pDataParms->DataSourceType!=SOURCE_DATA_FROM_FXDB) {
+//		LogWrite(pDebugParms, LOG_ERROR, "Concordance Engine can oly work with FXDB data source. Exiting. \n", 0);
+//	} else {
+//		pCONCParms->FXParms = (tFXData*) pDataParms->DataSource;
+//	}
+
+	//-- open new connection for ConcDB
+	if (OraConnect(pDebugParms, pCONCParms->ConcDBParms)!=0) return -1;
+
+	tBar* CRec; int CRecCount;
+	tBar* HRec; int HRecCount;
+	double* CRank;
+	double* HRank;
+
+	CRecCount = pCONCParms->CurrMaxLen;
+		//for(int PastDepth= pCONCParms->CurrMinLen; PastDepth<pCONCParms->CurrMaxLen; PastDepth++){
+		CRec = (tBar*)malloc(CRecCount * sizeof(tBar));
+		CRank= (double*)malloc(CRecCount*sizeof(double));
+		
+		//-- Load CRec[]
+		if (LoadCurrentRecord(pDebugParms, pCONCParms->FXParms->FXDB->DBCtx, pCONCParms->FXParms->Symbol, pCONCParms->FXParms->TimeFrame, pCONCParms->CurrDate0, pCONCParms->HistMaxLen, 0, pCONCParms->FXParms->IsFilled, 0, CRec) != 0) return -1;
+
+		//-- Load HRec[]
+		if (GetHRecCount(pDebugParms, pCONCParms->FXParms->FXDB->DBCtx, pCONCParms->FXParms->Symbol, pCONCParms->FXParms->TimeFrame, pCONCParms->CurrDate0, 0, pCONCParms->FXParms->IsFilled, &HRecCount) != 0) return -1;
+		HRec = (tBar*)malloc(HRecCount * sizeof(tBar));
+		if (LoadHistoryRecord(pDebugParms, pCONCParms->FXParms->FXDB->DBCtx, pCONCParms->FXParms->Symbol, pCONCParms->FXParms->TimeFrame, pCONCParms->CurrDate0, 0, pCONCParms->FXParms->IsFilled, HRecCount, HRec) != 0) return -1;
+		double* HRank = (double*)malloc(HRecCount*sizeof(double));
+
+		//-- Initialize Best Predictors
+		for (i = 0; i < TOP_PREDICTORS_COUNT; i++) {
+			BestSRHORec[i].SRho = 0;
+			BestKTAURec[i].KTau = 0;
+		}
+		//-- Main loop (h,l)
+		for (h = 0; h <= (HRecCount - CRecCount); h++) {
+			for (l = CRecCount; l <= CRecCount; l++) {
+				//-- Calc Spearman Rho
+				Sumd2Rank = 0;
+				ret = SRank(pOutputType, CRec, HRec, l, h, CRank, HRank, &Sumd2Rank);
+				vSRho = 1 - (6 * Sumd2Rank) / (l*(pow((double)l, 2) - 1));
+				//-- Calc Kendall Tau
+				Knumer = 0;
+				for (i = 1; i < l; i++) {
+					for (j = 0; j<(i - 1); j++) {
+						if (pOutputType == FH) {
+							Knumer = Knumer + sgn(CRec[i].High - CRec[j].High) * sgn(HRec[i + h].High - HRec[j + h].High);
+						} else {
+							Knumer = Knumer + sgn(CRec[i].Low - CRec[j].Low) * sgn(HRec[i + h].Low - HRec[j + h].Low);
+						}
+					}
+				}
+				vKTau = Knumer / (0.5 * l*(l - 1));
+				//-- Calc WeakC
+				vWeakC = 0;
+				//-- Calc Gini
+				vGini = 0;
+				//-- Prepare array for insert
+				strcpy(ConcordanceRec[InsertCount].CurrentData, pCONCParms->FXParms->Symbol);
+				strcpy(ConcordanceRec[InsertCount].CurrentStart, CRec[0].NewDateTime);
+				strcpy(ConcordanceRec[InsertCount].TimeFrame, pCONCParms->FXParms->TimeFrame);
+				strcpy(ConcordanceRec[InsertCount].OutputType, (pOutputType == FH) ? "High" : "Low");
+				strcpy(ConcordanceRec[InsertCount].PredictorData, pHSymbol);
+				Trim(HRec[h].NewDateTime); strcpy(ConcordanceRec[InsertCount].PredictorStart, HRec[h].NewDateTime);
+				ConcordanceRec[InsertCount].PatternLength = l;
+				ConcordanceRec[InsertCount].PatternShift = h;
+				ConcordanceRec[InsertCount].KTau = vKTau;
+				ConcordanceRec[InsertCount].SRho = vSRho;
+				ConcordanceRec[InsertCount].Gini = vGini;
+				ConcordanceRec[InsertCount].WeakC = vWeakC;
+				//-- Does this make the Top-10?
+				//-- First, SRho
+				if (ConcordanceRec[InsertCount].SRho > BestSRHORec[0].SRho) {
+					for (u = TOP_PREDICTORS_COUNT - 1; u>0; u--) memcpy(&BestSRHORec[u], &BestSRHORec[u - 1], sizeof(tConcordanceRec));
+					memcpy(&BestSRHORec[0], &ConcordanceRec[InsertCount], sizeof(tConcordanceRec));
+				}
+				//-- Then, KTau
+				if (ConcordanceRec[InsertCount].KTau > BestKTAURec[0].KTau) {
+					for (u = TOP_PREDICTORS_COUNT - 1; u>0; u--) memcpy(&BestKTAURec[u], &BestKTAURec[u - 1], sizeof(tConcordanceRec));
+					memcpy(&BestKTAURec[0], &ConcordanceRec[InsertCount], sizeof(tConcordanceRec));
+				}
+				InsertCount++;
+				//-- Bulk Insert BULK_SIZE records
+				if (InsertCount == BULK_SIZE) {
+					//if (BulkConcordanceInsert(pDebugLevel, pLogFile, pContext, &InsertCount, ConcordanceRec) <-1) return -1;	// 0: insert completed ; 1: data already in concordance table
+					InsertTotalCount += InsertCount;
+					InsertCount = 0;
+				}
+			}
+		}
+
+		free(CRec); free(CRank); free(HRec);
+	//}
+
+	//-- close ConcDB connection at the end
+	OraDisconnect(pCONCParms->ConcDBParms->DBCtx, true);
+
+	return 0;
+
+}
+EXPORT void Run_CONC(tDebugInfo* pDebugParms, NN_Parms* CONCParms, tCoreLog* CONCLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget) {
+
+}
+
+*/

@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <time.h>
 #include <float.h>
-#include <Concordance.h>
+#include <MyConcordance.h>
 #include <FXData.h>
 #include <DataShape.h>
 #include <MyEngines.h>
