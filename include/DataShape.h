@@ -3,6 +3,10 @@
 
 #define MAX_DATASETS 8
 
+#define SOURCE_DATA_FROM_FXDB 0
+#define SOURCE_DATA_FROM_FILE 1
+#define SOURCE_DATA_FROM_MT   2
+
 //-- Data Tranformations
 #define DT_NONE		 0
 #define DT_DELTA	 1

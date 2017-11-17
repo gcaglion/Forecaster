@@ -4,16 +4,6 @@
 #include <DataShape.h>
 #include <FileData.h>
 
-#define SOURCE_DATA_FROM_FXDB 0
-#define SOURCE_DATA_FROM_FILE 1
-#define SOURCE_DATA_FROM_MT   2
-
-//-- Data Tranformations
-#define DT_NONE		 0
-#define DT_DELTA	 1
-#define DT_LOG		 2
-#define DT_DELTALOG	 3
-
 #undef EXPORT
 #define EXPORT __declspec(dllexport)
 
@@ -22,6 +12,7 @@ EXPORT int __stdcall LoadData_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, char* StartDate, int DatesCount, char** oDate);
 EXPORT int __stdcall GetDates_FXDB(tDebugInfo* DebugParms, tFXData* SourceParms, char* StartDate, int DatesCount, char** oDate);
 EXPORT int __stdcall LoadHistoryData(int pHistoryLen, char* pDate0, int pBarDataType, double* oHistoryData, tFXData* DBParms, tDebugInfo* DebugParms);
+EXPORT int LoadHistoryAndFutureData_Flat(tDebugInfo* DebugParms, tFXData* DBParms, char* pDate0, int pHistoryLen, int pFutureLen, float* oHBarData, float* oFBarData);
 
 EXPORT void dataTransform(int dt, int dlen, double* idata, double baseVal, double* odata);
 EXPORT void dataUnTransform(int dt, int dlen, int from_i, int to_i, double* idata, double baseVal, double* iActual, double* odata);

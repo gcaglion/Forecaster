@@ -8,6 +8,7 @@
 #include <DataShape.h>	// to define tDataShape
 #include <MyEngines.h>	// to define tEngineHandle
 #include <MyNN_Parms.h>
+#include <cuRNN.h>
 
 typedef struct {
 	double*** LVV_W;

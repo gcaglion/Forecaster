@@ -2146,6 +2146,43 @@ EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, c
 	EXEC SQL CLOSE c1;
 	return sqlca.sqlcode;
 }
+EXPORT int __stdcall GetFlatBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int pRecCount, float* oBarData) {
+	//-- 'Flat' bar means returning OHLCV values for each record as an array 
+	EXEC SQL BEGIN DECLARE SECTION;
+	int retval = 0;
+	int i;
+	char stmt[1000];
+	char vNDT[12 + 1];
+	float vOpen, vHigh, vLow, vClose, vVolume;
+	EXEC SQL END   DECLARE SECTION;
+	strcpy(stmt, pSQL);
+
+	EXEC SQL CONTEXT USE : pCtx;
+	EXEC SQL PREPARE s4f FROM : stmt;
+	EXEC SQL DECLARE c4f CURSOR FOR s4f;
+	EXEC SQL OPEN c4f;
+	for (i = 0; i < pRecCount; i++) {
+		EXEC SQL FETCH c4f into :vNDT, :vOpen, :vHigh, :vLow, :vClose, :vVolume;
+		if (sqlca.sqlcode == 0) {
+			//strcpy(oBarDate[i], vNDT);
+			oBarData[5 * i + 0] = vOpen;
+			oBarData[5 * i + 1] = vHigh;
+			oBarData[5 * i + 2] = vLow;
+			oBarData[5 * i + 3] = vClose;
+			oBarData[5 * i + 4] = vVolume;
+		} else if (sqlca.sqlcode == 1403) {
+			break;
+		} else {
+			LogWrite_C(DebugParms, LOG_ERROR, "%s failed. stmt = %s\n Error %s", 3, __func__, stmt, sqlca.sqlerrm.sqlerrmc);
+			retval = sqlca.sqlcode;
+			break;
+		}
+	}
+	EXEC SQL CLOSE c4f;
+
+	return retval;
+}
+
 EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int pRecCount, int pSkipFirstN, tBar* oBar){
 	EXEC SQL BEGIN DECLARE SECTION;
 	int i = 0;  int j;

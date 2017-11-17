@@ -85,6 +85,7 @@ EXPORT int __stdcall GetStringArrayFromQuery(tDebugInfo* DebugParms, sql_context
 EXPORT int __stdcall GetIntFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int* oRet);
 EXPORT int __stdcall GetBarsFromQuery(tDebugInfo* DebugInfo, sql_context pCtx, char* pSQL, int pRecCount, int pSkipFirstN, tBar* oBar);
 EXPORT int __stdcall GetBarsFromQuery2(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int* pRecCount, tBar* oBar);
+EXPORT int __stdcall GetFlatBarsFromQuery(tDebugInfo* DebugParms, sql_context pCtx, char* pSQL, int pRecCount, float* oBarData);
 
 //=== ConcordanceCalc() stuff ===
 EXPORT int __stdcall GetHRecCount(tDebugInfo* DebugParms, void* pCtx, char* pHSymbol, char* pTimeFrame, char* pCFromDate, int pDelta, int pIsFilled, int* HRecCount);

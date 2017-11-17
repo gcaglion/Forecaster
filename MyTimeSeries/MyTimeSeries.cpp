@@ -438,6 +438,26 @@ EXPORT int __stdcall GetDates_CSV(tDebugInfo* DebugParms, tFileData* pDataFile, 
 	return 0;
 }
 
+EXPORT int LoadHistoryAndFutureData_Flat(tDebugInfo* DebugParms, tFXData* DBParms, char* pDate0, int pHistoryLen, int pFutureLen, float* oHBarData, float* oFBarData) {
+	char stmt[1000];
+
+	if (DBParms->FXDB->DBCtx == NULL) {
+		if (OraConnect(DebugParms, DBParms->FXDB) != 0) return -1;
+	}
+
+	//=== 1. Get History Data ===
+	sprintf(stmt, "select newdatetime, open, high, low, close, nvl(volume,0) from %s_%s%s where NewDateTime<=to_date('%s','YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled>0)?"_FILLED":""), pDate0);
+	if (GetFlatBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen, oHBarData) != 0) return -1;
+	//=== 2. FutureData for all but last sample are built by sliding History data
+	for (int i = 0; i < (pHistoryLen - 1); i++) {
+		oFBarData[i] = oHBarData[(i + 1) * 5];
+	}
+	float* last = &oFBarData[pHistoryLen-5*pFutureLen];
+	//=== 3. FutureData for last sample needs its own query
+	sprintf(stmt, "select newdatetime, open, high, low, close, nvl(volume,0) from %s_%s%s where NewDateTime>to_date('%s','YYYYMMDDHH24MI') order by 1", DBParms->Symbol, DBParms->TimeFrame, ((DBParms->IsFilled>0) ? "_FILLED" : ""), pDate0);
+	if (GetFlatBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pFutureLen, last) != 0) return -1;
+	return 0;
+}
 EXPORT int __stdcall LoadHistoryData(int pHistoryLen, char* pDate0, int pBarDataType, double* oHistoryData, tFXData* DBParms, tDebugInfo* DebugParms) {
 	int i;
 	tBar* PastBar = (tBar*)malloc(pHistoryLen * sizeof(tBar));

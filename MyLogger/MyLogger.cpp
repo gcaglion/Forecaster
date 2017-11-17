@@ -1,6 +1,6 @@
 ////#include <vld.h>
 
-#include "stdafx.h"
+#include <MyLogger.h>
 
 //-- Save MSE and Run data should be common across engines
 __declspec(dllexport) void __stdcall SaveMSEData(tCoreLog* coreLog, DWORD pid, DWORD tid, int pEpoch, double pMSE_T, double pMSE_V) {

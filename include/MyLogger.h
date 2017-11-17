@@ -1,7 +1,9 @@
+#include <MyOraUtils.h>
 #include <MyLogDefs.h>		// tDebugInfo
 #include <DBConnection.h>	// tDBConnection
 #include <MyEngines.h>		// tEngineHandle
 #include <FXData.h>			// tFXData
+#include <FileData.h>		// tFileData
 #include <DataShape.h>		// tDataShape
 
 #include <MyNN_Parms.h>

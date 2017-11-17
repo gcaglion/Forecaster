@@ -145,9 +145,9 @@ int main(int argc, char* argv[]) {
 }
 */
 
-#include <MyOraUtils.h>
+//#include <MyOraUtils.h>
 //#include <MyLogger.h>
-int main(int argc, char* argv[]) {
+/*int main(int argc, char* argv[]) {
 	
 	tDBConnection* DBConn=new tDBConnection;
 	strcpy(DBConn->DBUser, "LogUserxxx");
@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
 	int kaz = 0;
 
 }
-
+*/
 
 void loadStaticData(double** hd, double** fd, double** bw) {
 	hd[0][0] = 0.96716; hd[1][0] = 0.96639; bw[0][0] = 0.00077; bw[1][0] = 0.00077;
@@ -721,3 +721,56 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 */
+
+
+//-- newRNN client
+
+#include <MyTimeSeries.h>
+#include <cuRNN.h>
+
+int main(int argc, char* argv[]) {
+
+	tDebugInfo* DebugParms = new tDebugInfo;
+	DebugParms->DebugLevel = 2;
+	DebugParms->DebugDest = LOG_TO_TEXT;
+	DebugParms->PauseOnError = 1;
+	strcpy(DebugParms->fPath, "C:/temp");
+	strcpy(DebugParms->fName, "kaz.log");
+
+
+	tFXData* FxData = new tFXData;
+	strcpy(FxData->FXDB->DBUser, "History");
+	strcpy(FxData->FXDB->DBPassword, "HistoryPwd");
+	strcpy(FxData->FXDB->DBConnString, "Algo");
+	strcpy(FxData->Symbol, "EURUSD");
+	strcpy(FxData->TimeFrame, "H1");
+
+	char* date0 = "201710010000";
+	int historyLen = 100000;
+	int sampleLen = 200;
+	int inputSize = 5;	// OHLCV
+	int sampleCnt = (int)floor(historyLen / sampleLen);
+	int batchSize = 250;
+	int batchCnt = (int)floor(sampleCnt / batchSize);
+	int hiddenSize = 500;
+	int RNNlayers = 2;
+	bool bidirectional = false;
+	int RNNmode = CUDNN_RNN_TANH;
+	float RNNdropout = 0.6f;
+
+	//float**** hd = MallocArray<float>(batchCnt, batchSize, sampleLen, inputSize);
+	float*  hd  = MallocArray<float>(batchCnt*batchSize*sampleLen*inputSize);
+	float** hdb = MallocArray<float>(batchCnt, batchSize*sampleLen*inputSize);
+	float*  fd  = MallocArray<float>(batchCnt*batchSize*(sampleLen - 1)*inputSize);
+	float** fdb = MallocArray<float>(batchCnt, batchSize*(sampleLen - 1)*inputSize);
+
+	if(LoadHistoryAndFutureData_Flat(DebugParms, FxData, date0, historyLen, sampleLen, hd, fd) <0) return -1;
+	for (int b = 0; b < batchCnt; b++) {
+		memcpy(hdb[b], &hd[b*batchSize*sampleLen*inputSize], batchSize*sampleLen*inputSize);
+	}
+	if(RNNtrain(sampleLen, inputSize, hiddenSize, RNNlayers, batchCnt, batchSize, bidirectional, RNNmode, RNNdropout, hdb, fdb))
+
+	FreeArray(batchCnt*batchSize*sampleLen*inputSize, hd);
+
+	//FreeArray<float>(batchCnt, batchSize, sampleLen, 4, hd);
+}
