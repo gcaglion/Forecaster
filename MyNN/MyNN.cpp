@@ -12,6 +12,14 @@ EXPORT void getNNOutputRange(NN_Parms* NNParms, double* oScaleMin, double* oScal
 		(*oScaleMin) = 0;
 		(*oScaleMax) = 1;
 		break;
+	case NN_ACTIVATION_RELU:
+		(*oScaleMin) = 0;
+		(*oScaleMax) = 1;
+		break;
+	case NN_ACTIVATION_SOFTPLUS:
+		(*oScaleMin) = 0;
+		(*oScaleMax) = 1;
+		break;
 	default:
 		(*oScaleMin) = -1;
 		(*oScaleMax) = 1;
@@ -430,6 +438,12 @@ double	Derivate(int ActivationFunction, double INval) {
 	case NN_ACTIVATION_EXP4:
 		ret = 4 * exp(4 * INval) / (pow(exp(4 * INval) + 1, 2));
 		break;
+	case NN_ACTIVATION_RELU:
+		ret = (INval > 0) ? 1 : 0;
+		break;
+	case NN_ACTIVATION_SOFTPLUS:
+		ret = 1 / (1 + exp(-INval));
+		break;
 	default:
 		ret = (1 - tanh(INval)*tanh(INval));
 		break;
@@ -459,6 +473,12 @@ void	Activate(int ActivationFunction, int NeuronCount, double* gain, double* INv
 			break;
 		case NN_ACTIVATION_EXP4:
 			OUTval[n] = 1 / (1 + exp(-4 * INval[n]));
+			break;
+		case NN_ACTIVATION_RELU:
+			OUTval[n] = (INval[n] > 0) ? INval[n] : 0;
+			break;
+		case NN_ACTIVATION_SOFTPLUS:
+			OUTval[n] = log(1 + exp(INval[n]));
 			break;
 		default:
 			OUTval[n] = tanh(INval[n]);

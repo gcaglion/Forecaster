@@ -28,8 +28,10 @@
 //--
 
 //-- Activation Functions
-#define NN_ACTIVATION_TANH 1	// y=tanh(x)				=> range is [-1 ÷ 1]
-#define NN_ACTIVATION_EXP4 2	// y = 1 / (1+exp(-4*x))	=> range is [ 0 ÷ 1]
+#define NN_ACTIVATION_TANH     1	// y=tanh(x)				=> range is [-1 ÷ 1]
+#define NN_ACTIVATION_EXP4     2	// y = 1 / (1+exp(-4*x))	=> range is [ 0 ÷ 1]
+#define NN_ACTIVATION_RELU     3	// y=max(0,x)
+#define NN_ACTIVATION_SOFTPLUS 4	// y=ln(1+e^x)
 
 //-- Node Types
 #define DATANODE 0

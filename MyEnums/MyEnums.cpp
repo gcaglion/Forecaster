@@ -71,7 +71,9 @@ EXPORT int getEnumVal(char* edesc, char* eVal, int* oVal) {
 	}
 	else if (strcmp(right(edesc, 18), "ACTIVATIONFUNCTION") == 0) {
 		if (strcmp(eVal, "NN_ACTIVATION_TANH") == 0) { (*oVal)=NN_ACTIVATION_TANH; ret=0;}
-		if (strcmp(eVal, "NN_ACTIVATION_EXP4") == 0) { (*oVal)=NN_ACTIVATION_EXP4; ret=0;}
+		if (strcmp(eVal, "NN_ACTIVATION_EXP4") == 0) { (*oVal) = NN_ACTIVATION_EXP4; ret = 0; }
+		if (strcmp(eVal, "NN_ACTIVATION_RELU") == 0) { (*oVal) = NN_ACTIVATION_RELU; ret = 0; }
+		if (strcmp(eVal, "NN_ACTIVATION_SOFTPLUS") == 0) { (*oVal) = NN_ACTIVATION_SOFTPLUS; ret = 0; }
 	}
 	else if (strcmp(edesc, "SOMINFO.TDFUNCTION") == 0) {
 		if (strcmp(eVal, "TD_DECAY_CONSTANT") == 0) { (*oVal)=TD_DECAY_CONSTANT; ret=0;}
