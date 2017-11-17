@@ -29,7 +29,6 @@ EXPORT void getNNOutputRange(NN_Parms* NNParms, double* oScaleMin, double* oScal
 EXPORT void setNNTopology(NN_Parms* NN) {
 	int i, nl;
 	int Levcnt;	// Levels count
-				//char** DescList = (char**)malloc(MAX_LEVELS * sizeof(char*)); for (i = 0; i < MAX_LEVELS; i++) DescList[i] = (char*)malloc(100);
 	char** DescList = MallocArray<char>(MAX_LEVELS, 256);
 
 	//-- 1. Put the comma-separated string values into an array of strings. Max desc length=10
