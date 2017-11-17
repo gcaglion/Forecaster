@@ -321,7 +321,7 @@ NN_Mem	Malloc_NNMem(NN_Parms* pNNParms, int pSampleCount) {
 	ret.scgd->LVV_GdJdW = (double***)malloc(TimeSteps * sizeof(double**)); for (t = 0; t < TimeSteps; t++) ret.scgd->LVV_GdJdW[t] = (double**)malloc(pNNParms->WeightsCountTotal * sizeof(double*));
 
 	//-- Jacobian
-	ret.J = MallocArray<double>(pSampleCount, pNNParms->WeightsCountTotal);
+	//ret.J = MallocArray<double>(pSampleCount, pNNParms->WeightsCountTotal);
 
 	return ret;
 }
@@ -425,7 +425,7 @@ void	Free_NNMem(NN_Parms* pNNParms, NN_Mem NN, int pSampleCount) {
 	free(NN.scgd->sigmap);
 
 	//-- Jacobian
-	FreeArray(pSampleCount, pNNParms->WeightsCountTotal, NN.J);
+	//FreeArray(pSampleCount, pNNParms->WeightsCountTotal, NN.J);
 }
 
 double	Derivate(int ActivationFunction, double INval) {
@@ -1020,7 +1020,7 @@ int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxD
 
 	//-- Samples shuffle
 	int* sl = (int*)malloc(pSampleCount*sizeof(int)); for (int i = 0; i<pSampleCount; i++) sl[i] = i;
-	ShuffleArray(sl, pSampleCount);
+	if(NNParms->UseContext==0) ShuffleArray(sl, pSampleCount);
 
 	int BatchCount, BatchSize, BatchExtras;
 	switch (NNParms->TrainingBatchCount) {
@@ -1060,16 +1060,17 @@ int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxD
 				//if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
 				TSE_T += Ecalc(NNParms, Mx, s);
 
-				//-- 1.2 Calc dW for every sample based on BP algorithm
-				Mx->sampleid = si;
-				CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
-
-				//-- 1.3 BdW = BdW + dW (only if BP_ALGO is not global, like SCGD)
-				if (CalcdWType==0) SumUpW(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
-
 				//-- next sample id
 				si++;
 			}
+
+			//-- 1.2 Calc dW for every batch based on BP algorithm
+			Mx->sampleid = si;
+			CalcdWType = Calc_dW(pid, tid, epoch, pDebugParms, NNParms, NNLogs, Mx);
+
+			//-- 1.3 BdW = BdW + dW (only if specific Algo does not do it internally)
+			if (CalcdWType==0) SumUpW(NNParms, Mx, Mx->NN.BdW, Mx->NN.dW);
+
 
 			//-- 2. Weight update after every batch: W = W + BdW			
 			if (CalcdWType==0) SumUpW(NNParms, Mx, Mx->NN.W, Mx->NN.BdW);
@@ -1102,7 +1103,6 @@ int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxD
 	LogWrite(pDebugParms, LOG_INFO, "NNTrain() CheckPoint 4 - Thread=%d ; Final MSE_T=%f ; Final MSE_V=%f\n", 2, tid, MSE_T, MSE_V);
 	return 0;
 }
-
 
 EXPORT void Run_NN(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, tDataShape* pInputData, int pid, int tid, int pSampleCount, double** pSample, double** pTarget) {
 	int i, s, l, j;
@@ -1206,11 +1206,13 @@ EXPORT int  Train_NN(int pCorePos, int pTotCores, HANDLE pScreenMutex, tDebugInf
 	//-- Save Initial Weights
 	SaveInitW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 	//-- Train 
+	
 	if(pNNParms->BP_Algo==BP_SCGD || pNNParms->BP_Algo==BP_LM){
 		ret = NNTrain_Global(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	} else {
 		ret = NNTrain(pDebugParms, pNNParms, pNNLogs, &MxData, pSampleCount, pSampleData, pTargetData, pSampleDataV, pTargetDataV);
 	}
+	
 	//-- Save Final Weights
 	SaveFinalW(pNNParms, &MxData.NN, pNNLogs, pid, tid);
 
