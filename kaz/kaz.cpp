@@ -745,12 +745,13 @@ int main(int argc, char* argv[]) {
 	strcpy(FxData->Symbol, "EURUSD");
 	strcpy(FxData->TimeFrame, "H1");
 
-	char* date0 = "201710010000";
-	int historyLen = 100000;
-	int sampleLen = 200;
+	char* date0 = "201709010000";
+	int historyLen = 20000;
+	int sampleLen = 20;
+	int futureLen = 3;
 	int inputSize = 5;	// OHLCV
 	int sampleCnt = (int)floor(historyLen / sampleLen);
-	int batchSize = 250;
+	int batchSize = 256;
 	int batchCnt = (int)floor(sampleCnt / batchSize);
 	int hiddenSize = 500;
 	int RNNlayers = 2;
@@ -759,9 +760,9 @@ int main(int argc, char* argv[]) {
 	float RNNdropout = 0.6f;
 
 	//float**** hd = MallocArray<float>(batchCnt, batchSize, sampleLen, inputSize);
-	float*  hd  = MallocArray<float>(batchCnt*batchSize*sampleLen*inputSize);
+	float*  hd  = MallocArray<float>(historyLen*inputSize);
+	float*  fd = MallocArray<float>(futureLen*inputSize);
 	float** hdb = MallocArray<float>(batchCnt, batchSize*sampleLen*inputSize);
-	float*  fd  = MallocArray<float>(batchCnt*batchSize*(sampleLen - 1)*inputSize);
 	float** fdb = MallocArray<float>(batchCnt, batchSize*(sampleLen - 1)*inputSize);
 
 	if(LoadHistoryAndFutureData_Flat(DebugParms, FxData, date0, historyLen, sampleLen, hd, fd) <0) return -1;
