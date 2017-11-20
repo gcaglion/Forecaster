@@ -1313,12 +1313,18 @@ EXPORT int getForecast(int paramOverrideCnt, char** paramOverride, void* LogDBCt
 
 			printf("SaveTestLog_EngineThreads()...\n"); if (SaveTestLog_EngineThreads(&fp->DebugParms, fp->EngineParms.AdderCount, pid, pTestId, &fp->EngineParms, &fp->DataParms) != 0) return -1;
 
-			if (fp->Action !=JUST_RUN) {
-				printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId) != 0) return -1;
-				printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId) != 0) return -1;
+			if (fp->Action != JUST_RUN) {
+				if (fp->DebugParms.SaveMSE > 0) {
+					printf("LogSave_MSE()...\n"); if (LogSave_MSE(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId) != 0) return -1;
+				}
+				if (fp->DebugParms.SaveImages > 0) {
+					printf("LogSave_Cores()...\n"); if (LogSave_Cores(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pid, pTestId) != 0) return -1;
+				}
 			}
-			if (fp->Action!=ADD_SAMPLES) {
-				printf("LogSave_Run()...\n"); if (LogSave_Run(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId, runLog) != 0) return -1;
+			if (fp->Action != ADD_SAMPLES) {
+				if (fp->DebugParms.SaveRun > 0) {
+					printf("LogSave_Run()...\n"); if (LogSave_Run(&fp->DebugParms, &fp->EngineParms, &fp->DataParms, pTestId, runLog) != 0) return -1;
+				}
 			}
 		}
 	}
