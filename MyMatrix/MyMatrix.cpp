@@ -9,6 +9,32 @@
 #include <Windows.h>
 #include <math.h>
 
+EXPORT void Mprint(char* mdesc, int my, int mx, double* sm, int smy0, int smx0, int smy, int smx) {
+
+	if (smy==0) smy=my;
+	if (smx==0) smx=mx;
+
+	int idx;
+	printf("%s[%d][%d]:\n", mdesc, my, mx);
+	for (int y=0; y<smy; y++) {
+		for (int x=0; x<smx; x++) {
+			idx=x+y*(mx);
+			printf("|%4.1f", sm[idx]);
+		}
+		printf("|\n");
+	}
+}
+EXPORT void Mprint(char* mdesc, int my, int mx, double** m) {
+	printf("%s[%d][%d]:\n", mdesc, my, mx);
+	for (int y=0; y<my; y++) {
+		for (int x=0; x<mx; x++) {
+			printf("|%4.1f", m[y][x]);
+		}
+		printf("|\n");
+	}
+	printf("\n");
+}
+
 EXPORT void __stdcall MExtend(int m12x, int m1y, int m2y, double** m1, double** m2, double** m12){
 	int x,y;
 	for(x=0; x<m12x;x++){
@@ -22,10 +48,14 @@ EXPORT void __stdcall VInit(int Vlen, double* V, double InitVal){
 	for (int i = 0; i < Vlen; i++) V[i] = InitVal;
 }
 
-EXPORT void __stdcall MInit(int my, int mx, double** M, double InitVal){
+EXPORT void MInit(int my, int mx, double** M, double start, double inc){
 	// Initialize all matrix elements with same value
-	for (int y = 0; y < my; y++){
-		for (int x = 0; x < mx; x++) M[y][x] = 0;
+	int i=0;
+	for (int y = 0; y<my; y++) {
+		for (int x = 0; x<mx; x++) {
+			M[y][x] = start+i*inc;
+			i++;
+		}
 	}
 }
 

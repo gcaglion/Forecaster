@@ -1,6 +1,10 @@
+#pragma once
+
 #undef EXPORT
 #define EXPORT __declspec(dllexport)
 
+EXPORT void Mprint(char* mdesc, int my, int mx, double* sm, int smy0=0, int smx0=0, int smy=0, int smx=0);
+EXPORT void Mprint(char* mdesc, int my, int mx, double** m);
 //-- Overloaded VCopy, VminusV and VplusV, to handle arrays of pointers to values
 EXPORT void __stdcall VCopy(int Vlen, double* V1, double* V2);
 EXPORT void __stdcall VCopy(int Vlen, double* V1, double** V2);
@@ -25,7 +29,7 @@ EXPORT void __stdcall VminusV(int Vlen, double** V1, double** V2, double* oV);
 EXPORT void __stdcall VminusV(int Vlen, double** V1, double** V2, double** oV);
 //--
 EXPORT void __stdcall VInit(int Vlen, double* V, double InitVal);
-EXPORT void __stdcall MInit(int my, int mx, double** M, double InitVal);
+EXPORT void MInit(int my, int mx, double** M, double start=0, double inc=0);
 EXPORT void __stdcall  VExtend(int l1, double* v1, int l2, double* v2, double* vsum);
 EXPORT void __stdcall  VSplit(double* vsum, int l1, double* v1, int l2, double* v2);
 EXPORT void __stdcall VbyS(int Vlen, double* iV, double s, double* oV);

@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
 }
 */
 
-#include <MyOraUtils.h>
+/*#include <MyOraUtils.h>
 //#include <MyLogger.h>
 int main(int argc, char* argv[]) {
 	
@@ -168,7 +168,7 @@ int main(int argc, char* argv[]) {
 	int kaz = 0;
 
 }
-
+*/
 
 void loadStaticData(double** hd, double** fd, double** bw) {
 	hd[0][0] = 0.96716; hd[1][0] = 0.96639; bw[0][0] = 0.00077; bw[1][0] = 0.00077;
@@ -721,3 +721,21 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 */
+
+#include <MyMatrix.h>
+#include <MyUtils.h>
+
+int main() {
+	int Ay=3, Ax=14, By=14, Bx=1;
+	int Cy=Ay, Cx=Bx;
+
+	double** A=MallocArray<double>(Ay, Ax); MInit(Ay, Ax, A, 0, 0.1); Mprint("A", Ay, Ax, A);
+	double** B=MallocArray<double>(By, Bx); MInit(By, Bx, B, 0, -0.2); Mprint("B", By, Bx, B);
+	double** C=MallocArray<double>(Cy, Cx);
+	
+	MbyM(Ay, Ax, By, Bx, A, B, C);
+	Mprint("C", Cy, Cx, C);
+
+	int kaz=0;
+
+}
