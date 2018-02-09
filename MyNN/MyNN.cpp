@@ -38,7 +38,7 @@ EXPORT void setNNTopology(NN_Parms* NN) {
 	for (i = 0; i <= Levcnt; i++) NN->LevelRatio[i] = atof(DescList[i]);
 	
 	// set LevelsCount
-	NN->LevelsCount = (Levcnt + 1);
+	NN->LevelsCount = (Levcnt + 2);
 
 	// set NodesCount
 	NN->NodesCount[DATANODE][0] = NN->InputCount;
