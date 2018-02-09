@@ -1058,7 +1058,7 @@ int NNTrain(tDebugInfo* pDebugParms, NN_Parms* NNParms, tCoreLog* NNLogs, NN_MxD
 				//-- 1. present every sample in the batch, and sum up total error in tse
 				s = sl[si];
 				//if (Mx->useValidation>0) TSE_V += CalcNetworkTSE(NNParms, Mx, pSampleDataV[s], pTargetDataV[s]);
-				TSE_T += Ecalc(NNParms, Mx, si);
+				TSE_T += Ecalc(NNParms, Mx, s);
 
 				//-- next sample id
 				si++;
