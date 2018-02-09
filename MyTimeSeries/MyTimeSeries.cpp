@@ -40,7 +40,7 @@ EXPORT int __stdcall LoadData_FXDB(tDebugInfo* DebugParms, tFXData* DBParms, int
 	strcat(stmt, "','YYYYMMDDHH24MI') order by 1 desc");
 
 #ifndef _NO_ORCL
-	if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen + 1, 1, PastBar) != 0) return -1;	//-- HistoryData
+	if (GetBarsFromQuery(DebugParms, DBParms->FXDB->DBCtx, stmt, pHistoryLen + 1, 0, PastBar) != 0) return -1;	//-- HistoryData
 #endif
 																												//-- Repeat for each Dataset
 	for (d = 0; d < pDatasetCount; d++) {

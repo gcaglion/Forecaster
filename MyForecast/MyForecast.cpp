@@ -593,7 +593,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 
 		int dscnt_from_file = fParms->DataParms.DatasetsCount;
 		if (LoadDataParms(&fParms->DebugParms, fParms->SavedEngine.ProcessId, &fParms->DataParms) != 0) return -1;
-		fParms->DataParms.SampleCount = fParms->DataParms.HistoryLen - fParms->DataParms.SampleLen;
+		fParms->DataParms.SampleCount = fParms->DataParms.HistoryLen - fParms->DataParms.SampleLen - fParms->DataParms.PredictionLen+1;
 		if (LoadEngineParms(&fParms->DebugParms, fParms->SavedEngine.ProcessId, &fParms->EngineParms) != 0) return -1;
 
 		if (fParms->Action==ADD_SAMPLES) {
@@ -629,7 +629,7 @@ EXPORT int  ForecastParamLoader(tForecastParms* fParms) {
 		if (getParam(fParms->iniParms, "DataParms.ValidationShift", &fParms->DataParms.ValidationShift) < 0)					return -1;
 		if (getParam(fParms->iniParms, "DataParms.DataTransformation", &fParms->DataParms.DataTransformation, enumlist) < 0)	return -1;
 		if (getParam(fParms->iniParms, "DataParms.WiggleRoom", &fParms->DataParms.wiggleRoom) < 0)								return -1;
-		fParms->DataParms.SampleCount = fParms->DataParms.HistoryLen - fParms->DataParms.SampleLen;
+		fParms->DataParms.SampleCount = fParms->DataParms.HistoryLen - fParms->DataParms.SampleLen-fParms->DataParms.PredictionLen+1;
 
 		//-- Make sure DataParms make sense
 		if (fParms->DataParms.SampleLen>=fParms->DataParms.HistoryLen) {
